@@ -3,6 +3,8 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-preprocessor";
 import { HardhatUserConfig, task } from "hardhat/config";
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 import example from "./tasks/example";
 
@@ -24,7 +26,15 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 200,
       },
+    }
+  },
+  networks: {
+    hardhat: {
     },
+    mainnet: {
+      url: "https://rpc.ankr.com/eth",
+      accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
+    }
   },
   paths: {
     sources: "./src", // Use ./src rather than ./contracts as Hardhat expects
