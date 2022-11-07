@@ -26,6 +26,7 @@ Attack Block: 15794364
 Reference: https://twitter.com/peckshield/status/1583416829237526528
 
 Principle: Poor input validation, unchecked token transfer/burn amounts.
+
     function redeem(ERC20BondToken token_, uint256 amount_) 
     external 
     override 
@@ -40,7 +41,6 @@ The function allows arbitraty tokens to be passed as ERC20BondToken. Simply crea
 - Should implement an expiry() function that returns an a uint48 amount smaller than current timestamp.
 - Should do nothing while calling burn()
 - Should implement an underlying() function that returns OHM address.
-
 
 MITIGATIONS:
 1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))

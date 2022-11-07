@@ -1,4 +1,15 @@
-# <h1 align="center"> Hardhat x Foundry Template </h1>
+# <h1 align="center"> Reproduced Exploits Library </h1>
+A library with previously exploited vulnerabilities, categorized by type.
+
+Each exploit can be found under the test folder.
+
+## Index
+### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
+
+### Bad Input Validation
+- [Olympus DAO Bond, Oct 2022 - ($300,000)](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Bond_OlympusDAO.attack.sol)
+
+# <h1> How to Install, Compile and Run </h1>
 
 **Template repository for getting started quickly with Hardhat and Foundry in one project**
 
