@@ -37,7 +37,8 @@ Principle: Poor input validation, unchecked token transfer/burn amounts.
         token_.burn(msg.sender, amount_);
         token_.underlying().transfer(msg.sender, amount_);
     }
-
+    
+ATTACK:
 The function allows arbitraty tokens to be passed as ERC20BondToken. Simply creating a non-standard ERC20 token which has the following requirements:
 - Should implement an expiry() function that returns an a uint48 amount smaller than current timestamp.
 - Should do nothing while calling burn()

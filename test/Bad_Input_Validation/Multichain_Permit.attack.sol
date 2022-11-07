@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
 import {WETH9} from "../interfaces/WETH9.sol";
 
+// forge test --match-contract Exploit_Multichain -vvv
+
 /*
 On Jan 19, 2022 an attacker stoken $960,000 in WETH tokens from the Multichain contract.
 
@@ -54,6 +56,7 @@ https://gist.github.com/zhaojun-sh/0df8429d52ae7d71b6d1ff5e8f0050dc#file-anyswap
         emit LogAnySwapOut(token, from, to, amount, cID(), toChainID);
     }
 
+ATTACK:
 The function allows arbitraty tokens to be passed as token, even non-token contract addresses. The attacker passed the exploiter contract as a token which:
 - Implemented an underlying() function that returns WETH address.
 - As WETH has no permit() function but a fallback that triggers deposit(), any call that triggers the fallback will success regardless the signature.
@@ -97,6 +100,7 @@ interface AnyswapV1ERC20 {
   function underlying() external view returns (address);
 }
 
+// forge test --match-contract Exploit_Multichain -vvv
 contract Exploit_Multichain is Test{
     address WETH_Address = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     CheatCodes cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);

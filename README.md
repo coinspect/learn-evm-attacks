@@ -8,6 +8,7 @@ Each exploit can be found under the test folder.
 
 ### Bad Input Validation
 - [Olympus DAO Bond, Oct 2022 - ($300,000)](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Bond_OlympusDAO.attack.sol)
+- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000)](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Multichain_Permit.attack.sol)
 
 # <h1> How to Install, Compile and Run </h1>
 
