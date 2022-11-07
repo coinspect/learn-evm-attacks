@@ -23,7 +23,8 @@ Attacker Contract: 0xa29e4fe451ccfa5e7def35188919ad7077a4de8f
 Attack Block: 15794364
 
 // Key Info Sources
-Reference: https://twitter.com/peckshield/status/1583416829237526528
+Twitter: https://twitter.com/peckshield/status/1583416829237526528
+Writeup: https://mirror.xyz/0xbanky.eth/c7G9ZfTB8pzQ5cCMw5UhdFehmR6l0fVqd_B-ZuXz2_o
 
 Principle: Poor input validation, unchecked token transfer/burn amounts.
 
