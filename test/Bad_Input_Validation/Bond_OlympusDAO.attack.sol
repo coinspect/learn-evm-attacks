@@ -45,7 +45,7 @@ The function allows arbitraty tokens to be passed as ERC20BondToken. Simply crea
 
 MITIGATIONS:
 1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))
-2) Ensure that the amounts required to be burnt and transfer are respected (also unchecked transfer/burn is made here that could be solved with a safeERC20 library)
+2) Ensure that the amounts required to be burnt and transfer are respected (also unchecked transfer/burn is made here, use a safeERC20 library)
 */
 
 address constant OHM = 0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5;
