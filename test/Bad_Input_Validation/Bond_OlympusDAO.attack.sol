@@ -15,8 +15,9 @@ It is important to remark that the amount stolen could have been more, but the a
 // Attack Overview
 Total Lost (returned later):  30,437 OHM ($302,496)
 Attack Tx: https://etherscan.io/tx/0x3ed75df83d907412af874b7998d911fdf990704da87c2b1a8cf95ca5d21504cf
-Exploited Contract: 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156
+Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0x3ed75df83d907412af874b7998d911fdf990704da87c2b1a8cf95ca5d21504cf
 
+Exploited Contract: 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156
 Attacker Address: 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be
 Attacker Contract: 0xa29e4fe451ccfa5e7def35188919ad7077a4de8f
 Attack Block: 15794364
