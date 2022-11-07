@@ -48,6 +48,7 @@ MITIGATIONS:
 1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))
 2) Ensure that the amounts required to be burnt and transfer are respected (also unchecked transfer/burn is made here, use a safeERC20 library)
 3) If arbitratry tokens are meant to be used, evaluate what should happen if wrapped with non standard interfaces.
+4) Do not enforce users Approving For All, instead request them only to approve for a specific amount of tokens (when applies).
 */
 
 address constant OHM = 0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5;

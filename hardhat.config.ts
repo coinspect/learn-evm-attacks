@@ -34,6 +34,10 @@ const config: HardhatUserConfig = {
     mainnet: {
       url: "https://rpc.ankr.com/eth",
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
+    },
+    bsc: {
+      url: "https://rpc.ankr.com/bsc",
+      accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
     }
   },
   paths: {
