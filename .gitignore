@@ -11,3 +11,6 @@ artifacts/
 
 #Hardhat plugin files
 typechain-types/
+
+# Environment
+.env
