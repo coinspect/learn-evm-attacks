@@ -8,7 +8,7 @@ import {IERC20} from "../interfaces/IERC20.sol";
 // forge test --match-contract Exploit_OlympusDao -vvv
 
 /*
-On Oct 21, 2022 an attacker stoken $300,000 in OHM tokens from an experimental BondFixedExpiryTeller contract.
+On Oct 21, 2022 an attacker stolen $300,000 in OHM tokens from an experimental BondFixedExpiryTeller contract.
 The attacker managed to exploit a redeem function that performed arbitrary tokens actions, chosing to steal only the mentioned amount.
 It is important to remark that the amount stolen could have been more, but the attacker acted as a white-hat and later decided to return the funds.
 
