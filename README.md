@@ -12,6 +12,7 @@ Each exploit can be found under the test folder.
 
 ### Business Logic
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Fantasm_Finance.sol)
+- [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Bvaults.sol)
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
 
