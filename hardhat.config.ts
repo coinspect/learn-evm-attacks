@@ -36,14 +36,15 @@ const config: HardhatUserConfig = {
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
     },
     bsc: {
-      url: "https://rpc.ankr.com/bsc",
+      url: "https://bsc-dataseed.binance.org/",
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
     },
     fantom: {
       url: "https://rpc.ankr.com/fantom",
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
-    }
+    },
 
+    
   },
   paths: {
     sources: "./src", // Use ./src rather than ./contracts as Hardhat expects

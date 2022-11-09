@@ -6,7 +6,7 @@ import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
 
 // forge test --match-contract Exploit_PROTOCOL_NAME -vvv
 /*
-On DATE an attacker stolen AMOUNT in TYPEW tokens from an PROTOCOL.
+On DATE an attacker stolen AMOUNT in TYPE tokens from an PROTOCOL.
 
 
 // Attack Overview
