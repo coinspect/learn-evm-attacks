@@ -26,7 +26,7 @@ Beosin : https://twitter.com/BeosinAlert/status/1554303803218083842
 Blocksec : https://twitter.com/BlockSecTeam/status/1554335271964987395
 CertiK post-mortem : https://www.certik.com/resources/blog/28fMavD63CpZJOKOjb9DX3-nomad-bridge-exploit-incident-analysis
 
-Principle: Bad root commitment, verification bypass
+Principle: Bad root commitment, root verification bypass
 
     function initialize(uint32 _remoteDomain, address _updater, bytes32 _committedRoot, uint256 _optimisticSeconds) public initializer {
         __NomadBase_initialize(_updater);
@@ -82,14 +82,14 @@ Principle: Bad root commitment, verification bypass
 ATTACK:
 The nature of this attack was pretty like a snowball that only required copying the calls others were performing because no external contracts or exploits were needed.
 A free-for-all acceptableRoot was commited on initialization (bytes32(0)) which allowed users to bypass the msg checks claiming 100 WBTC per tx on the ETH side of the bridge.
-1) 
-
+1) Bridge 0.1 WBTC from Moonbeam to Mainnet
+2) Claim 100 WBTC by sending a message with message that bypasses "require(acceptableRoot(messages[_messageHash]), "!proven");"
+3) Repeat
 
 MITIGATIONS:
 As the root of this attack was a bad initialization value that affected message validation, there are two critical aspects that could be taken into account:
 1) Evaluate if a specific initialization value could impact on the key functions of the contracts.
 2) Evaluate while validating messages if there are values that should not be provided by users as inputs (e.g bytes32(0) for signatures or roots).
-
 */
 
 interface INomadReplica {
