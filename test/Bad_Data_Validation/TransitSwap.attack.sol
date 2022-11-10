@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "forge-std/Test.sol";
-import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
+import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_TransitSwap -vvv
@@ -46,8 +45,8 @@ MITIGATIONS:
 
 */
 
-contract Exploit_TransitSwap is Test {
-    CheatCodes constant cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract Exploit_TransitSwap is TestHarness {
+
     IERC20 internal constant bscpegged = IERC20(0x55d398326f99059fF775485246999027B3197955);
 
     bytes32 internal constant EXPLOIT_TX = 0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189;

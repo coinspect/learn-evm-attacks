@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
+import {TestHarness} from "../TestHarness.sol";
 import {WETH9} from "../interfaces/WETH9.sol";
 
 // forge test --match-contract Exploit_Multichain -vvv
@@ -101,9 +101,8 @@ interface AnyswapV1ERC20 {
 }
 
 // forge test --match-contract Exploit_Multichain -vvv
-contract Exploit_Multichain is Test{
+contract Exploit_Multichain is TestHarness{
     address WETH_Address = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
-    CheatCodes cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
     AnyswapV4Router swapRouter  = AnyswapV4Router(0x6b7a87899490EcE95443e979cA9485CBE7E71522);
     AnyswapV1ERC20 swap20 =AnyswapV1ERC20(0x6b7a87899490EcE95443e979cA9485CBE7E71522);
     WETH9  weth = WETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);

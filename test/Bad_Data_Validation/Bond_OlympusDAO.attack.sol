@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
+import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_OlympusDao -vvv
@@ -69,8 +69,8 @@ contract ExploitOlympusToken {
 }
 
 // forge test --match-contract Exploit_OlympusDao -vvv
-contract Exploit_OlympusDao is Test {
-    CheatCodes constant cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+contract Exploit_OlympusDao is TestHarness {
+
     address constant internal BOND_FIXED_EXPIRY_TELLER = 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156;
     address constant internal ATTACKER = 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be;
     

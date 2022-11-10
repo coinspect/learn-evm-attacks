@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {CheatCodes} from "../interfaces/00_CheatCodes.interface.sol";
+import {TestHarness} from "../TestHarness.sol";
 
 // forge test --match-contract Exploit_Bad_Guys_NFT -vvv
 /*
@@ -61,9 +61,8 @@ interface IBadGuys {
     function balanceOf(address owner) external view returns (uint256 balance);
 }
 
-contract Exploit_Bad_Guys_NFT is Test {
-    CheatCodes constant cheat = CheatCodes(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
-
+contract Exploit_Bad_Guys_NFT is TestHarness {
+    
     IBadGuys internal constant nft = IBadGuys(0xB84CBAF116eb90fD445Dd5AeAdfab3e807D2CBaC);
     address internal constant PROJECT_OWNER = 0x09eFF2449882F9e727A8e9498787f8ff81465Ade;
     address internal constant ATTACKER = 0xBD8A137E79C90063cd5C0DB3Dbabd5CA2eC7e83e;
