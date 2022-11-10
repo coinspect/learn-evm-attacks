@@ -7,14 +7,14 @@ Each exploit can be found under the test folder.
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
 ### Bad Input Validation
-- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Bond_OlympusDAO.attack.sol)
-- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Multichain_Permit.attack.sol)
-- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Data_Validation/Bad_Guys_NFT.sol)
+- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/blob/master/test/Bad_Input_Validation/Bond_OlympusDAO.attack.sol)
+- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](/blob/master/test/Bad_Input_Validation/Multichain_Permit.attack.sol)
+- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](/blob/master/test/Bad_Data_Validation/Bad_Guys_NFT.sol)
 
 
 ### Business Logic
-- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Fantasm_Finance.sol)
-- [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Bvaults.sol)
+- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](/blob/master/test/Business_Logic/Fantasm_Finance.sol)
+- [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](/blob/master/test/Business_Logic/Bvaults.sol)
 
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
