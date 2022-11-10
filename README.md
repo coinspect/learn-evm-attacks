@@ -7,9 +7,9 @@ Each exploit can be found under the test folder.
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
 ### Bad Input Validation
-- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Input_Validation/Bond_OlympusDAO.attack.sol)
-- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Input_Validation/Multichain_Permit.attack.sol)
-- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](https://github.com/coinspect/prev-exploit-library/blob/master/test/Bad_Data_Validation/Bad_Guys_NFT.sol)
+- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
+- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit.attack.sol)
+- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](/test/Bad_Data_Validation/Bad_Guys_NFT.sol)
 
 
 ### Business Logic
