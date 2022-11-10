@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 
+import {BalancerFlashloan} from "../utils/BalancerFlashloan.sol";
+
 import {IERC20} from "../interfaces/IERC20.sol";
 import {WETH9} from "../interfaces/WETH9.sol";
 
@@ -40,10 +42,6 @@ MITIGATIONS:
 
 */
 
-interface IBalancer {
-    function flashLoan(address recipient, address[] memory tokens, uint256[] memory amounts, bytes memory userData) external payable;
-}
-
 interface IUnitroller {
     function enterMarkets(address[] memory cTokens) external payable returns(uint256[] memory);
 }
@@ -55,8 +53,8 @@ interface ICERC20Delegator {
     function borrow(uint256 borrowAmount) external payable returns (uint256);
 }
 
-contract Exploit_Fei is TestHarness {
-    IBalancer internal constant balancer = IBalancer(0xBA12222222228d8Ba445958a75a0704d566BF2C8);
+contract Exploit_Fei is TestHarness, BalancerFlashloan {
+    
     IUnitroller internal constant unitroller = IUnitroller(0x3f2D1BC6D02522dbcdb216b2e75eDDdAFE04B16F);
     ICERC20Delegator internal constant cerc20Delegator_USDC = ICERC20Delegator(0xEbE0d1cb6A0b8569929e062d67bfbC07608f0A47);
     ICERC20Delegator internal constant cerc20Delegator_ETH = ICERC20Delegator(0x26267e41CeCa7C8E0f143554Af707336f27Fa051);
