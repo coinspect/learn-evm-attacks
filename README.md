@@ -1,5 +1,5 @@
 # <h1 align="center"> Reproduced Exploits Library </h1>
-A library with previously exploited vulnerabilities, categorized by type (common denominator of each exploit).
+A library with previously exploited vulnerabilities, categorized by type (common denominator of each exploit). Also, utils that perform flashloans and swaps are provided in `test/utils` to ease the job of reproducing future attacks.
  
 Each exploit can be found under the test folder.
 
