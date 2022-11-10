@@ -9,13 +9,13 @@ Each exploit can be found under the test folder.
 ### Bad Input Validation
 - [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
 - [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit.attack.sol)
-- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](/test/Bad_Data_Validation/Bad_Guys_NFT.sol)
+- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked mint amount](/test/Bad_Data_Validation/Bad_Guys_NFT.attack.sol)
 
 
 ### Business Logic
-- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Fantasm_Finance.sol)
-- [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Bvaults.sol)
-- [BVaults, Oct 2022 - ($35,000) - Invalid Root Hash Commitment / Poor root validation](https://github.com/coinspect/prev-exploit-library/blob/master/test/Business_Logic/Bvaults.sol)
+- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
+- [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](/test/Business_Logic/Bvaults.attack.sol)
+- [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor root validation](/test/Business_Logic/NomadBridge.attack.sol)
 
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
