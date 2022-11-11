@@ -67,6 +67,17 @@ The issue was located in CERCImplementation.borrowFresh(), the internal function
 ATTACK:
 The function performs a low level call sending ETH with doTransferOut before updating the internal accounting for the borrower.
 The fallback triggered by the low level call calls Controller.exitMarket() which wipes the liquidity calculation of the borrower.
+1) Flasloan collateral to a factory contract
+2) Deploy with Create2 a borrower contract #1
+3) With contract #1, mint fCURRENCY equivalent to the flashloaned amount (fei currency of certain tokens)
+4) Then, borrow against the minted currency
+5) Redeem the borrowed amount to recover the collateral
+6) Use the factory to borrow against ETH (with fETH) more fUSDC, fUSDT and fFRAX
+7) Redeem all the tokens from step 6)
+8) Repeat steps 2 - 5.
+9) Redeem with the factory the fETH position
+10) Repay the flashloan
+11) Transfer the tokens back to the attacker
 
 MITIGATIONS:
 1) Respect the checks-effects-interactions to prevent cross-function and single function reentrancy
