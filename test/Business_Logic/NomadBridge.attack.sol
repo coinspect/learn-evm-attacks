@@ -7,7 +7,7 @@ import {IERC20} from "../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_Nomad -vvv
 /*
-On Aug 1st, 2022 ~190MM AMOUNT were stolen from Nomad Bridge because of a bad initialization of the tree root.
+On Aug 1st, 2022 ~190MM AMOUNT were stole from Nomad Bridge because of a bad initialization of the tree root.
 As a result, attackers (and whitehats) were allowed to bypass the message verification claiming tokens for free from the bridge.
 
 // Attack Overview

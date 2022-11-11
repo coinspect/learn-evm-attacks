@@ -7,7 +7,7 @@ import {IERC20} from "../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_FantasmFinance -vvv
 /*
-On Mar 09, 2022 an attacker stolen ~$2.62MM in XFTM tokens from an Fantasm Finance collateral reserve.
+On Mar 09, 2022 an attacker stole ~$2.62MM in XFTM tokens from an Fantasm Finance collateral reserve.
 The attacker managed to exploit the mint function supplying only FSM without transferring the FTM.
 This was possible because the mint function did not check the counterpart required in FTM as payment.
 

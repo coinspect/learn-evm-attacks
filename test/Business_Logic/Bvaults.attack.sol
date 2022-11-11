@@ -8,7 +8,7 @@ import {IERC20} from "../interfaces/IERC20.sol";
 // forge test --match-contract Exploit_BVaults -vvv
 
 /*
-On Oct 30, 2022 an attacker stolen over $35,000 from BVaults. 
+On Oct 30, 2022 an attacker stole over $35,000 from BVaults. 
 The price was manipulated and exploited a dust swapping function due to the lack of price checks inflating the price of an artificial pair.
 
 // Attack Overview

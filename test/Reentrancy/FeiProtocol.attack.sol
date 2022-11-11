@@ -11,7 +11,7 @@ import {WETH9} from "../interfaces/WETH9.sol";
 
 // forge test --match-contract Exploit_Fei -vvv
 /*
-On Apr 30 2022, an attacker stolen ~80MM USD in multiple stablecoins from FeiProtocol.
+On Apr 30 2022, an attacker stole ~80MM USD in multiple stablecoins from FeiProtocol.
 An old school cross-function reentrancy attack with the root cause of not respecting the checks-effects-interactions pattern.
 The attacker flashloaned multiple tokens wiping down the collateral draining the pool. 
 
@@ -67,7 +67,7 @@ The issue was located in CERCImplementation.borrowFresh(), the internal function
 ATTACK:
 The function performs a low level call sending ETH with doTransferOut before updating the internal accounting for the borrower.
 The fallback triggered by the low level call calls Controller.exitMarket() which wipes the liquidity calculation of the borrower.
-1) Flasloan collateral to a factory contract
+1) Flashloan collateral to a factory contract
 2) Deploy with Create2 a borrower contract #1
 3) With contract #1, mint fCURRENCY equivalent to the flashloaned amount (fei currency of certain tokens)
 4) Then, borrow against the minted currency

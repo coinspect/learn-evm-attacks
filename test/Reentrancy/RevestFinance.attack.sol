@@ -8,7 +8,7 @@ import {IUniswapV2Pair} from "../utils/IUniswapV2Pair.sol";
 
 // forge test --match-contract Exploit_RevestFinance -vvv
 /*
-On Mar 27 2022 an attacker stolen ~$2MM USD in RENA tokens from an Revest.
+On Mar 27 2022 an attacker stole ~$2MM USD in RENA tokens from an Revest.
 The attacker managed to reenter the minting mechanism of the ERC-1155's with its callback.
 
 // Attack Overview

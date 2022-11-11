@@ -6,7 +6,7 @@ import {TestHarness} from "../TestHarness.sol";
 
 // forge test --match-contract Exploit_PROTOCOL_NAME -vvv
 /*
-On DATE an attacker stolen AMOUNT in TYPE tokens from an PROTOCOL.
+On DATE an attacker stole AMOUNT in TYPE tokens from an PROTOCOL.
 
 
 // Attack Overview

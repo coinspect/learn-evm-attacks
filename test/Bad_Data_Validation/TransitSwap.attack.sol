@@ -8,7 +8,7 @@ import {IERC20} from "../interfaces/IERC20.sol";
 // forge test --match-contract Exploit_TransitSwap -vvv
 
 /*
-On Oct 2, 2022 an attacker stolen nearly $400,000 in BSC-USD tokens from BSC and $742,000 in USDC from the TransitSwap only in the shown transactions.
+On Oct 2, 2022 an attacker stole nearly $400,000 in BSC-USD tokens from BSC and $742,000 in USDC from the TransitSwap only in the shown transactions.
 The total value lost ascends to ~$23MM. 
 
 A considerable amount of assets was recovered: https://www.coindesk.com/business/2022/10/03/transit-swap-exploiter-returns-large-chunk-of-289m-hack/
