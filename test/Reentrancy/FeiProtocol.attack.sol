@@ -9,11 +9,11 @@ import {BalancerFlashloan} from "../utils/BalancerFlashloan.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 import {WETH9} from "../interfaces/WETH9.sol";
 
-// forge test --match-contract Exploit_PROTOCOL_NAME -vvv
+// forge test --match-contract Exploit_Fei -vvv
 /*
 On Apr 30 2022, an attacker stolen ~80MM USD in multiple stablecoins from FeiProtocol.
-An old school reentrancy attack with the root cause of not respecting the checks-effects-interactions pattern.
-The attacker flashloaned multiple tokens and borrowed uncollateralized assets draining the pool. 
+An old school cross-function reentrancy attack with the root cause of not respecting the checks-effects-interactions pattern.
+The attacker flashloaned multiple tokens wiping down the collateral draining the pool. 
 
 // Attack Overview
 Total Lost: ~80MM USD
