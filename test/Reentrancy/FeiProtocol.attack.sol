@@ -28,7 +28,6 @@ Attack Block:
 // Key Info Sources
 Twitter: https://twitter.com/peckshield/status/1520369315698016256
 Writeup: https://certik.medium.com/fei-protocol-incident-analysis-8527440696cc
-Code: 
 
 
 Principle: Flashloan borrowing, reentrancy
