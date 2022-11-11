@@ -14,7 +14,7 @@ The attacker managed to reenter the minting mechanism of the ERC-1155's with its
 // Attack Overview
 Total Lost: ~$2MM USD
 Attack Tx: https://etherscan.io/tx/0xe0b0c2672b760bef4e2851e91c69c8c0ad135c6987bbf1f43f5846d89e691428
-Ethereum Transaction Viewer: 
+Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0xe0b0c2672b760bef4e2851e91c69c8c0ad135c6987bbf1f43f5846d89e691428
 
 Exploited Contract: https://etherscan.io/address/0x2320A28f52334d62622cc2EaFa15DE55F9987eD9
 Attacker Address: https://etherscan.io/address/0xef967ECE5322c0D7d26Dab41778ACb55CE5Bd58B
