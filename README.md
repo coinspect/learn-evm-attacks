@@ -19,6 +19,8 @@ Each exploit can be found under the test folder.
 - [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor root validation](/test/Business_Logic/NomadBridge.attack.sol)
 
+### Reentrancy
+- [Fei Protocol, Apr 2022 - (~$80MM) - Cross function reentrancy / FlashLoan attack](/test/Reentrancy/FeiProtocol.attack.sol)
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
 
