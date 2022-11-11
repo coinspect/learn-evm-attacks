@@ -21,6 +21,7 @@ Each exploit can be found under the test folder.
 
 ### Reentrancy
 - [Fei Protocol, Apr 2022 - (~$80MM) - Cross function reentrancy / FlashLoan attack](/test/Reentrancy/FeiProtocol.attack.sol)
+- [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap attack](/test/Reentrancy/RevestFinance.attack.sol)
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
 
