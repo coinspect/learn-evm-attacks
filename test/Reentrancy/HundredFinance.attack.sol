@@ -110,8 +110,9 @@ contract Exploit_HundredFinance is TestHarness {
     }
 
     // Flashswap callback
-    function uniswapV2Call(address , uint256 _amount0, uint256 _amount1, bytes calldata ) external {
+    function uniswapV2Call(address sender, uint256 _amount0, uint256 _amount1, bytes calldata ) external {
         // attackLogic(_amount0, _amount1, _data);
+        require(sender == address(this), 'Not requested by this');
         require(msg.sender == address(pairUsdcWxdai), 'Only callable by pair');
 
         console.log('------- STEP 2: FLASHSWAP CALLBACK -------');

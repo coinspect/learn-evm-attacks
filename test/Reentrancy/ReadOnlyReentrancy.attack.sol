@@ -15,7 +15,6 @@ So far, no attacks that follow this path were identified. However, it is worth e
 Total Lost: No previous attacks via this path (yet)
 
 // Key Info Sources
-
 Video: https://www.youtube.com/watch?v=0fgGTRlsDxI 
 
 
@@ -37,7 +36,7 @@ Principle: Read-only reentrancy
 
 ATTACK:
 1) The attacker's contract calls contract A that performs a call open to be hooked (by an ERC777s, ERC1155 or regular ether transfers).
-2) The attacker callbackss a contract B that reads for example totalLocked from contract A.
+2) The attacker callbacks a contract B that reads for example totalLocked from contract A.
 3) As totalLocked was not updated by the call was made, it is reading that contract's A older value (yet not updated).
 4) Because of this, the attacker managed to exploit contract B because it read an invalid value of contract A (e.g. price rate manipulation).
 
@@ -73,7 +72,7 @@ contract Target {
     token.transfer(msg.sender, amount);
   }
 
-  function getReward() external returns (uint) {
+  function getReward() external view returns (uint) {
     uint reward = (balanceOf[msg.sender] * pool.get_virtual_price()) / 1e18;
     // Omitting code to transfer reward tokens
     return reward;
