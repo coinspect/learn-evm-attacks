@@ -28,12 +28,79 @@ Article: https://blocksecteam.medium.com/revest-finance-vulnerabilities-more-tha
 
 Principle: Reetrancy on ERC1155
 
+   function mintAddressLock(
+        address trigger,
+        bytes memory arguments,
+        address[] memory recipients,
+        uint[] memory quantities,
+        IRevest.FNFTConfig memory fnftConfig
+    ) external payable override returns (uint) {
+        uint fnftId = getFNFTHandler().getNextId();
 
-ATTACK: WIP
-1)
+        {
+            IRevest.LockParam memory addressLock;
+            addressLock.addressLock = trigger;
+            addressLock.lockType = IRevest.LockType.AddressLock;
+            // Get or create lock based on address which can trigger unlock, assign lock to ID
+            uint lockId = getLockManager().createLock(fnftId, addressLock);
+
+            if(trigger.supportsInterface(ADDRESS_LOCK_INTERFACE_ID)) {
+                IAddressLock(trigger).createLock(fnftId, lockId, arguments);
+            }
+        }
+        // This is a public call to a third-party contract. Must be done after everything else.
+        // Safe for reentry
+        doMint(recipients, quantities, fnftId, fnftConfig, msg.value);
+
+        emit FNFTAddressLockMinted(fnftConfig.asset, _msgSender(), fnftId, trigger, quantities, fnftConfig);
+
+        return fnftId;
+    }
+
+    // Then, doMint call ends up calling tokenVault.depositToken():
+
+    function depositToken(
+        uint fnftId,
+        uint transferAmount,
+        uint quantity
+    ) public override onlyRevestController {
+        // Updates in advance, to handle rebasing tokens
+        updateBalance(fnftId, quantity * transferAmount); // <----- HERE IS WHERE THE LOCKED BALANCE OF THE NFT IS ACCOUNTED
+        IRevest.FNFTConfig storage fnft = fnfts[fnftId];
+        fnft.depositMul = tokenTrackers[fnft.asset].lastMul;
+    }
+
+    // In revest.depositAdditionalToken(), the balance of an NFT is topped up with more tokens:
+    function depositAdditionalToFNFT(
+        uint fnftId,
+        uint amount,
+        uint quantity
+    ) external override returns (uint) {
+        ...
+        ITokenVault(vault).depositToken(fnftId, amount, quantity);
+        ...
+    }
+
+    // The FNFT Token Handler's mint function does not respect the Checks-Effects-Interactions pattern minting before updating internal variables.
+    
+    function mint(address account, uint id, uint amount, bytes memory data) external override onlyRevestController {
+        supply[id] += amount;
+        _mint(account, id, amount, data);
+        fnftsCreated += 1;
+    }
+
+
+ATTACK: 
+Each FNFT could be redeemed by the accounted tokens it backs. The attacker created vaults (repredented by FNFTs) without backing them with RENA and
+reentered with depositToken which updates the vault's balance before doMint.
+1) Mints first a small amount to determine the currentId and to generate a small NFT position.
+2) Mints a big NFT position and reenters the minting call with revest.depositAdditionalToken() with just 1e18 RENA so each token virtually backs that amount.
+3) After the call finishes, the internal accoutancy interprets that the attacker sent 360,000 * 1e18 RENA instead of what he sent allowing him to redeem that amount of RENA.
+ 
 
 MITIGATIONS:
-1) Respect the checks-effects-interactions security pattern
+1) Respect the checks-effects-interactions security pattern by minting tokens lastly on the mint call
+2) Evaluate if checks are needed before minting in order to guarantee that the system works as intended (e.g. no checks present in the mint function).
 
 */
 
