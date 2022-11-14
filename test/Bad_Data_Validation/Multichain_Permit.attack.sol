@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
-import {WETH9} from "../interfaces/WETH9.sol";
+import {IWETH9} from "../interfaces/IWETH9.sol";
 
 // forge test --match-contract Exploit_Multichain -vvv
 
@@ -105,7 +105,7 @@ contract Exploit_Multichain is TestHarness{
     address WETH_Address = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
     AnyswapV4Router swapRouter  = AnyswapV4Router(0x6b7a87899490EcE95443e979cA9485CBE7E71522);
     AnyswapV1ERC20 swap20 =AnyswapV1ERC20(0x6b7a87899490EcE95443e979cA9485CBE7E71522);
-    WETH9  weth = WETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    IWETH9  weth = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
     address constant internal ATTACKER = 0xFA2731d0BEde684993AB1109DB7ecf5bF33E8051;
     address constant internal VICTIM = 0x3Ee505bA316879d246a8fD2b3d7eE63b51B44FAB;

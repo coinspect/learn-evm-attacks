@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
+import {ICurve} from '../utils/ICurve.sol';
 
 // forge test --match-contract Exploit_ReadOnly -vvv
 /*
@@ -54,25 +55,6 @@ https://github.com/stakewithus/defi-by-example/blob/main/read-only-reentrancy/sr
 
 address constant STETH_POOL = 0xDC24316b9AE028F1497c275EB9192a3Ea0f67022;
 address constant LP = 0x06325440D014e39736583c165C2963BA99fAf14E;
-
-interface ICurve {
-  function get_virtual_price() external view returns (uint);
-
-  function add_liquidity(uint[2] calldata amounts, uint min_mint_amount)
-    external
-    payable
-    returns (uint);
-
-  function remove_liquidity(uint lp, uint[2] calldata min_amounts)
-    external
-    returns (uint[2] memory);
-
-  function remove_liquidity_one_coin(
-    uint lp,
-    int128 i,
-    uint min_amount
-  ) external returns (uint);
-}
 
 // Vulnerable contract as reads the pool price to calculate the rewards.
 contract Target {

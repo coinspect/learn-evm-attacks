@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.0;
-interface WETH9 {
+interface IWETH9 {
   function name() external view returns (string memory);
 
   function approve(address guy, uint256 wad) external returns (bool);

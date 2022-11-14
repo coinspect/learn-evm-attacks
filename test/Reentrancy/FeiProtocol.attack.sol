@@ -7,7 +7,7 @@ import {TestHarness} from "../TestHarness.sol";
 import {BalancerFlashloan} from "../utils/BalancerFlashloan.sol";
 
 import {IERC20} from "../interfaces/IERC20.sol";
-import {WETH9} from "../interfaces/WETH9.sol";
+import {IWETH9} from "../interfaces/IWETH9.sol";
 
 // forge test --match-contract Exploit_Fei -vvv
 /*
@@ -122,7 +122,7 @@ contract Exploit_Fei_Globals {
 
     IETHDelegator public constant fETH = IETHDelegator(0x26267e41CeCa7C8E0f143554Af707336f27Fa051);
 
-    WETH9 public constant weth =  WETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    IWETH9 public constant weth =  IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IERC20 public constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
     IERC20 public constant usdt = IERC20(0xdAC17F958D2ee523a2206206994597C13D831ec7);
     IERC20 public constant frax = IERC20(0x853d955aCEf822Db058eb8505911ED77F175b99e);

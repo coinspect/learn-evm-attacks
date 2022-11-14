@@ -43,6 +43,10 @@ const config: HardhatUserConfig = {
       url: "https://rpc.ankr.com/fantom",
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
     },
+    gnosis: {
+      url: "https://rpc.ankr.com/gnosis",
+      accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
+    },
 
     
   },
