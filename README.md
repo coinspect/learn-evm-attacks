@@ -18,12 +18,13 @@ Each exploit can be found under the test folder.
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked payments while minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
 - [BVaults, Oct 2022 - ($35,000) - DEX pair manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor root validation](/test/Business_Logic/NomadBridge.attack.sol)
+- [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Reentrancy/OneRingFinance.attack.sol)
 
 ### Reentrancy
 - [Fei Protocol, Apr 2022 - (~$80MM) - Cross function reentrancy / FlashLoan attack](/test/Reentrancy/FeiProtocol.attack.sol)
 - [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap attack](/test/Reentrancy/RevestFinance.attack.sol)
 - [Read Only Reentrancy - N/A - N/A - Read Only Reentrancy](/test/Reentrancy/ReadOnlyReentrancy.attack.sol)
-- [Hundred Finance - Mar 2022 - (~$6MM) -Reentrancy / ERC667 Transfer Hook](/test/Reentrancy/HundredFinance.attack.attack.sol)
+- [Hundred Finance - Mar 2022 - (~$6MM) - Reentrancy / ERC667 Transfer Hook](/test/Reentrancy/HundredFinance.attack.sol)
 
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
