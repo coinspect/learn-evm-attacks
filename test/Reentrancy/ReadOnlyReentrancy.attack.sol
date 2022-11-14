@@ -8,7 +8,7 @@ import {ICurve} from '../utils/ICurve.sol';
 
 // forge test --match-contract Exploit_ReadOnly -vvv
 /*
-By the date of this, no attacks that follow this path were identified. However, it is worth exploring this example for educational purposes.
+So far, no attacks that follow this path were identified. However, it is worth exploring this example for educational purposes.
 
 
 // Attack Overview
