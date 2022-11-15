@@ -9,7 +9,8 @@ Each exploit can be found under the test folder.
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
 ### Access Control
-- [Rikkei, Apr 2022 - ($1MM) - Non Access Controlled Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
+- [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
+- [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox.attack.sol)
 
 ### Bad Input Validation
 - [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
