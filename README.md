@@ -12,6 +12,7 @@ Each exploit can be found under the test folder.
 - [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
 - [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox.attack.sol)
 - [DAOMaker, Sept 2021 - (~$4MM) - Public Init](/test/Access_Control/DAOMaker.attack.sol)
+- [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao.attack.sol)
 
 ### Bad Input Validation
 - [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
