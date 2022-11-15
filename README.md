@@ -8,11 +8,13 @@ Each exploit can be found under the test folder.
 ## Index
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
+### Access Control
+- [Rikkei, Apr 2022 - ($1MM) - Non Access Controlled Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
+
 ### Bad Input Validation
 - [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
 - [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit.attack.sol)
 - [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT.attack.sol)
-
 
 ### Business Logic
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
