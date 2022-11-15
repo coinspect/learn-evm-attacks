@@ -11,7 +11,7 @@ import {IPancakeRouter01} from '../utils/IPancakeRouter01.sol';
 
 // forge test --match-contract Exploit_Rikkei -vvv
 /*
-On Apr 15, 2022 an attacker stole ~1MM USD in BNB tokens from an Rikkei Protocol.
+On Apr 15, 2022 an attacker stole ~1MM USD in BNB tokens from Rikkei Protocol.
 The attacker changed a non access controlled oracle setter, using a malicious oracle to manipulate the price draining several 
 stablecoin pools.
 
