@@ -1,7 +1,7 @@
 # <h1 align="center"> Reproduced Exploits Library </h1>
 A library with previously exploited vulnerabilities, categorized by type (common denominator of each exploit). 
 
-To contribute, create a new file inside the most appropriate category. Use the `template.txt file` in the `test` folder including the information related to the attack.
+To contribute, create a new file inside the most appropriate category. Use the `template.txt` file in the `test` folder including the information related to the attack.
 
 Utils that perform flashloans and swaps are provided in `test/utils` to ease the job of reproducing future attacks.
 Also, modules that provide enhanced features to Foundry are included in the `test/modules` folder. 
