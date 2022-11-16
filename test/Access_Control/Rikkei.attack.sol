@@ -178,7 +178,8 @@ contract Exploit_Rikkei is TestHarness {
 
     function logBalances(address _from) internal {
         emit log_named_decimal_uint('NATIVE TOKENS', _from.balance, 18);
-        for(uint i = 0; i < 5; i++){
+        uint256 tokensLength = tokens.length;
+        for(uint i = 0; i < tokensLength; i++){
             emit log_named_decimal_uint(tokens[i].name(), tokens[i].balanceOf(_from), tokens[i].decimals());
         }
         console.log('\n');
