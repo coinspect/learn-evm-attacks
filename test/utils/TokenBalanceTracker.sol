@@ -91,6 +91,7 @@ contract TokenBalanceTracker {
         string sign;
         uint256 value;
     }
+
     function addTokens(address[] memory _tokens) public {
         uint256 tokensLength = _tokens.length;
         for(uint256 i = 0; i < tokensLength; i++){
@@ -107,9 +108,9 @@ contract TokenBalanceTracker {
 
         // NATIVE TOKENS HANDLING (12-9)
         if(nativeTokenDelta.value == 0) {
-            console.log('NATIVE TOKENS: %s', toStringWithDecimals(_from.balance, 18));
+            console.log('Native Tokens: %s', toStringWithDecimals(_from.balance, 18));
         } else {
-            console.log('NATIVE TOKENS: %s (%s%s)', toStringWithDecimals(_from.balance, 18), nativeTokenDelta.sign, toStringWithDecimals(nativeTokenDelta.value, 18));
+            console.log('Native Tokens: %s (%s%s)', toStringWithDecimals(_from.balance, 18), nativeTokenDelta.sign, toStringWithDecimals(nativeTokenDelta.value, 18));
         }
 
         // Other tokens
