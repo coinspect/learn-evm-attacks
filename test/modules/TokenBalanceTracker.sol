@@ -92,14 +92,14 @@ contract TokenBalanceTracker {
         uint256 value;
     }
 
-    function addTokens(address[] memory _tokens) public {
+    function addTokensToTracker(address[] memory _tokens) public {
         uint256 tokensLength = _tokens.length;
         for(uint256 i = 0; i < tokensLength; i++){
             trackedTokens.push(_tokens[i]);
         }
     }
 
-    function addToken(address _token) public {
+    function addTokenToTracker(address _token) public {
         trackedTokens.push(_token);
     }
 
