@@ -39,6 +39,7 @@ Currently, 17 past exploits were reproduced.
 
 ### Bridges
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Bridges/NomadBridge.attack.sol)
+- [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge.attack.sol)
 
 
 # <h2 align="center"> How to Install, Compile and Run </h2>
