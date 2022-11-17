@@ -85,7 +85,7 @@ contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(address(this));
         updateBalanceTracker(address(stax));
     }
-
+    
     function test_attack() external {
         console.log('------- INITIAL STATUS -------');
         console.log('Attacker balances');
