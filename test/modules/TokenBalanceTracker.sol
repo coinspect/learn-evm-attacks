@@ -84,7 +84,7 @@ contract TokenBalanceTracker {
     //     0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, // WBTC
     //     0x86ed939B500E121C0C5f493F399084Db596dAd20, // SPC
     //     0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421, // VSP
-    //     0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2  // WETH (used only here for balance tracking) 
+    //     0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2  // WETH 
     // ];
 
     struct BalanceDeltaReturn {
