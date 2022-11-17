@@ -11,6 +11,8 @@ Each exploit can be found under the test folder.
 ## Index
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
+Currently, 17 past exploits were reproduced. 
+
 ### Access Control
 - [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
 - [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox.attack.sol)
@@ -27,6 +29,7 @@ Each exploit can be found under the test folder.
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Business_Logic/NomadBridge.attack.sol)
 - [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance.attack.sol)
+- [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse.attack.sol)
 
 ### Reentrancy
 - [Fei Protocol, Apr 2022 - (~$80MM) - Cross Function Reentrancy / FlashLoan Attack](/test/Reentrancy/FeiProtocol.attack.sol)
