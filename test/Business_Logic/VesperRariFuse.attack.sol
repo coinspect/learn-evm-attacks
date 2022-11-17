@@ -14,14 +14,14 @@ import {TWAPGetter} from '../modules/TWAPGetter.sol';
 
 // forge test --match-contract Exploit_VesperRariFuse -vvv
 /*
-On Nov 02, 2021 an attacker stole AMOUNT in TYPE tokens from Vesper-Rari Pools.
+On Nov 02, 2021 an attacker stole ~$3MM in various tokens from Vesper-Rari Pools.
 
 The attacker managed to drain a VUSD-USDC pair and waited for 10 blocks to increase the weight of that pool state
 in the TWAP oracle increasing the retrieved price (to an amount that even overflown the frontend of the website).
 Then, with the overinflated price, the attacker deposited VUSD as a collateral and got WBTC in exchange.
 
 // Attack Overview
-Total Lost: 
+Total Lost: ~$3MM
 Manipulation Tx: https://etherscan.io/tx/0x89d0ae4dc1743598a540c4e33917efdce24338723b0fabf34813b79cb0ecf4c5
 Borrow Tx: https://etherscan.io/tx/0x8527fea51233974a431c92c4d3c58dee118b05a3140a04e0f95147df9faf8092
 
@@ -151,7 +151,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
         // IERC20(tokens[1]).approve(cTokens[1], type(uint256).max); // Approve VUSD to fVUSD-23
 
         // Setup the balance tracker
-        addTokens(tokens);
+        addTokensToTracker(tokens);
     }
 
     function test_attack() external {
@@ -240,7 +240,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
 
     function attackTwo() internal {
         // We add to the tracking only the Vesper Pool VUSD because we are only giving VUSD as a collateral.
-        addToken(cTokens[1]);
+        addTokenToTracker(cTokens[1]);
 
         IERC20(tokens[1]).approve(cTokens[1], type(uint256).max); // Approve VUSD to fVUSD-23
         unitroller.enterMarkets(cTokens);
