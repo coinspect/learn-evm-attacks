@@ -103,6 +103,11 @@ contract TokenBalanceTracker {
         trackedTokens.push(_token);
     }
 
+    function logBalancesWithLabel(string memory label, address _from) public {
+        console.log(label);
+        logBalances(_from);
+    }
+
     function logBalances(address _from) public {
         (BalanceDeltaReturn memory nativeTokenDelta, BalanceDeltaReturn[] memory tokensDelta) = calculateBalanceDelta(_from);
 

