@@ -121,7 +121,7 @@ contract TokenBalanceTracker {
                 if(tokensDelta[i].value == 0) {
                     console.log('%s: %s', curToken.name(), toStringWithDecimals(curToken.balanceOf(_from), curToken.decimals()));
                 } else {
-                    string memory deltaAndSign = string.concat(tokensDelta[i].sign,' ', toStringWithDecimals(tokensDelta[i].value, curToken.decimals()));
+                    string memory deltaAndSign = string.concat(tokensDelta[i].sign, toStringWithDecimals(tokensDelta[i].value, curToken.decimals()));
                     console.log('%s: %s (%s)',  curToken.name(), toStringWithDecimals(curToken.balanceOf(_from), curToken.decimals()), deltaAndSign);
                 }
             }
