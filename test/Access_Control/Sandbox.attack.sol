@@ -4,6 +4,9 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
+
 // forge test --match-contract Exploit_SandBox -vvv
 /*
 On Feb 08, 2022 an attacker burned a Sandbox Land NFT from another user without their consent by

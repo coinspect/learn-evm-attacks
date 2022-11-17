@@ -110,6 +110,7 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
         }
 
         addTokenToTracker(address(rBNB));
+        updateBalanceTracker(address(this));
     }
 
     receive() external payable {}
