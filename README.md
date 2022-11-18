@@ -42,6 +42,9 @@ Currently, 19 past exploits were reproduced.
 - [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge.attack.sol)
 - [PolyNetwork Bridge, Aug 2021 - (~$611MM) - Arbitrary External Calls, Access Control Bypass](/test/Bridges/PolyNetworkBridge.attack.sol)
 
+
+Another interesting repo that might be handy: https://github.com/SunWeb3Sec/DeFiHackLabs
+
 # <h2 align="center"> How to Install, Compile and Run </h2>
 
 **Template repository for getting started quickly with Hardhat and Foundry in one project**
