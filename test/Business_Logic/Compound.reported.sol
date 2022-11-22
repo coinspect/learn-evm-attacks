@@ -74,7 +74,6 @@ contract Exploit_CompoundReported is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() external {
-        
         cheat.expectRevert(abi.encodePacked("CErc20::sweepToken: can not sweep underlying token"));
         cTUSD.sweepToken(tusd); // This reverts
 
