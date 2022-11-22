@@ -27,6 +27,7 @@ Currently, 19 past exploits were reproduced.
 ### Business Logic
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
+- [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/test/Business_Logic/Compound.reported.sol)
 - [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance.attack.sol)
 - [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse.attack.sol)
 
