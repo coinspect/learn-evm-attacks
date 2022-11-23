@@ -36,6 +36,7 @@ Currently, 20 past exploits were reproduced.
 - [Fei Protocol, Apr 2022 - (~$80MM) - Cross Function Reentrancy / FlashLoan Attack](/test/Reentrancy/FeiProtocol.attack.sol)
 - [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap Attack](/test/Reentrancy/RevestFinance.attack.sol)
 - [Hundred Finance - Mar 2022 - (~$6MM) - Reentrancy / ERC667 Transfer Hook](/test/Reentrancy/HundredFinance.attack.sol)
+- [Cream Finance - Aug 2021 - (~$18MM) - Reentrancy / ERC777 Transfer Hook](/test/Reentrancy/CreamFinance.attack.sol)
 - [Read Only Reentrancy - N/A - N/A - Read Only Reentrancy](/test/Reentrancy/ReadOnlyReentrancy.attack.sol)
 
 ### Bridges
