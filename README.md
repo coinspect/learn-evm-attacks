@@ -11,7 +11,7 @@ Each exploit can be found under the test folder.
 ## Index
 ### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
 
-Currently, 21 past exploits were reproduced. 
+Currently, 22 past exploits were reproduced. 
 
 ### Access Control
 - [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao.attack.sol)
