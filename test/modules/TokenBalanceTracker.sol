@@ -95,12 +95,27 @@ contract TokenBalanceTracker {
     function addTokensToTracker(address[] memory _tokens) public {
         uint256 tokensLength = _tokens.length;
         for(uint256 i = 0; i < tokensLength; i++){
-            trackedTokens.push(_tokens[i]);
+            addTokenToTracker(_tokens[i]);
         }
     }
 
     function addTokenToTracker(address _token) public {
-        trackedTokens.push(_token);
+        uint256 lenTrackedTokens = trackedTokens.length;
+        if(lenTrackedTokens == 0){
+            trackedTokens.push(_token);
+            return;
+        }
+
+        bool alreadyTracked;
+        for(uint256 i = 0; i < lenTrackedTokens; i++ ){ 
+            if(_token == trackedTokens[i]){
+                alreadyTracked = true;
+            }
+        }
+        
+        if(!alreadyTracked){
+            trackedTokens.push(_token);
+        }
     }
 
     function logBalancesWithLabel(string memory label, address _from) public {
