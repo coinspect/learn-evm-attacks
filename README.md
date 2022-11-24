@@ -30,6 +30,7 @@ Currently, 21 past exploits were reproduced.
 - [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound.reported.sol)
 - [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance.attack.sol)
 - [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse.attack.sol)
+- [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium.attack.sol)
 
 ### Reentrancy
 - [DFX Finance - Nov 2022 - (~$6MM) - Reentrancy / Side Entrance](/test/Reentrancy/DFXFinance.attack.sol)
