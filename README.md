@@ -23,6 +23,8 @@ Currently, 22 past exploits were reproduced.
 - [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens/Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
 - [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT.attack.sol)
 - [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens/Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit.attack.sol)
+- [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid.attack.sol)
+
 
 ### Business Logic
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
