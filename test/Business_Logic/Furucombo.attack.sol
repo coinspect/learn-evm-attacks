@@ -9,34 +9,64 @@ import {IWETH9} from '../interfaces/IWETH9.sol';
 
 // forge test --match-contract Exploit_Furucombo -vvv
 /*
-On DATE an attacker stole AMOUNT in TYPE tokens from an PROTOCOL.
-
+On Feb 27, 2021 an attacker stole over ~$15MM in multiple tokens from uses who gave max approval to Furucombo.
+The attacker initialized a malicious contract spoofing as a new implementation of AaveV2 abusing the previously gave allowance to Furucombo.
 
 // Attack Overview
 Total Lost: 
-Attack Tx: 
-Ethereum Transaction Viewer: 
+3,9k stETH
+2.4M USDC
+649k USDT
+257k DAI
+26 aWBTC
+270 aWETH
+296 aETH
+2.3k aAAVE
+4 WBTC
+90k CRV
+43k LINK
+7.3k cETH
+17.2M cUSDC
+69 cWBTC
+142.2M BAO
+38.6k PERP
+30.4k COMBO
+75k PAID
+225k UNIDX
+342 GRO
+19k NDX
 
-Exploited Contract: 
-Attacker Address: 
-Attacker Contract: 
-Attack Block:  
+Initialization: https://etherscan.io/tx/0x6a14869266a1dcf3f51b102f44b7af7d0a56f1766e5b1908ac80a6a23dbaf449
+Ethereum Transaction Viewer - Initialization: https://tx.eth.samczsun.com/ethereum/0x6a14869266a1dcf3f51b102f44b7af7d0a56f1766e5b1908ac80a6a23dbaf449
+
+Attack: https://etherscan.io/tx/0x8bf64bd802d039d03c63bf3614afc042f345e158ea0814c74be4b5b14436afb9
+Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0x8bf64bd802d039d03c63bf3614afc042f345e158ea0814c74be4b5b14436afb9
+
+
+Exploited Contract: https://etherscan.io/address/0x17e8Ca1b4798B97602895f63206afCd1Fc90Ca5f
+Attacker Address: https://etherscan.io/address/0xb624e2b10b84a41687caec94bdd484e48d76b212
+Attacker Contract: https://etherscan.io/address/0x86765dde9304bEa32f65330d266155c4fA0C4F04
+Attack Block: 11940500 
 
 // Key Info Sources
 Twitter: https://twitter.com/furucombo/status/1365743633605959681
-Writeup: 
-Article: 
-Code: 
+Writeup: https://slowmist.medium.com/slowmist-analysis-of-the-furucombo-hack-28c9ae558db9
+Writeup: https://github.com/OriginProtocol/security/blob/master/incidents/2021-02-27-Furucombo.md
+Article: https://github.com/MrToph/replaying-ethereum-hacks/blob/master/test/furucombo.ts
 
 
-Principle: VULN PRINCIPLE
-
+Principle: Non Initialized Proxy Spoof
 
 ATTACK:
-1)
+The attacker detected a non initialized proxy implementation and deceived Furucombo's Proxy to interpret that the implementaiton of AaveV2 proxy was modified. This was
+also possible because the non initialized proxy was already included into the whitelisted contracts. A malicious implementation was passed instead (being the attacker's contract) 
+that performed a transferFrom the users who gave approval to Furucombo. Because the calls were triggered by a delegation chain, the sender of the transferFrom was 
+Fucucombo (the approved) executing the logic of the malicious contract.
 
 MITIGATIONS:
-1)
+1) Initialize upgradable contracts.
+2) Prevent delegatecalls that could maliciously initialize the upgradable contracts.
+3) If the protocol use a whitelist to filter transactions, add only operative and already fully configured contracts to that whitelist ensuring that they work as intended.
 
 */
 
