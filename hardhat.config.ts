@@ -47,6 +47,10 @@ const config: HardhatUserConfig = {
       url: "https://rpc.ankr.com/gnosis",
       accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
     },
+    polygon: {
+      url: "https://rpc.ankr.com/polygon",
+      accounts: [process.env.BURNER_PRIVATE_KEY? process.env.BURNER_PRIVATE_KEY : ""]
+    },
 
     
   },
