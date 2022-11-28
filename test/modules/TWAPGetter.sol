@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
-import "forge-std/test.sol";
+import "forge-std/Test.sol";
 
 import {IUniswapV3Pair} from '../utils/IUniswapV3Pair.sol';
 

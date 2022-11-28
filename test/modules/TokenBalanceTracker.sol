@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
-import "forge-std/test.sol";
+import "forge-std/Test.sol";
 interface IERC20Local {
     function name() external view returns(string memory);
     function decimals() external view returns(uint8);
