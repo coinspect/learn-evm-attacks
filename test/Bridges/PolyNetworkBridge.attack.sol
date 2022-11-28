@@ -76,6 +76,13 @@ Principle: Arbitrary External Calls, Access Control bypass by impersonation, fun
         return true;
     }
 
+VULNERABILITY:
+1. _executeCrossChainTx will call a particular method inside an arbitrary contract. The sighash of that method must correspond to `_method(bytes,bytes,uint64)`. The sighash is only 4 bytes.
+2. There's another contract which is privileged: https://github.com/polynetwork/eth-contracts/blob/master/contracts/core/cross_chain_manager/data/EthCrossChainData.sol#L45.
+3. The privileged contract allows the owner to change the admin public keys, the `putCurEpochConPubKeyBytes`
+4. The owner of the privileged contract is EthCrossChainManager.
+5. Join all these facts together, you can bruteforce a `_method` such that `keccak(_method(bytes,bytes,uint64))[0:4]` calls `putCurEpochConPubKeyBytes` with whatever data.
+
 ATTACK:
 The attack has two main parts. First, the attacker modified the _method of the _executeCrossChainTx call in order to modify the keys of the manager contract.
 Then, in control of the keys drained the pool.
