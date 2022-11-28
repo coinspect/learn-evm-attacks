@@ -9,7 +9,7 @@ Also, modules that provide enhanced features to Foundry are included in the `tes
 Each exploit can be found under the test folder.
 
 ## Index
-### [How to Install, Compile and Run](https://github.com/coinspect/prev-exploit-library#-hardhat-x-foundry-template-)
+### [How to Install, Compile and Run](#-how-to-install-compile-and-run-)
 
 Currently, 24 past exploits were reproduced. 
 
@@ -50,7 +50,7 @@ Currently, 24 past exploits were reproduced.
 
 Another interesting repo that might be handy: https://github.com/SunWeb3Sec/DeFiHackLabs
 
-# <h2 align="center"> How to Install, Compile and Run </h2>
+# <h2 align="center"> How to Install, Compile and Run </h2>[]
 
 **Template repository for getting started quickly with Hardhat and Foundry in one project**
 

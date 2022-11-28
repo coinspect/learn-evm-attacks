@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../TestHarness.sol";
 import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
 import {IERC20} from "../interfaces/IERC20.sol";
-import {ERC20} from "../interfaces/ERC20.sol";
 
 import {IWETH9} from '../interfaces/IWETH9.sol';
 
