@@ -79,7 +79,13 @@ Principle: Bad root commitment, root verification bypass
             return false;
         }
         return block.timestamp >= _time;
-    }   
+    }
+
+VULNERABILITY:
+1. The contract was deployed with `commitedRoot` set to zero.
+2. `confirmAt[commitedRoot]` is set to non-zero
+3. Passing any message which is not present in `messages[_messageHash]` sends `0x00` to `acceptableRoot`
+4. `acceptRoot` will check `confirmAt[0x00]` which is non-zero, so will always return true (the timestamp is always bigger than one)
 
 ATTACK:
 The nature of this attack was pretty like a snowball that only required copying the calls others were performing because no external contracts or exploits were needed.
