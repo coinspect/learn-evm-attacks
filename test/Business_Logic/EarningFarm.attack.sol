@@ -69,6 +69,7 @@ Principle: Unchecked Flashloan reception
 VULNERABILITY
 1) The receiveFlashloan function does not checks if the loan was requested by the contract. It is worth noting that Balancer
 flashloan function does not include the initiator in the function signature.
+2) The contract does not properly check that the initial balance of the contract is not reduced after the loan.
 
 ATTACK:
 1) Desposit a tiny amount
