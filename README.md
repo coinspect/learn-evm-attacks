@@ -27,6 +27,7 @@ Currently, 24 past exploits were reproduced.
 - [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid.attack.sol)
 
 ### Business Logic
+- [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm.attack.sol)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
 - [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound.reported.sol)
