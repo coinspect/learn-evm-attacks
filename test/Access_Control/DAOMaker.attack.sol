@@ -16,6 +16,17 @@ Also, the contract attacked was not verified. The fact that the attacker used on
 on a non verified contract suggests that the attacker was aware of this vulnerability.
 The attacker called init on a non access controlled contract and called emergencyExit withdrawing the tokens held.
 
+The actual problem is hard to detect as contracts were not verified, thus the source code is not readily available.
+Nevertheless, we can see the first attack tx https://etherscan.io/tx/0xd5e2edd6089dcf5dca78c0ccbdf659acedab173a8ab3cb65720e35b640c0af7c
+calls an init method with a sighash 84304ad7. The exploited contract is simply a universal-proxy-like, which delegates call to an implementation
+that holds the actual upgrade logic. This implementation contract didn't not prevent an arbitrary address to call it.
+It also set as `owner` anyone who called it. You can check the decompilation here https://etherscan.io/bytecode-decompiler?a=0xf17ca0e0f24a5fa27944275fa0cedec24fbf8ee2
+and look for the unknown84304ad7 method, as the decompiler calls it. Look at the bottom, you will see `owner = caller`.
+We can be sure this transaction triggered because there is an event in the event list: https://etherscan.io/address/0x2fd602ed1f8cb6deaba9bedd560ffe772eb85940#events
+See that the first one sets it from zero to an OK address, then after a while fron the OK address to the attacker's.
+
+This allowed the attacker to call emergencyExit (sighash: a441d067) which is `onlyOwner` protected.
+
 // Attack Overview
 Total Lost: ~4MM usd on several transactions
 Attack Tx: https://etherscan.io/tx/0x96bf6bd14a81cf19939c0b966389daed778c3a9528a6c5dd7a4d980dec966388, https://etherscan.io/tx/0x96bf6bd14a81cf19939c0b966389daed778c3a9528a6c5dd7a4d980dec966388
