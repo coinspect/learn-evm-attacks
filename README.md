@@ -11,7 +11,7 @@ Each exploit can be found under the test folder.
 ## Index
 ### [How to Install, Compile and Run](#-how-to-install-compile-and-run-)
 
-Currently, 26 past exploits were reproduced. 
+Currently, 28 past exploits were reproduced. 
 
 ### Access Control
 - [MoonBirds, ZZSH Liquidity Tokens, Nov 2022 - (~$5k) - Public Liquify Function / Sandwich Attack](/test/Access_Control/MBCToken.attack.sol)
@@ -28,6 +28,7 @@ Currently, 26 past exploits were reproduced.
 - [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid.attack.sol)
 
 ### Business Logic
+- [Seaman, Nov 2022 - (~$7k) - Subsequent Liquify triggers (like Moonbirds attack)](/test/Business_Logic/Seaman.attack.sol)
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm.attack.sol)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
