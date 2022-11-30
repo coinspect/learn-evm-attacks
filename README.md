@@ -14,6 +14,7 @@ Each exploit can be found under the test folder.
 Currently, 26 past exploits were reproduced. 
 
 ### Access Control
+- [MoonBirds, ZZSH Liquidity Tokens, Nov 2022 - (~$5k) - Public Liquify Function / Sandwich Attack](/test/Access_Control/MBCToken.attack.sol)
 - [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao.attack.sol)
 - [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
 - [DAOMaker, Sept 2021 - (~$4MM) - Public Init](/test/Access_Control/DAOMaker.attack.sol)
