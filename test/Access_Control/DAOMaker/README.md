@@ -38,6 +38,10 @@ Also, the contract attacked was not verified. The fact that the attacker used on
 ## Possible mitigations
 - `initialize` functions should always be protected so they can be called only once
 
+## Diagrams and graphs
+
+### PlantUML
+![PlantUML](daomaker.png)
 
 ## Sources and references
 - [Mudit Gupta Twitter Thread](https://twitter.com/Mudit__Gupta/status/1434059922774237185)
