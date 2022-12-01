@@ -6,7 +6,6 @@ import "forge-std/console.sol";
 
 import {TestHarness} from "../TestHarness.sol";
 import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
-import {ECCUtils} from '../interfaces/PolyNetworkLibraries/ETHCrossChainUtils.sol';
 
 // forge test --match-contract Report_ArbitrumInbox -vvv
 /*
