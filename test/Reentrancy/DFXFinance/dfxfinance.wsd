@@ -1,0 +1,47 @@
+@startuml
+
+interface IDFX {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+flash()
+	+deposit()
+	+withdraw()
+	+derivatives()
+	+balanceOf()
+	+🔍viewDeposit()
+	+approve()
+
+}
+
+
+class Exploit_DFXFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IDFX]] dfx
+	#[[IERC20]] usdc
+	#[[IERC20]] xidr
+	#[[address]] attackerContract
+	#{static}[[uint256]] AMOUNT_TO_DEPOSIT
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#attack_dfx()
+	#requestLoan()
+	+flashCallback()
+	#logBalances()
+
+}
+' -- inheritance / usingFor --
+Exploit_DFXFinance --[#DarkGoldenRod]|> TestHarness
+
+@enduml

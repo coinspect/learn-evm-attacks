@@ -1,0 +1,64 @@
+@startuml
+
+interface IERC1820Registry {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+setInterfaceImplementer()
+
+}
+
+
+interface IRevest {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mintTimeLock()
+	+💰mintValueLock()
+	+💰mintAddressLock()
+	+withdrawFNFT()
+	+unlockFNFT()
+	+splitFNFT()
+	+depositAdditionalToFNFT()
+	+setFlatWeiFee()
+	+setERC20Fee()
+	+getFlatWeiFee()
+	+getERC20Fee()
+
+}
+
+
+class Exploit_RevestFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IUniswapV2Pair]] renaWethPair
+	#[[IERC1820Registry]] interfaceRegistry
+	#[[IRevest]] revest
+	#[[IERC20]] rena
+	#{static}[[address]] attacker
+	#[[uint256]] reentrancyStep
+	#[[uint256]] currentId
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+uniswapV2Call()
+	+onERC1155Received()
+
+}
+' -- inheritance / usingFor --
+Exploit_RevestFinance --[#DarkGoldenRod]|> TestHarness
+
+@enduml

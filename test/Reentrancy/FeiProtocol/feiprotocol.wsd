@@ -1,0 +1,126 @@
+@startuml
+
+interface IUnitroller {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰enterMarkets()
+	+exitMarket()
+	+🔍borrowCaps()
+
+}
+
+
+interface ICERC20Delegator {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+🔍balanceOf()
+	+🔍decimals()
+	+💰borrow()
+	+accrueInterest()
+	+approve()
+	+💰redeemUnderlying()
+
+}
+
+
+interface IETHDelegator {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+🔍balanceOf()
+	+🔍decimals()
+	+💰borrow()
+	+accrueInterest()
+	+approve()
+	+💰redeemUnderlying()
+	+🔍getCash()
+
+}
+
+
+class Exploit_Fei_Globals {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+	+{static}[[IUnitroller]] unitroller
+	+{static}[[ICERC20Delegator]] fUSDC
+	+{static}[[ICERC20Delegator]] fUSDT
+	+{static}[[ICERC20Delegator]] fFRAX
+	+{static}[[IETHDelegator]] fETH
+	+{static}[[IWETH9]] weth
+	+{static}[[IERC20]] usdc
+	+{static}[[IERC20]] usdt
+	+{static}[[IERC20]] frax
+	+{static}[[address]] attacker
+
+    ' -- methods --
+
+}
+
+
+class Exploit_Fei {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}BalancerFlashloan
+	{abstract}Exploit_Fei_Globals
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+💰receiveFlashLoan()
+	#attackfETH()
+	+attack_fUSDC()
+	+💰**__constructor__**()
+	#log_balances()
+
+}
+
+
+class Exploiter_Attacker_Minion {
+    ' -- inheritance --
+	{abstract}Exploit_Fei_Globals
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[uint256]] mintAmount
+	+[[address]] factory
+
+    ' -- methods --
+	+**__constructor__**()
+	+exploiter_setup_function()
+	+mint()
+	+borrow()
+	+redeemAll()
+	+💰**__constructor__**()
+
+}
+' -- inheritance / usingFor --
+Exploit_Fei --[#DarkGoldenRod]|> TestHarness
+Exploit_Fei --[#DarkGoldenRod]|> BalancerFlashloan
+Exploit_Fei --[#DarkGoldenRod]|> Exploit_Fei_Globals
+Exploiter_Attacker_Minion --[#DarkGoldenRod]|> Exploit_Fei_Globals
+
+@enduml

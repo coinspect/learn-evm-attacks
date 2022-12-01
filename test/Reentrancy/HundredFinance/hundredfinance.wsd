@@ -1,0 +1,28 @@
+@startuml
+
+class Exploit_HundredFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[ICurve]] curve
+	-{static}[[IUniswapV2Pair]] pairUsdcWxdai
+	#[[uint256]] amountBorrowed
+	#[[uint16]] timesBorrowed
+
+    ' -- methods --
+	+setUp()
+	+💰**__constructor__**()
+	+test_attack()
+	+uniswapV2Call()
+	+onTokenTransfer()
+	+borrowXDAI()
+	#logBalances()
+
+}
+' -- inheritance / usingFor --
+Exploit_HundredFinance --[#DarkGoldenRod]|> TestHarness
+
+@enduml
