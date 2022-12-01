@@ -1,0 +1,69 @@
+@startuml
+
+interface IRegistry {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+🔍infos()
+	+🔍isValid()
+
+}
+
+
+interface IProxy {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+batchExec()
+
+}
+
+
+interface IAaveV2Proxy {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰initialize()
+
+}
+
+
+class Exploit_Furucombo {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[address]] victim
+	#[[IProxy]] furucomboProxy
+	#[[IAaveV2Proxy]] aaveV2Proxy
+	#[[IERC20]] usdc
+	#[[IRegistry]] furucomboRegistry
+	#[[address]] attacker
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#executeTransferFrom()
+	+💰doTransferFrom()
+
+}
+' -- inheritance / usingFor --
+Exploit_Furucombo --[#DarkGoldenRod]|> TestHarness
+Exploit_Furucombo --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
