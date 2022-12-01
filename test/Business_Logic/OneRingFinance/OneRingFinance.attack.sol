@@ -2,11 +2,11 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {IUniswapV2Pair} from '../utils/IUniswapV2Pair.sol';
-import {IERC20} from '../interfaces/IERC20.sol';
+import {TestHarness} from "../../TestHarness.sol";
+import {IUniswapV2Pair} from '../../utils/IUniswapV2Pair.sol';
+import {IERC20} from '../../interfaces/IERC20.sol';
 
-import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
 // forge test --match-contract Exploit_OneRingFinance -vvv
 /*

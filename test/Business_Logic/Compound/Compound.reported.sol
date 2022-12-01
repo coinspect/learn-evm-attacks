@@ -2,10 +2,10 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+import {TestHarness} from "../../TestHarness.sol";
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
-import {IERC20} from "../interfaces/IERC20.sol";
+import {IERC20} from "../../interfaces/IERC20.sol";
 
 
 // forge test --match-contract Exploit_CompoudReported -vvv

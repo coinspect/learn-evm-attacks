@@ -2,15 +2,15 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
+import {TestHarness} from "../../TestHarness.sol";
 
-import {IERC20} from '../interfaces/IERC20.sol';
-import {IWETH9} from '../interfaces/IWETH9.sol';
+import {IERC20} from '../../interfaces/IERC20.sol';
+import {IWETH9} from '../../interfaces/IWETH9.sol';
 
-import {IUniswapV3Pair} from '../utils/IUniswapV3Pair.sol';
+import {IUniswapV3Pair} from '../../utils/IUniswapV3Pair.sol';
 
-import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
-import {TWAPGetter} from '../modules/TWAPGetter.sol';
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
+import {TWAPGetter} from '../../modules/TWAPGetter.sol';
 
 // forge test --match-contract Exploit_VesperRariFuse -vvv
 /*
