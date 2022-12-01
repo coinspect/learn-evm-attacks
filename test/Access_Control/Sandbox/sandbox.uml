@@ -1,0 +1,36 @@
+@startuml
+
+interface ILand {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+_burn()
+	+🔍_numNFTPerAddress()
+
+}
+
+
+class Exploit_SandBox {
+    ' -- inheritance --
+	{abstract}TestHarness
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[address]] attacker
+	#[[address]] victim
+	#[[ILand]] land
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_SandBox --[#DarkGoldenRod]|> TestHarness
+
+@enduml
