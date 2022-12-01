@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {IERC20} from '../interfaces/IERC20.sol';
-import {IUniswapV3Pair} from '../utils/IUniswapV3Pair.sol';
+import {TestHarness} from "../../TestHarness.sol";
+import {IERC20} from '../../interfaces/IERC20.sol';
+import {IUniswapV3Pair} from '../../utils/IUniswapV3Pair.sol';
 
 // forge test --match-contract Exploit_DFXFinance -vvv
 /*

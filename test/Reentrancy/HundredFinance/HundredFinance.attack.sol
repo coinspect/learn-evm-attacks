@@ -2,14 +2,14 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
+import {TestHarness} from "../../TestHarness.sol";
 
-import {ICompound} from '../utils/ICompound.sol';
-import {ICurve} from '../utils/ICurve.sol';
-import {IUniswapV2Pair} from '../utils/IUniswapV2Pair.sol';
+import {ICompound} from '../../utils/ICompound.sol';
+import {ICurve} from '../../utils/ICurve.sol';
+import {IUniswapV2Pair} from '../../utils/IUniswapV2Pair.sol';
 
-import {IERC20} from '../interfaces/IERC20.sol';
-import {IWETH9} from '../interfaces/IWETH9.sol';
+import {IERC20} from '../../interfaces/IERC20.sol';
+import {IWETH9} from '../../interfaces/IWETH9.sol';
 
 // forge test --match-contract Exploit_HundredFinance -vvv
 /*

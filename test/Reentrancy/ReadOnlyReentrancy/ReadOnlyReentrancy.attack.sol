@@ -2,9 +2,9 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {IERC20} from "../interfaces/IERC20.sol";
-import {ICurve} from '../utils/ICurve.sol';
+import {TestHarness} from "../../TestHarness.sol";
+import {IERC20} from "../../interfaces/IERC20.sol";
+import {ICurve} from '../../utils/ICurve.sol';
 
 // forge test --match-contract Exploit_ReadOnly -vvv
 /*
