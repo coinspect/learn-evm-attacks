@@ -14,40 +14,41 @@ Each exploit can be found under the test folder.
 Currently, 26 past exploits were reproduced. 
 
 ### Access Control
-- [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao.attack.sol)
-- [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei.attack.sol)
-- [DAOMaker, Sept 2021 - (~$4MM) - Public Init](/test/Access_Control/DAOMaker.attack.sol)
-- [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox.attack.sol)
-- [Punk Protocol, Aug 2021 - (~$8MM) - Non initialized contract](/test/Access_Control/PunkProtocol.attack.sol)
+- [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao/TempleDao.attack.sol)
+- [Rikkei, Apr 2022 - ($1MM) - Public Oracle Setter](/test/Access_Control/Rikkei/Rikkei.attack.sol)
+- [DAOMaker, Sept 2021 - (~$4MM) - Public Init](/test/Access_Control/DAOMaker/DAOMaker.attack.sol)
+- [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox/Sandbox.attack.sol)
+- [Punk Protocol, Aug 2021 - (~$8MM) - Non initialized contract](/test/Access_Control/PunkProtocol/PunkProtocol.attack.sol)
+
 
 ### Bad Data Validation
-- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO.attack.sol)
-- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT.attack.sol)
-- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit.attack.sol)
-- [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid.attack.sol)
+- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/Bond_OlympusDAO.attack.sol)
+- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/Bad_Guys_NFT.attack.sol)
+- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol)
+- [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid/Superfluid.attack.sol)
 
 ### Business Logic
-- [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm.attack.sol)
-- [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults.attack.sol)
-- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance.attack.sol)
-- [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound.reported.sol)
-- [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance.attack.sol)
-- [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse.attack.sol)
-- [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium.attack.sol)
+- [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm/EarningFarm.attack.sol)
+- [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults/Bvaults.attack.sol)
+- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance/Fantasm_Finance.attack.sol)
+- [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound/Compound.reported.sol)
+- [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance/OneRingFinance.attack.sol)
+- [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse/VesperRariFuse.attack.sol)
+- [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium/Uranium.attack.sol)
 
 ### Reentrancy
-- [DFX Finance - Nov 2022 - (~$6MM) - Reentrancy / Side Entrance](/test/Reentrancy/DFXFinance.attack.sol)
-- [Fei Protocol, Apr 2022 - (~$80MM) - Cross Function Reentrancy / FlashLoan Attack](/test/Reentrancy/FeiProtocol.attack.sol)
-- [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap Attack](/test/Reentrancy/RevestFinance.attack.sol)
-- [Hundred Finance - Mar 2022 - (~$6MM) - Reentrancy / ERC667 Transfer Hook](/test/Reentrancy/HundredFinance.attack.sol)
-- [Paraluni - Mar 2022 - (~$1.7MM) - Reentrancy / Arbitrary tokens](/test/Reentrancy/Paraluni.attack.sol)
-- [Cream Finance - Aug 2021 - (~$18MM) - Reentrancy / ERC777 Transfer Hook](/test/Reentrancy/CreamFinance.attack.sol)
-- [Read Only Reentrancy - N/A - N/A - Read Only Reentrancy](/test/Reentrancy/ReadOnlyReentrancy.attack.sol)
+- [DFX Finance - Nov 2022 - (~$6MM) - Reentrancy / Side Entrance](/test/Reentrancy/DFXFinance/DFXFinance.attack.sol)
+- [Fei Protocol, Apr 2022 - (~$80MM) - Cross Function Reentrancy / FlashLoan Attack](/test/Reentrancy/FeiProtocol/FeiProtocol.attack.sol)
+- [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap Attack](/test/Reentrancy/RevestFinance/RevestFinance.attack.sol)
+- [Hundred Finance - Mar 2022 - (~$6MM) - Reentrancy / ERC667 Transfer Hook](/test/Reentrancy/HundredFinance/HundredFinance.attack.sol)
+- [Paraluni - Mar 2022 - (~$1.7MM) - Reentrancy / Arbitrary tokens](/test/Reentrancy/Paraluni/Paraluni.attack.sol)
+- [Cream Finance - Aug 2021 - (~$18MM) - Reentrancy / ERC777 Transfer Hook](/test/Reentrancy/CreamFinance/CreamFinance.attack.sol)
+- [Read Only Reentrancy - N/A - N/A - Read Only Reentrancy](/test/Reentrancy/ReadOnlyReentrancy/ReadOnlyReentrancy.attack.sol)
 
 ### Bridges
-- [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Bridges/NomadBridge.attack.sol)
-- [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge.attack.sol)
-- [PolyNetwork Bridge, Aug 2021 - (~$611MM) - Arbitrary External Calls, Access Control Bypass](/test/Bridges/PolyNetworkBridge.attack.sol)
+- [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Bridges/NomadBridge/NomadBridge.attack.sol)
+- [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge/RoninBridge.attack.sol)
+- [PolyNetwork Bridge, Aug 2021 - (~$611MM) - Arbitrary External Calls, Access Control Bypass](/test/Bridges/PolyNetworkBridge/PolyNetworkBridge.attack.sol)
 
 
 Another interesting repo that might be handy: https://github.com/SunWeb3Sec/DeFiHackLabs
