@@ -1,0 +1,40 @@
+@startuml
+
+interface IFantasm {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+collect()
+
+}
+
+
+class Exploit_FantasmFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC20]] fsm
+	#[[IERC20]] xFTM
+	#[[IFantasm]] fantasmPool
+	#{static}[[address]] FANTOM_DEPLOYER
+	#{static}[[uint256]] ATTACKER_INITIAL_BALANCE
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_FantasmFinance --[#DarkGoldenRod]|> TestHarness
+Exploit_FantasmFinance --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
