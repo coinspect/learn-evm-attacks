@@ -41,7 +41,7 @@ Also, the contract attacked was not verified. The fact that the attacker used on
 ## Diagrams and graphs
 
 ### Overview
-![Overview](daomaker.d2.png)
+![Overview](DAOMaker.d2.png)
 
 ### Entity and class diagram
 ![PlantUML](daomaker.png)
