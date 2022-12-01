@@ -7,7 +7,6 @@
 - - https://etherscan.io/address/0x2FD602Ed1F8cb6DEaBA9BEDd560ffE772eb85940
 - Attack transactions: 
 - - https://etherscan.io/tx/0x96bf6bd14a81cf19939c0b966389daed778c3a9528a6c5dd7a4d980dec966388 
-- - https://etherscan.io/tx/0x96bf6bd14a81cf19939c0b966389daed778c3a9528a6c5dd7a4d980dec966388
 - Attack Block: 13155350 
 - Date: Sep 03, 2021
 - Reproduce: `forge test --match-contract Exploit_DAOMaker -vvv`
@@ -39,6 +38,13 @@ Also, the contract attacked was not verified. The fact that the attacker used on
 ## Possible mitigations
 - `initialize` functions should always be protected so they can be called only once
 
+## Diagrams and graphs
+
+### Overview
+![Overview](daomaker.d2.png)
+
+### Entity and class diagram
+![PlantUML](daomaker.png)
 
 ## Sources and references
 - [Mudit Gupta Twitter Thread](https://twitter.com/Mudit__Gupta/status/1434059922774237185)
