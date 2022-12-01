@@ -2,10 +2,10 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {IWETH9} from "../interfaces/IWETH9.sol";
+import {TestHarness} from "../../TestHarness.sol";
+import {IWETH9} from "../../interfaces/IWETH9.sol";
 
-import {TokenBalanceTracker} from '../modules/TokenBalanceTracker.sol';
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
 // forge test --match-contract Exploit_Multichain -vvv
 
