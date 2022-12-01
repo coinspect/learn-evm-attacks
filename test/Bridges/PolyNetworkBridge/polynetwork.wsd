@@ -1,0 +1,56 @@
+@startuml
+
+interface IEthCrossChainManager {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+verifyHeaderAndExecuteTx()
+
+}
+
+
+class Exploit_PolyNetwork {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IEthCrossChainManager]] bridge
+	#[[address]] attacker
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+deserializeProof()
+	+deserializeHeader()
+
+}
+
+
+class Exploit_PolyNetwork_Deserializer {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+🔍deseralizeProof()
+	+🔍deserializeHeader()
+
+}
+' -- inheritance / usingFor --
+Exploit_PolyNetwork --[#DarkGoldenRod]|> TestHarness
+Exploit_PolyNetwork --[#DarkGoldenRod]|> TokenBalanceTracker
+Exploit_PolyNetwork_Deserializer --[#DarkGoldenRod]|> TestHarness
+Exploit_PolyNetwork_Deserializer --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

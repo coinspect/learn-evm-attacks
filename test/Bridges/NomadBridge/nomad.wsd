@@ -1,0 +1,46 @@
+@startuml
+
+interface INomadReplica {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+initialize()
+	+process()
+	+🔍acceptableRoot()
+
+}
+
+
+class Exploit_Nomad {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#{static}[[address]] NOMAD_DEPLOYER
+	#{static}[[address]] attacker
+	#{static}[[uint32]] ETHEREUM
+	#{static}[[uint32]] MOONBEAM
+	#{static}[[INomadReplica]] replicaProxy
+	#{static}[[INomadReplica]] replica
+	#{static}[[address]] bridgeRouter
+	#{static}[[address]] ercBridge
+	#{static}[[IERC20]] WBTC
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+🔍getPayload()
+
+}
+' -- inheritance / usingFor --
+Exploit_Nomad --[#DarkGoldenRod]|> TestHarness
+Exploit_Nomad --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
