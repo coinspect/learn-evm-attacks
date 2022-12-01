@@ -1,0 +1,50 @@
+@startuml
+
+interface IStax {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+migrateStake()
+	+withdrawAll()
+
+}
+
+
+class Exploit_TempleDAO {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC20]] staxLpToken
+	#[[IStax]] stax
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+
+
+class FakeMigrate {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+migrateWithdraw()
+
+}
+' -- inheritance / usingFor --
+Exploit_TempleDAO --[#DarkGoldenRod]|> TestHarness
+Exploit_TempleDAO --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
