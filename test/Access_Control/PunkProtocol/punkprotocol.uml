@@ -1,0 +1,49 @@
+@startuml
+
+interface IPunk {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+initialize()
+	+invest()
+	+underlyingBalanceWithInvestment()
+	+withdrawToForge()
+
+}
+
+
+class Exploit_Punk {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IPunk]] punkUsdc
+	#[[IPunk]] punkUsdt
+	#[[IPunk]] punkDai
+	#[[address]] punks
+	#[[IERC20]] usdc
+	#[[IERC20]] usdt
+	#[[IERC20]] dai
+	#[[address]] tokens
+	#[[address]] cTokens
+	#[[address]] forgeProxies
+	#[[address]] attackerEOA
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#attackAPunk()
+
+}
+' -- inheritance / usingFor --
+Exploit_Punk --[#DarkGoldenRod]|> TestHarness
+Exploit_Punk --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
