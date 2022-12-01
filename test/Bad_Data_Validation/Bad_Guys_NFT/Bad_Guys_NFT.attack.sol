@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
+import {TestHarness} from "../../TestHarness.sol";
 
 // forge test --match-contract Exploit_Bad_Guys_NFT -vvv
 /*
