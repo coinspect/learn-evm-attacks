@@ -1,0 +1,37 @@
+@startuml
+
+interface IBadGuys {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+WhiteListMint()
+	+flipPauseMinting()
+	+🔍balanceOf()
+
+}
+
+
+class Exploit_Bad_Guys_NFT {
+    ' -- inheritance --
+	{abstract}TestHarness
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#{static}[[IBadGuys]] nft
+	#{static}[[address]] PROJECT_OWNER
+	#{static}[[address]] ATTACKER
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_Bad_Guys_NFT --[#DarkGoldenRod]|> TestHarness
+
+@enduml

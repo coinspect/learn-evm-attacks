@@ -1,0 +1,53 @@
+@startuml
+
+interface IBondFixedExpiryTeller {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+redeem()
+
+}
+
+
+class Exploit_OlympusDao {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#{static}[[address]] BOND_FIXED_EXPIRY_TELLER
+	#{static}[[address]] ATTACKER
+	+[[ExploitOlympusToken]] exploitToken
+	+[[IBondFixedExpiryTeller]] bondExpiryTeller
+
+    ' -- methods --
+	+setUp()
+	+test_Attack()
+
+}
+
+
+class ExploitOlympusToken {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+🔍underlying()
+	+🔍expiry()
+	+burn()
+
+}
+' -- inheritance / usingFor --
+Exploit_OlympusDao --[#DarkGoldenRod]|> TestHarness
+Exploit_OlympusDao --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

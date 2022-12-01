@@ -1,0 +1,43 @@
+@startuml
+
+interface ISuperfluid {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+callAgreement()
+
+}
+
+
+class Exploit_Superfluid {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[ISuperfluid]] superfluid
+	#[[address]] agreementIDAV2
+	#[[IERC20]] qi
+	#[[address]] victim
+	#{static}[[uint256]] CALL_INFO_CALL_TYPE_SHIFT
+	#{static}[[uint256]] CALL_INFO_CALL_TYPE_MASK
+	#{static}[[uint256]] CALL_INFO_APP_LEVEL_MASK
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#🔍encodeCallInfo()
+	#🔍decodeCallInfo()
+
+}
+' -- inheritance / usingFor --
+Exploit_Superfluid --[#DarkGoldenRod]|> TestHarness
+Exploit_Superfluid --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

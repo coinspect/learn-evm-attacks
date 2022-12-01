@@ -1,0 +1,63 @@
+@startuml
+
+interface AnyswapV4Router {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+anySwapOutUnderlyingWithPermit()
+
+}
+
+
+interface AnyswapV1ERC20 {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+mint()
+	+burn()
+	+changeVault()
+	+depositVault()
+	+withdrawVault()
+	+🔍underlying()
+
+}
+
+
+class Exploit_Multichain {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[address]] WETH_Address
+	#[[AnyswapV4Router]] swapRouter
+	#[[AnyswapV1ERC20]] swap20
+	#[[IWETH9]] weth
+	#{static}[[address]] ATTACKER
+	#{static}[[address]] VICTIM
+	#{static}[[uint256]] stole_WETH
+	#{static}[[uint256]] FUTURE_DEADLINE
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+🔍underlying()
+	+burn()
+	+depositVault()
+
+}
+' -- inheritance / usingFor --
+Exploit_Multichain --[#DarkGoldenRod]|> TestHarness
+Exploit_Multichain --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
