@@ -1,0 +1,44 @@
+@startuml
+
+interface ICERC20Delegator {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+🔍balanceOf()
+	+🔍decimals()
+	+💰borrow()
+	+accrueInterest()
+	+approve()
+	+💰redeemUnderlying()
+	+sweepToken()
+
+}
+
+
+class Exploit_CompoundReported {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[ICERC20Delegator]] cTUSD
+	#[[IERC20]] tusd
+	#[[IERC20]] tusdLegacy
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_CompoundReported --[#DarkGoldenRod]|> TestHarness
+Exploit_CompoundReported --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
