@@ -2,8 +2,8 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../TestHarness.sol";
-import {IERC20} from "../interfaces/IERC20.sol";
+import {TestHarness} from "../../TestHarness.sol";
+import {IERC20} from "../../interfaces/IERC20.sol";
 
 // forge test --match-contract Exploit_TransitSwap -vvv
 
