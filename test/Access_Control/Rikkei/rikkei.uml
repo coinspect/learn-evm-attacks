@@ -1,0 +1,90 @@
+@startuml
+
+interface IUnitroller {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰enterMarkets()
+	+exitMarket()
+	+🔍borrowCaps()
+
+}
+
+
+interface ChainLinkOracle {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+🔍decimals()
+	+🔍latestRoundData()
+
+}
+
+
+interface ISimpleOraclePrice {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+setOracleData()
+
+}
+
+
+class Exploit_Rikkei {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IRToken]] rBNB
+	#[[IRToken]] rTokens
+	#[[IWETH9]] wbnb
+	#[[IERC20]] tokens
+	#[[address]] attackerContract
+	#[[IPancakeRouter01]] router
+	#[[IUnitroller]] unitroller
+	#[[ISimpleOraclePrice]] priceOracle
+
+    ' -- methods --
+	+setUp()
+	+💰**__constructor__**()
+	+test_attack()
+	#deployMaliciousOracle()
+
+}
+
+
+class MaliciousOracle {
+    ' -- inheritance --
+	{abstract}ChainLinkOracle
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[ChainLinkOracle]] bnbUSDOracle
+
+    ' -- methods --
+	+🔍decimals()
+	+🔍latestRoundData()
+
+}
+' -- inheritance / usingFor --
+Exploit_Rikkei --[#DarkGoldenRod]|> TestHarness
+Exploit_Rikkei --[#DarkGoldenRod]|> TokenBalanceTracker
+MaliciousOracle --[#DarkGoldenRod]|> ChainLinkOracle
+
+@enduml
