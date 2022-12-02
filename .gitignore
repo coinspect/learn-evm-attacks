@@ -14,3 +14,4 @@ typechain-types/
 
 # Environment
 .env
+.DS_Store
