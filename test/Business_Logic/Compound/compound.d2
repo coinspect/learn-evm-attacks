@@ -1,0 +1,17 @@
+cTUSD: cTUSD Token {
+    sweepTokenFails: sweepToken(TUSD)
+    sweepTokenPasses: sweepToken(TUSDLegacy)
+}
+
+
+
+  Attacker -> cTUSD.sweepTokenFails: 0°: This tx fails
+  Attacker -> cTUSD.sweepTokenPasses: 1°: This tx passes
+
+
+  explanation: |md
+    # Compound
+    - Double entry point
+
+  |
+  
