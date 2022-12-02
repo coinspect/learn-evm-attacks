@@ -29,15 +29,17 @@ Attack Block:
 // Key Info Sources
 Twitter: 
 Writeup: 
-Article: 
-Code: 
+Article: https://rekt.news/beanstalk-rekt/
 
 
 Principle: VULN PRINCIPLE
 
+VULNERABILITY:
+1) No delay on proposal execution
+2) Allowing flashvoting in an on-chain voting system
 
 ATTACK:
-1)
+1) Flashloan 
 
 MITIGATIONS:
 1)
