@@ -31,10 +31,13 @@ because they were experiencing a period of heavy traffic. Delegation that never 
 over the five validators (four of Sky Mavis and the remaining delegated one) and signed the draining transactions.
 
 ATTACK:
-1)
+This attack was a social engineering attack that targeted the SPOF (holder of the majority of the private keys). 
+In control of the keys, the attacker was able to successfully call withdrawERC from the bridge without 
+providing the counterpart on the other side.
 
 MITIGATIONS:
-1)
+1) If a multisig is meant to be used to manage a protocol, ensure that no single points of failure exist
+regarding the storage of the private keys able to sign.
 
 */
 

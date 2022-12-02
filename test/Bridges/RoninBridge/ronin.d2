@@ -1,0 +1,24 @@
+Multisig {
+    keys: 5 out of 9 
+}
+
+
+Ronin {
+    wethDrain: withdrawERC20For(wethParams)
+    usdcDrain: withdrawERC20For(usdcParams)
+}
+
+  Attacker <-> Multisig.keys: 1°: Compromised keys
+  Attacker -> Ronin.wethDrain: 2°: Drain WETH 
+  Attacker -> Ronin.usdcDrain: 3°: Drain USDC 
+  Multisig <-> Ronin
+
+
+
+
+  explanation: |md
+    # Ronin
+    - Private Key leak
+    - Social engineering attack
+  |
+  
