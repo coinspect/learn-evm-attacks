@@ -1,0 +1,57 @@
+@startuml
+
+interface IOneRingVault {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+depositSafe()
+	+withdraw()
+	+🔍balanceOf()
+	+🔍getSharePrice()
+
+}
+
+
+interface ISolidlyPair {
+    ' -- inheritance --
+	{abstract}IUniswapV2Pair
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+
+}
+
+
+class Exploit_OneRingFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[ISolidlyPair]] pairUsdc_Mim
+	#[[IERC20]] usdc
+	#[[IERC20]] mim
+	#[[IOneRingVault]] vault
+	#[[uint256]] borrowAmount
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+hook()
+
+}
+' -- inheritance / usingFor --
+ISolidlyPair --[#DarkGoldenRod]|> IUniswapV2Pair
+Exploit_OneRingFinance --[#DarkGoldenRod]|> TestHarness
+Exploit_OneRingFinance --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

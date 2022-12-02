@@ -1,0 +1,107 @@
+@startuml
+
+interface IERC1820Registry {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+setInterfaceImplementer()
+
+}
+
+
+interface IcrToken {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+borrow()
+	+🔍balanceOf()
+	+🔍decimals()
+	+accrueInterest()
+	+approve()
+	+💰redeemUnderlying()
+	+liquidateBorrow()
+	+redeem()
+
+}
+
+
+interface IUnitroller {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰enterMarkets()
+	+exitMarket()
+	+🔍borrowCaps()
+
+}
+
+
+class Exploit_CreamFinance {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC1820Registry]] interfaceRegistry
+	#[[IUniswapV2Pair]] wiseWethPair
+	#[[IUnitroller]] comptroller
+	#[[IWETH9]] weth
+	#[[IcrToken]] crAmp
+	#[[IcrToken]] crEth
+	#[[IERC20]] amp
+	#{static}[[bytes32]] TOKENS_RECIPIENT_INTERFACE_HASH
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+uniswapV2Call()
+	+tokensReceived()
+	+💰**__constructor__**()
+
+}
+
+
+class ExploiterMinion {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC1820Registry]] interfaceRegistry
+	#{static}[[bytes32]] TOKENS_RECIPIENT_INTERFACE_HASH
+	#[[address]] commanderContract
+	#[[IWETH9]] weth
+	#[[IcrToken]] crAmp
+	#[[IcrToken]] crEth
+	#[[IERC20]] amp
+
+    ' -- methods --
+	+**__constructor__**()
+	+liquidateAMPBorrow()
+	+redeemLiquidationPrize()
+	+depositAndTransferWeth()
+	+selfDestructMinion()
+	+tokensReceived()
+	+💰**__constructor__**()
+
+}
+' -- inheritance / usingFor --
+Exploit_CreamFinance --[#DarkGoldenRod]|> TestHarness
+Exploit_CreamFinance --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

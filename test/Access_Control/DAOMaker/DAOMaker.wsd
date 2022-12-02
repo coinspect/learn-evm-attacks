@@ -1,0 +1,36 @@
+@startuml
+interface DAOMaker {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+init()
+	+emergencyExit()
+
+}
+
+class Exploit_DAOMaker {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[address]] attacker
+	#[[DAOMaker]] daomaker
+	#[[IERC20]] derc
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_DAOMaker --[#DarkGoldenRod]|> TestHarness
+Exploit_DAOMaker --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

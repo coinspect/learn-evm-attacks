@@ -1,0 +1,52 @@
+@startuml
+
+interface IUraniumFactory {
+    ' -- inheritance --
+	{abstract}IUniswapV2Factory
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+
+}
+
+
+interface IUraniumPair {
+    ' -- inheritance --
+	{abstract}IUniswapV2Pair
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+
+}
+
+
+class Exploit_Uranium {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IUraniumFactory]] uraniumFactory
+	#[[address]] attacker
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#attackEachPairOnce()
+
+}
+' -- inheritance / usingFor --
+IUraniumFactory --[#DarkGoldenRod]|> IUniswapV2Factory
+IUraniumPair --[#DarkGoldenRod]|> IUniswapV2Pair
+Exploit_Uranium --[#DarkGoldenRod]|> TestHarness
+Exploit_Uranium --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

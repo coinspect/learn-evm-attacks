@@ -1,0 +1,115 @@
+@startuml
+
+interface IVUSDMinter {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+mint()
+
+}
+
+
+interface IUniV3PositionsNFT {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+
+}
+
+
+interface IUnitroller {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰enterMarkets()
+	+exitMarket()
+	+🔍borrowCaps()
+
+}
+
+
+interface ICERC20Delegator {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+💰mint()
+	+🔍balanceOf()
+	+🔍decimals()
+	+💰borrow()
+	+accrueInterest()
+	+approve()
+	+💰redeemUnderlying()
+
+}
+
+
+class ModuleImports {
+    ' -- inheritance --
+	{abstract}TokenBalanceTracker
+	{abstract}TWAPGetter
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+
+}
+
+
+class Exploit_VesperRariFuse {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}ModuleImports
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IUniswapV3Pair]] pairUsdcWeth
+	#[[IUniswapV3Pair]] pairUsdcVusd
+	#[[IVUSDMinter]] minter
+	#[[IUniV3PositionsNFT]] positionManager
+	#[[IUnitroller]] unitroller
+	#{static}[[uint160]] SQRT_SWAP_MAX
+	#[[uint256]] timesEntered
+	#[[address]] tokens
+	#[[address]] cTokens
+	#[[IWETH9]] weth
+	#[[uint256]] forkId
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	#attackOne()
+	#waitAndLogTWAP()
+	#attackTwo()
+	+uniswapV3SwapCallback()
+	+💰**__constructor__**()
+	+onERC721Received()
+	#🔍getMintingParams()
+
+}
+' -- inheritance / usingFor --
+ModuleImports --[#DarkGoldenRod]|> TokenBalanceTracker
+ModuleImports --[#DarkGoldenRod]|> TWAPGetter
+Exploit_VesperRariFuse --[#DarkGoldenRod]|> TestHarness
+Exploit_VesperRariFuse --[#DarkGoldenRod]|> ModuleImports
+
+@enduml

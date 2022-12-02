@@ -1,0 +1,13 @@
+DAOMaker {
+  init()
+  emergencyExit()
+}
+
+Attacker -> DAOMaker.init(): attacker is now owner
+Attacker -> DAOMaker.emergencyExit(): withdraws tokens (protected by onlyOwner)
+
+explanation: |md
+  # DAO Maker\n
+  - Simple attack with only two steps
+  - Difficult to find because source code is not available
+|

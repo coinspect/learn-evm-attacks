@@ -1,0 +1,38 @@
+@startuml
+
+interface IRoninBridge {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+withdrawERC20For()
+
+}
+
+
+class Exploit_RoninBridge {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[address]] attacker
+	#[[address]] weth
+	#[[address]] usdc
+	#[[IRoninBridge]] bridge
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+Exploit_RoninBridge --[#DarkGoldenRod]|> TestHarness
+Exploit_RoninBridge --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

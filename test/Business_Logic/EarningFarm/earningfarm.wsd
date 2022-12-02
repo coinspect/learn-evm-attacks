@@ -1,0 +1,56 @@
+@startuml
+
+interface IDVM {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+flashLoan()
+
+}
+
+
+interface IEFVault {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+withdraw()
+	+💰deposit()
+
+}
+
+
+class Exploit_EarningFarm {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+	{abstract}BalancerFlashloan
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IDVM]] dvm
+	#[[IEFVault]] efvault
+	#[[IWETH9]] weth
+	#[[IERC20]] eftoken
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+DVMFlashLoanCall()
+	+💰**__constructor__**()
+
+}
+' -- inheritance / usingFor --
+Exploit_EarningFarm --[#DarkGoldenRod]|> TestHarness
+Exploit_EarningFarm --[#DarkGoldenRod]|> TokenBalanceTracker
+Exploit_EarningFarm --[#DarkGoldenRod]|> BalancerFlashloan
+
+@enduml

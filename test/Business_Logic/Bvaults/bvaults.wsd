@@ -1,0 +1,72 @@
+@startuml
+
+
+interface IERC20_Burnable {
+    ' -- inheritance --
+	{abstract}IERC20
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+burn()
+
+}
+
+
+interface BVaultsStrategy {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+convertDustToEarned()
+
+}
+
+
+interface Pair {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+swap()
+	+🔍getReserves()
+
+}
+
+
+class Exploit_BVaults {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC20]] WBNB
+	#[[IERC20]] BDEX
+	#[[IERC20_Burnable]] maliciousToken
+	#[[BVaultsStrategy]] vaultsStrategy
+	#{static}[[Pair]] BDEXWBNB_PAIR
+	#{static}[[Pair]] MALICIOUS_PAIR
+	#{static}[[address]] ATTACKER
+	#{static}[[address]] ATTACKER_CONTRACT
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+
+}
+' -- inheritance / usingFor --
+IERC20_Burnable --[#DarkGoldenRod]|> IERC20
+Exploit_BVaults --[#DarkGoldenRod]|> TestHarness
+Exploit_BVaults --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml

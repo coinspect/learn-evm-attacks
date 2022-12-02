@@ -1,0 +1,98 @@
+@startuml
+
+interface IParaluniPair {
+    ' -- inheritance --
+	{abstract}IUniswapV2Pair
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+
+}
+
+
+interface IParaProxy {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+depositByAddLiquidity()
+	+withdrawAndRemoveLiquidity()
+	+withdrawChange()
+	+userInfo()
+	+withdraw()
+
+}
+
+
+interface IParaRouter {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+
+    ' -- methods --
+	+addLiquidity()
+	+removeLiquidity()
+
+}
+
+
+class Exploit_Paraluni {
+    ' -- inheritance --
+	{abstract}TestHarness
+	{abstract}TokenBalanceTracker
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC20]] bscusd
+	#[[IERC20]] busd
+	#[[EvilToken]] ukrBadToken
+	#[[EvilToken]] russiaGoodToken
+	#[[IParaluniPair]] paraluniBSCBUSDPair
+	#[[IParaRouter]] paraRouter
+	#[[IParaProxy]] paraProxy
+	#[[IUniswapV2Pair]] pancakeBSCBUSDPair
+
+    ' -- methods --
+	+setUp()
+	+test_attack()
+	+pancakeCall()
+
+}
+
+
+class EvilToken {
+    ' -- inheritance --
+
+    ' -- usingFor --
+
+    ' -- vars --
+	#[[IERC20]] bscusd
+	#[[IERC20]] busd
+	#[[IParaProxy]] paraProxy
+	+[[string]] name
+	+[[string]] symbol
+	#[[address]] owner
+
+    ' -- methods --
+	+**__constructor__**()
+	+🔍allowance()
+	+🔍balanceOf()
+	+transferFrom()
+	+withdrawAsset()
+
+}
+' -- inheritance / usingFor --
+IParaluniPair --[#DarkGoldenRod]|> IUniswapV2Pair
+Exploit_Paraluni --[#DarkGoldenRod]|> TestHarness
+Exploit_Paraluni --[#DarkGoldenRod]|> TokenBalanceTracker
+
+@enduml
