@@ -15,7 +15,7 @@
 - **Reproduce:** `forge test --match-contract Exploit_Punk -vvv`
 
 ## Step-by-step 
-1. Call `init` to set yourself as owner
+1. Call `initialize` to set your own `forge_` address
 2. Call `withdrawToForge` to withdraw tokens
 
 ## Detailed Description
