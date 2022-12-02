@@ -1,5 +1,4 @@
-# Punk Protocol
-
+# Punk Protocol Re-initialize
 - **Type:** Exploit
 - **Network:** Ethereum
 - **Total lost**: ~6MM (lost: 3MM USDT + 3MM USDC + 2.95MM DAI, recovered: 3MM USDT, 1.95MM DAI)

@@ -1,4 +1,4 @@
-# Rikkei 
+# Rikkei Oracle Replace
 - **Type:** Exploit
 - **Network:** Binance Smart Chain
 - **Total lost**: 1MM
