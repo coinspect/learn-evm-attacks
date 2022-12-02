@@ -1,0 +1,19 @@
+Attacker -> BUST.transfer: 1. transfer BUST to Uniswap pool
+Attacker -> uniswapPool.swap: 2. swap transferred BUST for MBC
+Attacker -> MBCToken.swapAndLiquifyStepv1
+MBCToken.swapAndLiquifyStepv1 -> uniswapPool.addLiquidity: 3. adds liquidity to pool at `MBC/BUSD` rate
+Attacker -> BUST.transfer: 4. transfer MBC to Uniswap
+Attacker -> uniswapPool.swap: 5. swap the BUST for the provided MBC
+
+
+Flashloan <-> Attacker
+
+
+
+
+explanation: |md
+  # MBC Token
+  - Attacker gets hold of MBC and increases its price in the pool by swapping
+  - Then forces contract to deposit MBC and BUSD in the pool
+  - Buys the BUSD cheaply from the pool, as the MBC price is still too high
+|
