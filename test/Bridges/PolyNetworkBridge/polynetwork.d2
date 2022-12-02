@@ -1,0 +1,16 @@
+PolyNetwork {
+
+    setterTx: verifyHeaderAndExecuteTx(modifyPublicKeyParams)
+    drainTx: verifyHeaderAndExecuteTx(drainParams)
+
+  }
+  
+  Attacker -> PolyNetwork.setterTx: 1°
+  Attacker -> PolyNetwork.drainTx: 2°
+
+  explanation: |md
+    # PolyNetwork
+    - Access control leak
+    - Public Key modified with whitelisted contract
+  |
+  

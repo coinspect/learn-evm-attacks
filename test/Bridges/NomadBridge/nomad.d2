@@ -1,0 +1,21 @@
+Nomad {
+    Moonbeam {
+        mb-deposit: Deposit 0.1 WBTC
+    }
+
+    Mainnet {
+        payload: getPayload()
+        process: process()
+    }
+  }
+  
+  Attacker -> Nomad.Moonbeam.mb-deposit: 1°
+  Attacker -> Nomad.Mainnet.payload: 2°
+  Attacker -> Nomad.Mainnet.process: 3°
+
+  explanation: |md
+    # Nomad
+    - Bad root commitment
+    - Reproduceable just by copying payload
+  |
+  
