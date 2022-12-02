@@ -7,49 +7,6 @@ import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from '../../interfaces/IWETH9.sol';
 
-// forge test --match-contract Exploit_Punk -vvv
-/*
-On Aug 10, 2021 an attacker stole ~$8MM in stablecoins  from an Punk Protocol.
-
-
-// Attack Overview
-Total Lost: 
-$3MM USDT
-$3MM USDC
-$1.95MM DAI
-
-Attack Tx: https://etherscan.io/tx/0x7604c7dd6e9bcdba8bac277f1f8e7c1e4c6bb57afd4ddf6a16f629e8495a0281
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0x7604c7dd6e9bcdba8bac277f1f8e7c1e4c6bb57afd4ddf6a16f629e8495a0281
-
-Attacker Contract: https://etherscan.io/address/0x1695CE70DA4521Cb94DEA036e6ebCf1E8a073ee6
-Attack Block: 12995895 
-
-// Key Info Sources 
-
-Article: https://rekt.news/punkprotocol-rekt/
-Code: https://etherscan.io/address/0x3BC6aA2D25313ad794b2D67f83f21D341cc3f5fb#code
-
-
-Principle: Non access controlled initialization
-
-    function initialize( 
-        address forge_, 
-        address token_,
-        address cToken_, 
-        address comp_, 
-        address comptroller_,
-        address uRouterV2_ ) public {
-    }
-
-
-ATTACK:
-The attacker initialized contracts setting their address as the forge (beneficiary of tokens) address draining the pools of several stable coins.
-
-MITIGATIONS:
-1) Perform the initialization in an atomic way and access control it.
-
-*/
-
 interface IPunk {
     function initialize(address forge_, address token_, address cToken_, address comp_, address comptroller_, address uRouterV2_) external;
     function invest() external;
