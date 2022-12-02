@@ -10,42 +10,6 @@ import {IWETH9} from '../../interfaces/IWETH9.sol';
 import {IPancakeRouter01} from '../../utils/IPancakeRouter01.sol';
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
-// forge test --match-contract Exploit_Rikkei -vvv
-/*
-On Apr 15, 2022 an attacker stole ~1MM USD in BNB tokens from Rikkei Protocol.
-The attacker called a non access controlled oracle setter, setting a malicious oracle to manipulate the price draining several 
-stablecoin pools.
-
-// Attack Overview
-Total Lost: 
-Attack Tx: https://bscscan.com/tx/0x93a9b022df260f1953420cd3e18789e7d1e095459e36fe2eb534918ed1687492
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/binance/0x93a9b022df260f1953420cd3e18789e7d1e095459e36fe2eb534918ed1687492
-
-Exploited Contract: 
-Attacker Address: https://bscscan.com/address/0x803e0930357ba577dc414b552402f71656c093ab
-Attacker Contract: https://bscscan.com/address/0xe6DF12a9f33605F2271D2a2DdC92E509E54E6b5F
-Attacker Oracle: https://bscscan.com/address/0xA36F6F78B2170a29359C74cEFcB8751E452116f9#code
-Attack Block:  16956475
-
-// Key Info Sources
-Writeup: https://knownseclab.com/news/625e865cf1c544005a4bdaf2 
-
-
-Principle: Access Control / Oracle Manipulation
-
-    function setOracleData(address rToken, oracleChainlink _oracle) external {
-        oracleData[rToken] = _oracle;
-    }
-
-
-ATTACK:
-This non access controlled function allows anyone to set the address of the new oracle. The attacker changed the current oracle
-for a malicious implementation that returned a manipulated value allowing the attacker to drain each pair.
-
-MITIGATIONS:
-1) Access control the oracle setting functions.
-*/
-
 interface IUnitroller {
     function enterMarkets(address[] memory cTokens) external payable returns(uint256[] memory);
     function exitMarket(address market) external;
