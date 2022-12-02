@@ -1,0 +1,45 @@
+MaliciousToken: Malicious Token {
+    maliciousTransfer: transfer()
+    maliciousBurn: burn()
+}
+
+MaliciousPair: Malicious Pair {
+    maliciousSwap: swap()
+}
+
+WBNBToken: WBNB Token{
+    wbnbTransfer: transfer()
+}
+
+BDexPair: BDEX Pair {
+    vaultSwap: swap()
+}
+
+BVault: Vault (Victim) {
+    convertDust: convertDustToEarned()  
+}
+
+BDEXToken: BDEX Token {
+    bdexTransfer: transfer(BDEX Pair)
+}
+
+
+
+
+  Attacker -> MaliciousToken.maliciousTransfer: 1°: to Malicious Pair
+  MaliciousToken.maliciousTransfer -> MaliciousPair.maliciousSwap: 2°
+  MaliciousPair.maliciousSwap -> WBNBToken.wbnbTransfer: 3°: transfer to BDEX Pair
+  WBNBToken.wbnbTransfer -> BDexPair.vaultSwap: 4°
+  BDexPair.vaultSwap -> BVault.convertDust: 5°
+  BVault.convertDust -> BDEXToken.bdexTransfer: 6°
+  BDEXToken.bdexTransfer -> BDexPair.vaultSwap: 7°
+  BDexPair.vaultSwap -> WBNBToken.wbnbTransfer: 8°: to Malicious Pair
+  WBNBToken.wbnbTransfer -> MaliciousPair.maliciousSwap: 9°
+  MaliciousPair.maliciousSwap -> MaliciousToken.maliciousBurn: 10°: Burn malicious tokens
+
+  explanation: |md
+    # BVaults
+    - Price Manipulation
+    - Arbitrary Tokens Allowed
+  |
+  
