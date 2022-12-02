@@ -11,7 +11,7 @@ Each exploit can be found under the test folder.
 ## Index
 ### [How to Install, Compile and Run](#-how-to-install-compile-and-run-)
 
-Currently, 26 past exploits were reproduced. 
+Currently, 28 past exploits were reproduced. 
 
 ### Access Control
 - [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao)
