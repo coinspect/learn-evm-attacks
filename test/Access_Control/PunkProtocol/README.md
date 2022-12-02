@@ -16,7 +16,7 @@
 
 ## Step-by-step 
 1. Call `init` to set yourself as owner
-2. Call `emergencyExit` to withdraw tokens
+2. Call `withdrawToForge` to withdraw tokens
 
 ## Detailed Description
 The Punk protocol pools did not prevent someone from calling `initialize` after
