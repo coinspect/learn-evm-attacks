@@ -4,57 +4,6 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 
-// forge test --match-contract Exploit_Bad_Guys_NFT -vvv
-/*
-On Sept 02, 2022 an attacker minted 400 NFTs from a WhitelistMint from the Bad Guys NFT project.
-
-// Attack Overview
-Total Lost: 400 NFTs
-Attack Tx: https://etherscan.io/tx/0xb613c68b00c532fe9b28a50a91c021d61a98d907d0217ab9b44cd8d6ae441d9f
-
-Project owner: (rugpullfinder.eth) - 0x09eff2449882f9e727a8e9498787f8ff81465ade
-Exploited Contract: 0xb84cbaf116eb90fd445dd5aeadfab3e807d2cbac
-Attacker Address: 0xbd8a137e79c90063cd5c0db3dbabd5ca2ec7e83e
-Attack Block: 15460094 
-
-// Key Info Sources
-Twitter: https://twitter.com/RugDoctorApe/status/1565739119606890498
-Code: https://etherscan.io/address/0xb84cbaf116eb90fd445dd5aeadfab3e807d2cbac#code#L1190
-
-
-Principle: Unchecked minting amount
-
-    function WhiteListMint(bytes32[] calldata _merkleProof, uint256 chosenAmount)
-        public
-    {
-        require(_numberMinted(msg.sender)<1, "Already Claimed");
-        require(isPaused == false, "turn on minting");
-        require(
-            chosenAmount > 0,
-            "Number Of Tokens Can Not Be Less Than Or Equal To 0"
-        );
-        require(
-            totalSupply() + chosenAmount <= maxsupply - reserve,
-            "all tokens have been minted"
-        );
-        bytes32 leaf = keccak256(abi.encodePacked(msg.sender));
-        require(
-            MerkleProof.verify(_merkleProof, rootHash, leaf),
-            "Invalid Proof"
-        );
-        _safeMint(msg.sender, chosenAmount);
-    }
-
-ATTACK:
-1) If whitelisted, just call WhiteListMint(myProof, anyAmount);
-This is possible as the return value of the function _numberMinted is updated on _safeMint(), which is called after its check.
-Also, if the max amount to be minted per user should be 1, the chosenAmount input should have also been checked.
-
-MITIGATIONS:
-1) Check both that the accounting mapping and the amount requested to mint fits with the current contract restrictions.
-2) Use non manipulable mappings to check minting amounts instead of token.balanceOf(minter), which could be gamed by minting, transfering, minting...
-
-*/
 interface IBadGuys {
     function WhiteListMint(bytes32[] calldata _merkleProof, uint256 chosenAmount) external;
     function flipPauseMinting() external;

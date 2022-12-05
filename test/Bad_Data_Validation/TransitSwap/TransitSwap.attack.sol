@@ -5,47 +5,6 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 import {IERC20} from "../../interfaces/IERC20.sol";
 
-// forge test --match-contract Exploit_TransitSwap -vvv
-
-/*
-On Oct 2, 2022 an attacker stole nearly $400,000 in BSC-USD tokens from BSC and $742,000 in USDC from the TransitSwap only in the shown transactions.
-The total value lost ascends to ~$23MM. 
-
-A considerable amount of assets was recovered: https://www.coindesk.com/business/2022/10/03/transit-swap-exploiter-returns-large-chunk-of-289m-hack/
-
-// Attack Overview
-Total Lost:  ~400,000 BSC-USD ($400,000) + ~742,000 USDC ($742,000)
-Attack Tx: https://bscscan.com/tx/0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189
-Attack Tx: https://etherscan.io/tx/0x743e4ee2c478300ac768fdba415eb4a23ae66981c076f9bff946c0bf530be0c7
-
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0x743e4ee2c478300ac768fdba415eb4a23ae66981c076f9bff946c0bf530be0c7
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/binance/0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189
-
-Exploited Contract: 
-Attacker Address: 0x75F2abA6a44580D7be2C4e42885D4a1917bFFD46
-Attack Block: 14037237
-
-// Key Info Sources
-Cointelegraph: https://cointelegraph.com/news/main-hacker-in-transit-swap-exploit-agrees-to-return-remaining-funds
-Writeup: https://slowmist.medium.com/cross-chain-dex-aggregator-transit-swap-hacked-analysis-74ba39c22020
-
-ATTACK:
-Principle: Poor input validation
-
-The transit swap is a non verified contract....
-Essentially, the attacker:
-1) Scanned USDC and BSC-USD tokens approvals to the DEX Manager
-2) Found a vulnerable claimTokens() function which invokes ‘transferFrom’ of the specified token contract. 
-3) The claimTokens function should target the bridge as the destination of the funds which input was not checked.
-4) Because users allowed the DEX to manage their funds, the attacker could pass the address of his contract as if it was the bridge.
-
-
-MITIGATIONS:
-1) While performing transferFrom, check if the destination/origin of the funds should be restricted
-2) Do not enforce users Approving For All, instead request them only to approve for a specific amount of tokens (when applies).
-
-*/
-
 interface ITransit {
     function claimTokens(address arg0, address arg1, address arg2, uint256 arg3) external;
 }

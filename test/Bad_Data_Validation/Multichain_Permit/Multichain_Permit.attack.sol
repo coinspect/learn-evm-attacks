@@ -7,69 +7,6 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
-// forge test --match-contract Exploit_Multichain -vvv
-
-/*
-On Jan 19, 2022 an attacker stoken $960,000 in WETH tokens from the Multichain contract.
-
-The attacker managed to exploit a swap function that uses permit tokens in order to bypass the signature check by
-using tokens that do not implement a permit function.
-Blocksec performed several whitehat hacks around this vulnerability to reduce the total value lost.
-
-// Attack Overview
-Total Lost (returned later):  308 WETH ($960,595)
-Attack Tx: https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7
-Tenderly: https://dashboard.tenderly.co/tx/mainnet/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7/debugger?trace=0.1
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/ethereum/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7
-
-Exploited Contract: 0x6b7a87899490EcE95443e979cA9485CBE7E71522
-Attacker Address: 0xfa2731d0bede684993ab1109db7ecf5bf33e8051
-Victim Address: 0x3Ee505bA316879d246a8fD2b3d7eE63b51B44FAB
-Attack Block: 14037237
-
-// Key Info Sources
-BlockSec: https://blocksecteam.medium.com/the-race-against-time-and-strategy-about-the-anyswap-rescue-and-things-we-have-learnt-4fe086b186ac
-Writeup: https://medium.com/zengo/without-permit-multichains-exploit-explained-8417e8c1639b
-
-Principle: Poor input validation, unchecked permit token.
-
-https://gist.github.com/zhaojun-sh/0df8429d52ae7d71b6d1ff5e8f0050dc#file-anyswaprouterv4-sol-L245-L261
-
-    function anySwapOutUnderlyingWithPermit(
-        address from,
-        address token,
-        address to,
-        uint amount,
-        uint deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s,
-        uint toChainID
-    ) external {
-        address _underlying = AnyswapV1ERC20(token).underlying();
-        IERC20(_underlying).permit(from, address(this), amount, deadline, v, r, s);
-        TransferHelper.safeTransferFrom(_underlying, from, token, amount);
-        AnyswapV1ERC20(token).depositVault(amount, from);
-        _anySwapOut(from, token, to, amount, toChainID);
-    }
-
-    function _anySwapOut(address from, address token, address to, uint amount, uint toChainID) internal {
-        AnyswapV1ERC20(token).burn(from, amount);
-        emit LogAnySwapOut(token, from, to, amount, cID(), toChainID);
-    }
-
-ATTACK:
-The function allows arbitraty tokens to be passed as token, even non-token contract addresses. The attacker passed the exploiter contract as a token which:
-- Implemented an underlying() function that returns WETH address.
-- As WETH has no permit() function but a fallback that triggers deposit(), any call that triggers the fallback will success regardless the signature.
-- Multichain requested ApprovalForAll while managing users tokens, so any transferFrom has the requried allowance.
-- Because of this, this function transfers WETH from a user who gave ApprovalForAll to Multichain (AnySwap) before to the attacker's contract;
-- Rekt call: TransferHelper.safeTransferFrom(WETH, VICTIM, address(MaliciousContract), stole_WETH);
-
-MITIGATIONS:
-1) Ensure that the tokens passed are allowed and known tokens. Don't allow arbitrary tokens. (e.g. require(isWhitelisted(token_)))
-2) If arbitratry tokens are meant to be used, evaluate what should happen if wrapped with non standard interfaces.
-*/
 interface AnyswapV4Router {
   function anySwapOutUnderlyingWithPermit(
     address from,
