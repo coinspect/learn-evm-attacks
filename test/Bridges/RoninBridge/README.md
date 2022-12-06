@@ -1,7 +1,7 @@
 # Ronin Bridge
 - **Type:** Exploit
 - **Network:** Ethereum
-- **Total lost**: ~624 USD 
+- **Total lost**: ~624MM USD 
 - **Category:**: Key Leak
 - **Vulnerable contracts:**
 - - None
@@ -10,8 +10,8 @@
 - - USDC: [0xed2c72ef1a552ddaec6dd1f5cddf0b59a8f37f82bdda5257d9c7c37db7bb9b08](https://etherscan.io/tx/0xed2c72ef1a552ddaec6dd1f5cddf0b59a8f37f82bdda5257d9c7c37db7bb9b08)
 - **Attacker Addresses**: 
 - - [0x098b716b8aaf21512996dc57eb0615e2383e2f96](https://etherscan.io/address/0x098b716b8aaf21512996dc57eb0615e2383e2f96)
-- **Attack Block:**: 12996659, 12996671 
-- **Date:** Aug 10, 2022 
+- **Attack Block:**: 14442835, 14442840
+- **Date:** Mar 23, 2022 
 - **Reproduce:** `forge test --match-contract Exploit_RoninBridge -vvv` 
 
 ## Step-by-step 
