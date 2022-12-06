@@ -5,42 +5,6 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
-// forge test --match-contract Exploit_RoninBridge -vvv
-/*
-On Mar 23, 2022 an attacker stole 173,600 ETH and 25.5MM USDC from the Ronin Bridge.
-The attacker gained control of 5 out of 9 validators keys, draining the bridge.
-
-// Attack Overview
-Total Lost: ~624MM USD
-Attack ETH Tx: https://etherscan.io/tx/0xc28fad5e8d5e0ce6a2eaf67b6687be5d58113e16be590824d6cfa1a94467d0b7
-Attack USDC Tx: https://etherscan.io/tx/0xed2c72ef1a552ddaec6dd1f5cddf0b59a8f37f82bdda5257d9c7c37db7bb9b08
-
-Exploited Contract: https://etherscan.io/address/0x1a2a1c938ce3ec39b6d47113c7955baa9dd454f2
-Attacker Address: https://etherscan.io/address/0x098b716b8aaf21512996dc57eb0615e2383e2f96
-Attack Blocks: 14442835, 14442840   
-
-// Key Info Sources
-Twitter: 
-Writeup: https://roninblockchain.substack.com/p/community-alert-ronin-validators
-Article: https://rekt.news/ronin-rekt/
-
-Principle: Compromised Keys
-The bridge was operated by 9 validators, with a threshold of 5 to approve transactions. Four out of nine were managed
-by the same entity (Sky Mavis) and back then in Nov 2021 Axie's validator delegated their signature to Sky Mavis 
-because they were experiencing a period of heavy traffic. Delegation that never revoked. The attacker got control
-over the five validators (four of Sky Mavis and the remaining delegated one) and signed the draining transactions.
-
-ATTACK:
-This attack was a social engineering attack that targeted the SPOF (holder of the majority of the private keys). 
-In control of the keys, the attacker was able to successfully call withdrawERC from the bridge without 
-providing the counterpart on the other side.
-
-MITIGATIONS:
-1) If a multisig is meant to be used to manage a protocol, ensure that no single points of failure exist
-regarding the storage of the private keys able to sign.
-
-*/
-
 interface IRoninBridge {
     function withdrawERC20For(uint256 _withdrawalId, address _user, address _token, uint256 _amount, bytes memory _signatures) external;
 }
