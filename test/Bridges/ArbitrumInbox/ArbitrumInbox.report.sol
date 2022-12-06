@@ -7,65 +7,6 @@ import "forge-std/console.sol";
 import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 
-// forge test --match-contract Report_ArbitrumInbox -vvv
-/*
-
-On September 2022, 0xriptide published a Medium article describing a vulnerability in the Arbitrum bridge.
-He reported the vulnerability and was awarded 400 ETH as a reward by Offchain Labs.
-
-The vulnerability was relatively simple, although the conditions by which it was made exploitable are interesting.
-
-
-// Attack Overview
-Total Lost: 400 ETH in Bounty price
-Target Contract: Arbitrum's Inbox.sol (https://github.com/OffchainLabs/nitro/tree/master/contracts/src/bridge/Inbox.sol)
-
-// Key Info Sources
-Writeup: https://medium.com/@0xriptide/hackers-in-arbitrums-inbox-ca23272641a2
-
-Principle: Re-initializable implementation contract
-
-Code with added comments tagged @reproduced:
-
-    // @reproduced: initialize method that serves as constructor in contract implementation
-    // @reproduced: of proxy
-    function initialize(IBridge _bridge, ISequencerInbox _sequencerInbox)
-        external
-        // @reproduced: initializer allows calling the function only if the function
-        // @reproduced: has not been called before, uses flag at slot 0x00 to mark if it has been called
-        // @reproduced: see https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/master/contracts/proxy/utils/Initializable.sol
-        initializer
-        onlyDelegated
-    {
-        bridge = _bridge;
-        sequencerInbox = _sequencerInbox;
-        allowListEnabled = false;
-        __Pausable_init();
-    }
-
-    /// @dev function to be called one time during the inbox upgrade process
-    /// this is used to fix the storage slots
-    function postUpgradeInit(IBridge _bridge) external onlyDelegated onlyProxyOwner {
-        // @reproduced: implementation now wipes 0x00, 0x01, 0x02 slots from the storage
-        // @reproduced: allowing `initialize` to be called by anyone again
-        uint8 slotsToWipe = 3;
-        for (uint8 i = 0; i < slotsToWipe; i++) {
-            assembly {
-                sstore(i, 0)
-            }
-        }
-        allowListEnabled = false;
-        bridge = _bridge;
-    }
-/**
-
-
-ATTACK:
-Simply call `initialize` through the proxy contract setting your own `_bridge` contract.
-This will make it so all `ethDeposit`  in the Inbox send the ETH to your bidge contract.
-
-*/
-
 interface IArbitrumInbox {
     function initialize(address _bridge, address _sequencerInbox) external;
     function depositEth() external payable;
