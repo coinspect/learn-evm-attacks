@@ -7,8 +7,7 @@
 - - [0xed1afc8c4604958c2f38a3408fa63b32e737c428](https://etherscan.io/address/0xed1afc8c4604958c2f38a3408fa63b32e737c428)
 - **Attack transactions:**
 - - [0xba75ad7a43e784f51fe777d749fc55ae10f1df2bcb01cde97641613b19acb6ec ](https://etherscan.io/tx/0xba75ad7a43e784f51fe777d749fc55ae10f1df2bcb01cde97641613b19acb6ec)
-- - 
-[0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189](https://bscscan.com/tx/0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189)
+- - [0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189](https://bscscan.com/tx/0x181a7882aac0eab1036eedba25bc95a16e10f61b5df2e99d240a16c334b9b189)
 - **Attacker Addresses**: 
 - - [0x75F2abA6a44580D7be2C4e42885D4a1917bFFD46](https://etherscan.io/address/0x75F2abA6a44580D7be2C4e42885D4a1917bFFD46)
 - **Attack Block:**: 14037237
