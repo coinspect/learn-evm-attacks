@@ -1,0 +1,15 @@
+FlashLoan: Flashloan {
+    requestLoan: flashLoan()
+    repayLoan: repay
+}
+
+Attacker -> FlashLoan.requestLoan: 1°
+Attacker.Callback -> FlashLoan.transfer: 2°
+
+
+  explanation: |md
+    # DFX Finance
+    - Reentrancy on flashloan
+    - Side Entrance
+  |
+  
