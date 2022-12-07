@@ -24,7 +24,7 @@ The function performs a low level call sending ETH with `doTransferOut` before u
 ## Detailed Description
 The attacker managed to drain the protocol's collateral by reentering borrow calls with the `onTokenTransfer` hook of ERC667 tokens.
 
-``` solidity
+```solidity
  function borrowFresh(address payable borrower, uint borrowAmount) internal returns (uint) {
         ...
         ...
