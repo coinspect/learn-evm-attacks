@@ -1,0 +1,30 @@
+dodo:  Dodo FlashLoan
+
+attacker: Attacker 
+
+Hundred: Hundred Finance {
+    HUSD: HUSD {
+        mint: mint()
+        borrow: borrow()
+    }
+    HXDAI: HXDAI {
+        borrow: borrow()
+    }
+}
+
+curve: Curve {
+    exchange: exchange()
+}
+
+attacker -> dodo -> attacker: 1°: Request Loan
+attacker -> Hundred.HUSD.mint: 2°: Mint HUSD
+Hundred.HUSD.mint -> Hundred.HUSD.borrow: 3°
+Hundred.HUSD.borrow -> Hundred.HXDAI.borrow: 4°: Reentrant call
+Hundred.HXDAI.borrow -> curve.exchange: 5°: Swap loot
+curve.exchange -> dodo: 6°: Repay Loan
+
+  explanation: |md
+    # Hundred Finance
+    - Reentrancy with ERC667 hooks
+  |
+  

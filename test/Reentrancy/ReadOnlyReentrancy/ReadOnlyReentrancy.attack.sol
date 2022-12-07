@@ -6,52 +6,6 @@ import {TestHarness} from "../../TestHarness.sol";
 import {IERC20} from "../../interfaces/IERC20.sol";
 import {ICurve} from '../../utils/ICurve.sol';
 
-// forge test --match-contract Exploit_ReadOnly -vvv
-/*
-So far, no attacks that follow this path were identified. However, it is worth exploring this example for educational purposes.
-
-
-// Attack Overview
-Total Lost: No previous attacks via this path (yet)
-
-// Key Info Sources
-Video: https://www.youtube.com/watch?v=0fgGTRlsDxI 
-
-
-Principle: Read-only reentrancy
-    mapping(address => uint256) public userLocked;
-    uint256 public totalLocked;
-
-    function withdraw() external nonReentrant {
-        require(userLocked[msg.sender] > 0);
-        require(address(this).balance >= userLocked[msg.sender]);
-
-        (bool success, ) = payable(msg.sender).call{value: userLocked[msg.sender]}();
-        require(success);
-
-        userLocked[msg.sender] = 0;
-        totalLocked -= userLocked[msg.sender];
-    }
-
-
-ATTACK:
-1) The attacker's contract calls contract A that performs a call open to be hooked (by an ERC777s, ERC1155 or regular ether transfers).
-2) The attacker callbacks a contract B that reads for example totalLocked from contract A.
-3) As totalLocked was not updated by the call was made, it is reading that contract's A older value (yet not updated).
-4) Because of this, the attacker managed to exploit contract B because it read an invalid value of contract A (e.g. price rate manipulation).
-
-MITIGATIONS:
-1) For newer contracts, the state mutex of the reentrancy lock could be set as public to allow other contracts check if they are in a reentrant call
-2) Also, respect the checks-effects interactions pattern as using reentrancy locks without respecting the pattern opens new attack paths like this one. 
-
-
-Below we show an example of a read-only vulnerable contract that reads the state 
-from another contract where reentrant calls are triggered by ether transfers.
-
-Based in the example made by @SmartContractProgrammer 
-https://github.com/stakewithus/defi-by-example/blob/main/read-only-reentrancy/src/Hack.sol
-*/
-
 address constant STETH_POOL = 0xDC24316b9AE028F1497c275EB9192a3Ea0f67022;
 address constant LP = 0x06325440D014e39736583c165C2963BA99fAf14E;
 
