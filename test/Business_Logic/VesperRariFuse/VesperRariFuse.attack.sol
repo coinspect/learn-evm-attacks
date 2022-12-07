@@ -12,44 +12,6 @@ import {IUniswapV3Pair} from '../../utils/IUniswapV3Pair.sol';
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 import {TWAPGetter} from '../../modules/TWAPGetter.sol';
 
-// forge test --match-contract Exploit_VesperRariFuse -vvv
-/*
-On Nov 02, 2021 an attacker stole ~$3MM in various tokens from Vesper-Rari Pools.
-
-The attacker managed to drain a VUSD-USDC pair and waited for 10 blocks to increase the weight of that pool state
-in the TWAP oracle increasing the retrieved price (to an amount that even overflown the frontend of the website).
-Then, with the overinflated price, the attacker deposited VUSD as a collateral and got WBTC in exchange.
-
-// Attack Overview
-Total Lost: ~$3MM
-Manipulation Tx: https://etherscan.io/tx/0x89d0ae4dc1743598a540c4e33917efdce24338723b0fabf34813b79cb0ecf4c5
-Borrow Tx: https://etherscan.io/tx/0x8527fea51233974a431c92c4d3c58dee118b05a3140a04e0f95147df9faf8092
-
-Exploited Contract: https://etherscan.io/address/0x8dDE0A1481b4A14bC1015A5a8b260ef059E9FD89
-Attacker Address: https://etherscan.io/address/0xa3f447feb0b2bddc50a44ccd6f412a5f98619264
-Attacker Contract: https://etherscan.io/address/0x7993e1d66ffb1ab3fb1cb3db87219f532c25bdc8
-Attack Block:  13537922, 13537933
-
-// Key Info Sources
-Twitter: https://twitter.com/RariCapital/status/1455569653820973057?s=20&t=MampCtubjv8Rf6QhoQAqQg
-Twitter: https://twitter.com/VesperFi/status/1455567032536248324?s=20&t=BKKLTvDar5uJ0R33t3vZdw
-Writeup: https://cmichel.io/replaying-ethereum-hacks-rari-fuse-vusd-price-manipulation/
-Article: https://medium.com/vesperfinance/on-the-vesper-lend-beta-rari-fuse-pool-23-exploit-9043ccd40ac9
-
-Principle: Price Oracle Manipulation
-
-ATTACK:
-The attacker received 100 ETH from TornadoCash and purchased all the VUSD tokens from the VUSD-USDC pair, and waited
-for 10 blocks manipulating the TWAP oracles based in that pair. As a consequence, the attacker was able to drain at no cost
-tokens from several lending pools that consulted that price.
-
-MITIGATIONS:
-This is debatable but when the liquidity of a pool is low, getting 'all the tokens' is easier. This is because the TWAP is computed with a 
-delay. For lower liquidities, the TWAP delay should be selected carefully. Also, if low liquidity pools are used as TWAPs monitoring their 
-liquidity in order to detect manipulations could also help. If the VUSD-USDC pair was monitored, protective actions could have been taken before
-the price impacted on the TWAP.
-
-*/
 interface IVUSDMinter {
     function mint(
         address _token,

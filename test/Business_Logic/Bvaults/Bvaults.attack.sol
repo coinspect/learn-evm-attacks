@@ -7,69 +7,6 @@ import {IERC20} from "../../interfaces/IERC20.sol";
 
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
-// forge test --match-contract Exploit_BVaults -vvv
-
-/*
-On Oct 30, 2022 an attacker stole over $35,000 from BVaults. 
-The price was manipulated and exploited a dust swapping function due to the lack of price checks inflating the price of an artificial pair.
-
-// Attack Overview
-Total Lost: over $35,000
-Attack Tx: https://bscscan.com/tx/0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94
-Ethereum Transaction Viewer: https://tx.eth.samczsun.com/binance/0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94
-
-Exploited Contract: 
-Attacker Address: 0x5bfaa396c6fb7278024c6d7230b17d97ce8ab62d
-Attacker Contracts: 0x4a7c762d9af1066c9241c8c1b63681fd1b438d05, 0x1958d75C082D7F10991d07e0016B45a0904D2Eb1
-Attack Block: 22629432
-
-// Key Info Sources
-Twitter: https://twitter.com/BeosinAlert/status/1588579143830343683
-Code: https://bscscan.com/address/0xb2b1dc3204ee8899d6575f419e72b53e370f6b20#code
-
-Malicious Token Deploy: https://bscscan.com/tx/0xf6d11637c31c3b9ea8bb1828a958b56f687a67409ca3010f5293ae7a934de694
-Malicious Token Mint: https://bscscan.com/tx/0xf244f0b412bc0a9637b7af84b7b2cda04e1003923b22e9aef5c778ebad6ee214
-
-
-Principle: Unchecked price while performing swaps
-
-    function convertDustToEarned() public whenNotPaused {
-        require(isAutoComp, "!isAutoComp");
-
-        // Converts dust tokens into earned tokens, which will be reinvested on the next earn().
-
-        // Converts token0 dust (if any) to earned tokens
-        uint256 _token0Amt = IERC20(token0Address).balanceOf(address(this));
-        if (token0Address != earnedAddress && _token0Amt > 0) {
-            _vswapSwapToken(token0Address, earnedAddress, _token0Amt);
-        }
-
-        // Converts token1 dust (if any) to earned tokens
-        uint256 _token1Amt = IERC20(token1Address).balanceOf(address(this));
-        if (token1Address != earnedAddress && _token1Amt > 0) {
-            _vswapSwapToken(token1Address, earnedAddress, _token1Amt);
-        }
-    }
-
-    function _vswapSwapToken(address _inputToken, address _outputToken, uint256 _amount) internal {
-        IERC20(_inputToken).safeIncreaseAllowance(vswapRouterAddress, _amount);
-        IValueLiquidRouter(vswapRouterAddress).swapExactTokensForTokens(_inputToken, _outputToken, _amount, 1, vswapPaths[_inputToken][_outputToken], address(this), now.add(1800));
-    }
-
-(*) token0Address is a global variable for the BDEX token https://bscscan.com/address/0x7e0f01918d92b2750bbb18fcebeedd5b94ebb867#readProxyContract
-ATTACK:
-1) Create a malicious token and pair
-2) Inflate its price
-3) Call convertDustToEarned
-4) Swap again
-5) Cashout and repeat
-
-MITIGATIONS:
-1) Relying on token balances only for price calculations could be potentially manipulated
-2) It is important to use more robust data sources (time weighting, oracles, among others) and checking sudden price changes.
-
-*/
-
 interface IERC20_Burnable is IERC20 {
     function burn(uint256 amount) external;
 }
