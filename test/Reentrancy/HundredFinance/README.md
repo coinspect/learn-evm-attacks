@@ -6,7 +6,7 @@
 - **Exploited contracts:**
 - - Hundred: https://gnosisscan.io/address/0x090a00A2De0EA83DEf700B5e216f87a5D4F394FE
 - **Attack transactions:**
-- - Attack Tx: hhttps://gnosisscan.io/tx/0x534b84f657883ddc1b66a314e8b392feb35024afdec61dfe8e7c510cfac1a098
+- - Attack Tx: https://gnosisscan.io/tx/0x534b84f657883ddc1b66a314e8b392feb35024afdec61dfe8e7c510cfac1a098
 - **Attack Block:**: 21120320 
 - **Date:** Mar 15, 2022
 - **Reproduce:** `forge test --match-contract Exploit_HundredFinance -vvv`
