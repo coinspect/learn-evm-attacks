@@ -1,0 +1,53 @@
+InterfaceRegistry: Interface Registry 
+
+FlashLoan: Flashloan {
+    requestLoan: flashLoan()
+    repayLoan: repay
+}
+
+weth: WETH9 {
+    withdrawETH: withdraw()
+    depositETH: deposit()
+}
+
+crETH: Cream ETHER {
+    mintcrETH: mint()
+    borrowcrETH: borrow()
+}
+
+comptroller: Comptroller {
+    enterMarkets: enterMarkets()
+}
+
+crAMP: Cream AMP {
+    borrowcrAMP: borrow()
+}
+
+MinionContract: Minion Contract {
+    liquidateAMPBorrow: liquidateAMPBorrow()
+    redeemLiquidationPrize: redeemLiquidationPrize()
+    depositAndTransferWeth: depositAndTransferWeth()
+    selfDestructMinion: selfDestructMinion()
+}
+
+Attacker -> InterfaceRegistry: 1°: Add malicious contract to registry
+Attacker -> FlashLoan.requestLoan: 2°
+FlashLoan.requestLoan -> weth.withdrawETH: 3°
+weth.withdrawETH -> crETH.mintcrETH: 4°
+crETH.mintcrETH -> comptroller.enterMarkets: 5°
+comptroller.enterMarkets -> crAMP.borrowcrAMP: 6°
+crAMP.borrowcrAMP -> crETH.borrowcrETH: 7°: reenter
+Attacker -> MinionContract: 8°: deploy
+Attacker -> MinionContract.liquidateAMPBorrow: 9°
+MinionContract.liquidateAMPBorrow -> MinionContract.redeemLiquidationPrize: 10°
+MinionContract.redeemLiquidationPrize -> MinionContract.depositAndTransferWeth: 11°
+MinionContract.depositAndTransferWeth -> MinionContract.selfDestructMinion: 12°
+MinionContract.selfDestructMinion -> weth.deposit: 13°
+weth.deposit -> FlashLoan.repayLoan: 14°
+
+  explanation: |md
+    # CreamFinance
+    - Reentrancy with hookable token
+    - Borrow without collateral
+  |
+  
