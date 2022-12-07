@@ -1,8 +1,8 @@
 # Earning Farm
-- **Type:** Report
+- **Type:** Exploit
 - **Network:** Ethereum 
 - **Total lost**: 200 ETH (750 ETH originally targetted, 550 returned by MEV frontrunning bot)
-- **Category:** Price Manipulation
+- **Category:** Flashloan attack
 - **Vulnerable contracts:**
 - - [0xe39fd820b58f83205db1d9225f28105971c3d309](https://etherscan.io/address/0xe39fd820b58f83205db1d9225f28105971c3d309)
 - **Attack transactions:**
@@ -21,7 +21,7 @@
 
 ## Detailed Description
 
-The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol. 
+The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol. The contract is probably intended as a leveraged pool (flashloans that are used to swap assets), althought is 
 
 We can start the flow by looking at the public `withdraw` method and noting where it makes the call to `flashLoan`. 
 
