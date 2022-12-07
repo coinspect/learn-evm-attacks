@@ -30,7 +30,7 @@ The fallback triggered by the low level call, calls Controller.exitMarket() whic
 An old school cross-function reentrancy attack with the root cause of not respecting the checks-effects-interactions pattern.
 The attacker flashloaned multiple tokens wiping down the collateral draining the pool. 
 
-``` solidity
+```solidity
 function borrowFresh(address payable borrower, uint borrowAmount) internal returns (uint) {
         ...
     [ComptrollerStorage.sol L802]  
