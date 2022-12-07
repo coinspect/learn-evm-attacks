@@ -1,0 +1,43 @@
+balancer:  Balancer FlashLoan
+
+AttackerCommander: Attacker Factory {
+    deployOne: deploy(Minion 1)
+    deployTwo: deploy(Minion 2)
+}
+
+AttackerMinion: Attacker Minion 1
+AttackerMinionTwo: Attacker Minion 2
+
+fei: Fei Protocol {
+    fCurrencyETH: fCurrency ETH {
+        mintETH: mint()
+        borrowETH: borrow()
+        redeemETH: redeemUnderlying()
+    }
+
+    fCurrencyStable: fCurrency Stable {
+        mintStable: mint()
+        borrowStable: borrow()
+        redeemStable: redeemUnderlying()
+    }
+}
+
+
+
+AttackerCommander -> balancer: 1°
+balancer -> AttackerCommander.deployOne: 2°
+AttackerCommander.deployOne -> AttackerMinion -> fei.fCurrencyStable.mintStable: 3°: minion mints
+AttackerCommander.deployOne -> AttackerMinion -> fei.fCurrencyETH.borrowETH: 4°: minion borrows
+AttackerMinion -> fei.fCurrencyStable.redeemStable: 5°
+AttackerCommander -> fei.fCurrencyETH.mintETH -> fei.fCurrencyStable.mintStable: 6°: multiple stables
+fei.fCurrencyStable.mintStable -> fei.fCurrencyStable.redeemStable: 7°: redeem all stables
+AttackerCommander.deployTwo -> AttackerMinionTwo: 8°: repeat 2°-5°
+AttackerCommander -> fei.fCurrencyETH.redeemETH: 9°
+AttackerCommander -> balancer: 10°: repay
+
+  explanation: |md
+    # Fei Protocol
+    - Reentrancy
+    - Undercollateralized borrows
+  |
+  
