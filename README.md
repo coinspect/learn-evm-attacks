@@ -1,17 +1,32 @@
 # <h1 align="center"> Reproduced Exploits Library </h1>
-A library with previously exploited vulnerabilities, categorized by type (common denominator of each exploit). 
+A set of Foundry tests that reproduce exploits, reports and theoretical vulnerabilities.
 
-To contribute, create a new file inside the most appropriate category. Use the `template.txt` file in the `test` folder including the information related to the attack.
+Want to take a quick look? Just to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken))). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
-Utils that perform flashloans and swaps are provided in `test/utils` to ease the job of reproducing future attacks.
-Also, modules that provide enhanced features to Foundry are included in the `test/modules` folder. 
- 
-Each exploit can be found under the test folder.
+``` bash
+$ git clone https://github.com/coinspect/reproduced-exploits-library
+# If you want to run with Foundry
+$ forge install
+$ forge test --match-contract Exploit_MBCToken -vvv
+```
 
 ## Index
-### [How to Install, Compile and Run](#-how-to-install-compile-and-run-)
 
-Currently, 28 past exploits were reproduced. 
+We now have 31 reproduced exploits, quite a handful. Of those 31, we have chosen a few in case you want to start styudying up with some of the most interesting ones.
+
+- **[Furucombo](/test/Business_Logic/Furucombo)** is an excellent way to show the dangers of `DELEGATECALL`.
+- **[MBC Token](/test/Access_Control/MBCToken)** is a primer on how sandwich attacks can be made with an interesting backstory on suspicious tokenomics. 
+- **[Uranium](/test/Bussiness_Logic/Uranium)** is a great excuse to study up on the actual code that guards the famouse AMM constant product `x*y=k`.
+
+To run an specific exploit, you can just use:
+
+``` bash
+forge test --match-contract Exploit_MBCToken -vvv
+```
+
+Vary the amount of verbosity (`-v`, `-vv`...) according to the data you want. `-vvv` includes traces! 
+
+The full list is below:
 
 ### Access Control
 - [TempleDAO, Oct 2022 - (~$2.3MM) - Unchecked ownership on token migration](/test/Access_Control/TempleDao)
@@ -19,13 +34,14 @@ Currently, 28 past exploits were reproduced.
 - [DAOMaker, Sept 2021 - (~$4MM) - Public Init](/test/Access_Control/DAOMaker)
 - [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox)
 - [Punk Protocol, Aug 2021 - (~$8MM) - Non initialized contract](/test/Access_Control/PunkProtocol)
-
+- [MBC Token, Nov 2022 - (~$8MM) - External function](/test/Access_Control/MBCToken)
 
 ### Bad Data Validation
-- [Olympus DAO Bond, Oct 2022 - ($300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/Bond_OlympusDAO.attack.sol)
+- [Olympus DAO Bond, Oct 2022 - (~$300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/Bond_OlympusDAO.attack.sol)
 - [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/Bad_Guys_NFT.attack.sol)
-- [Multichain a.k.a AnySwap, Jan 2022 - ($960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol)
-- [Superfluid, Jan 2022 - ($8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
+- [Multichain a.k.a AnySwap, Jan 2022 - (~$960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol)
+- [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
+- [TransitSwap, Oct 2022 - (~$400K) - Arbitrary receiver](/test/Bad_Data_Validation/TransitSwap)
 
 ### Business Logic
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
@@ -35,6 +51,8 @@ Currently, 28 past exploits were reproduced.
 - [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance)
 - [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse)
 - [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium)
+- [Furucombo - Feb 2021 - ($15MM) - DELEGATECALL to proxy](/test/Business_Logic/Furucombo)
+- [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
 
 ### Reentrancy
 - [DFX Finance - Nov 2022 - (~$6MM) - Reentrancy / Side Entrance](/test/Reentrancy/DFXFinance)
@@ -49,47 +67,21 @@ Currently, 28 past exploits were reproduced.
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Bridges/NomadBridge)
 - [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge)
 - [PolyNetwork Bridge, Aug 2021 - (~$611MM) - Arbitrary External Calls, Access Control Bypass](/test/Bridges/PolyNetworkBridge)
+- [Arbitrum Inbox (REPORTED), Sep 2022 - (400K ETH BUG BOUNTY) - Uninitialized Implementatin](/test/Bridges/Wintermute)
 
 
-Another interesting repo that might be handy: https://github.com/SunWeb3Sec/DeFiHackLabs
+# <h2 align="center"> Contributing </h2>[]
 
-# <h2 align="center"> How to Install, Compile and Run </h2>[]
+To contribute, create a new file inside the most appropriate category. Use the `template.txt` file in the `test` folder including the information related to the attack.
 
-**Template repository for getting started quickly with Hardhat and Foundry in one project**
+Utils that perform flashloans and swaps are provided in `test/utils` to ease the job of reproducing future attacks. Also, modules that provide enhanced features to Foundry are included in the `test/modules` folder. 
 
-### Getting Started
+The tests should `pass` if the attacker succeeded, for examples: your requires should show that the attacker has more balance after the attack than before.
 
- * Use Foundry: 
-```bash
-forge install
-forge test
-```
-
- * Use Hardhat:
-```bash
-npm install
-npx hardhat test
-```
-
-### Features
-
- * Write / run tests with either Hardhat or Foundry:
-```bash
-forge test
-# or
-npx hardhat test
-```
-
- * Use Hardhat's task framework
-```bash
-npx hardhat example
-```
-
- * Install libraries with Foundry which work with Hardhat.
-```bash
-forge install rari-capital/solmate # Already in this repo, just an example
-```
-
-### Notes
+## Note
 
 Whenever you install new libraries using Foundry, make sure to update your `remappings.txt` file by running `forge remappings > remappings.txt`. This is required because we use `hardhat-preprocessor` and the `remappings.txt` file to allow Hardhat to resolve libraries you install with Foundry.
+
+# <h2 align="center"> Past work and further study </h2>[]
+
+- [DefiHackLabs](https://github.com/SunWeb3Sec/DeFiHackLabs) has a similar repository with more exploits and more focus on the test reproductions alone, with no context or further explanations. It is nevertheless great if you only care about the attack reproductions! Go check it out.
