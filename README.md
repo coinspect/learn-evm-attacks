@@ -12,7 +12,7 @@ $ forge test --match-contract Exploit_MBCToken -vvv
 
 ## Index
 
-We now have 31 reproduced exploits, quite a handful. Of those 31, we have chosen a few in case you want to start styudying up with some of the most interesting ones.
+We now have 31 reproduced exploits. Of those 31, we have chosen a few in case you want to start styudying up with some of the most interesting ones.
 
 - **[Furucombo](/test/Business_Logic/Furucombo)** is an excellent way to show the dangers of `DELEGATECALL`.
 - **[MBC Token](/test/Access_Control/MBCToken)** is a primer on how sandwich attacks can be made with an interesting backstory on suspicious tokenomics. 
