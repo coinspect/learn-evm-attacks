@@ -25,9 +25,9 @@ The protocol wanted to allow users to migrate stake from an old contract to a ne
     }
 ```
 
-An OK implementation of `migrateWithdraw` should transfer `amount` from `msg.sender` to the current contract. `_applyStake` would later add `amount` to `msg.sender`.
+An OK implementation of `migrateWithdraw` should transfer `amount` from `msg.sender` to the current contract and revert if it wasn't able to. `_applyStake` would later add `amount` to `msg.sender`.
 
-Unfortunately, it is trivial to pass an evil `oldStaking` contract that approves any amount.
+Unfortunately, it is trivial to pass an evil `oldStaking` contract that never reverts.
 
 ## Possible mitigations
 - Store a list of valid `oldStaking` contract addresses and whitelist them (needs an `owner` if the list needs to be dynamic)
