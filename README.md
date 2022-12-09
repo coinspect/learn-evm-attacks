@@ -68,7 +68,7 @@ The full list is below:
 - [Arbitrum Inbox (REPORTED), Sep 2022 - (400K ETH BUG BOUNTY) - Uninitialized Implementation](/test/Bridges/AribtrumInbox)
 
 
-# <h2 align="center"> Contributing </h2>[]
+# <h2 align="center"> Contributing </h2>
 
 To contribute, create a new file inside the most appropriate category. Use the `template.txt` file in the `test` folder including the information related to the attack.
 
@@ -76,6 +76,6 @@ Utils that perform flashloans and swaps are provided in `test/utils` to ease the
 
 The tests should `pass` if the attacker succeeded, for examples: your requires should show that the attacker has more balance after the attack than before.
 
-# <h2 align="center"> Past work and further study </h2>[]
+# <h2 align="center"> Past work and further study </h2>
 
 - [DefiHackLabs](https://github.com/SunWeb3Sec/DeFiHackLabs) has a similar repository with more exploits and more focus on the test reproductions alone, with no context or further explanations. It is nevertheless great if you only care about the attack reproductions! Go check it out.
