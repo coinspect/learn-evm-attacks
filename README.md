@@ -23,7 +23,7 @@ To run an specific exploit, you can just use:
 forge test --match-contract Exploit_MBCToken -vvv
 ```
 
-Vary the amount of verbosity (`-v`, `-vv`...) according to the data you want. `-vvv` includes traces! 
+Vary the amount of verbosity (`-v`, `-vv`...) according to the data you want. `-vvvv` includes traces! 
 
 The full list is below:
 
