@@ -21,7 +21,7 @@
 6. Keep the rest.
 
 ## Detailed Description
-Understanding this attack needs a small prior on [Uniswap router contracts](https://docs.uniswap.org/contracts/v2/reference/smart-contracts/router-02) and their method. 
+Understanding this attack needs a small prior on [Uniswap router contracts](https://docs.uniswap.org/contracts/v2/reference/smart-contracts/router-02) and their methods. 
 
 Routers are contracts that facilitate the interaction with Uniswap pools. An important function in a router is `addLiquidity`:
 
@@ -38,7 +38,7 @@ function addLiquidity(
 ) external returns (uint amountA, uint amountB, uint liquidity);
 ```
 
-This will try to add liquidity to the pool where trades of `tokenA/tokenB` happen. The `amountADesired/amountBDesired` are the ideal ratio at which to add, while `amountAMin/amountBMin` work as slippage protection.
+This will try to add liquidity to the pool where trades of `tokenA/tokenB` happen. `amountADesired/amountBDesired` is the ideal amount of `A` and `B` to add, while `amountAMin/amountBMin` works as slippage protection.
 
 With that in mind, we can check the MBC Token `swapAndLiquifyStepv1()` function:
 
@@ -70,12 +70,10 @@ Something important here to stress is that the `MBC Token` has a balance of thei
 Now, inmediatly after calling `swapAndLiquifyStepv1`, the contract will go to the `BUSD/MBC` liquidity pool
 and add all of its balances of both BUSD and MBC to it.
 
-Now, **this is already a problem**. There's nothing guaranteeing that `BUSD/MBC` will be `1:1`! And both [Uniswap](https://docs.uniswap.org/contracts/v2/reference/smart-contracts/router-02#addliquidity) and common sense will tell you adding liquidity in proportions not representing the real price of the assets is a bad idea, as you will be gifting money to someone doing arbitrage.
-
 A small sidenote here, but: why does this contract have this function anyway? It does not seem to do much. The answer appears to be some [controversial tokenomics](https://www.youtube.com/watch?v=CvSJzqwJdBA). We haven't been able to pinpoint who invented it, but [Safemoon](https://safemoon.com/), now facing [lawsuits](https://www.nerdwallet.com/article/investing/safemoon), [seems to swear by it](https://www.safemoon.education/post/swap-and-evolve).
 
 
-Anyway, moving on the attack. We know we can force the contract to gift money to people doing arbitrage. How does the attacker take advantage of this? Well, basically by becoming the arbtrer themselves. 
+Anyway, moving on the attack. How does the attacker take advantage of this? They inflate the price of the token in the pool and foce the contract to buy it all up.
 
 In the same transaction, they:
 
