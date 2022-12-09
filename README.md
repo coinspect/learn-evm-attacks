@@ -41,7 +41,6 @@ The full list is below:
 - [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/Bad_Guys_NFT.attack.sol)
 - [Multichain a.k.a AnySwap, Jan 2022 - (~$960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol)
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
-- [TransitSwap, Oct 2022 - (~$400K) - Arbitrary receiver](/test/Bad_Data_Validation/TransitSwap)
 
 ### Business Logic
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
@@ -67,7 +66,7 @@ The full list is below:
 - [Nomad Bridge, Aug 2022 - (~$190MM) - Invalid Root Hash Commitment / Poor Root Validation](/test/Bridges/NomadBridge)
 - [Ronin Bridge, Mar 2022 - (~$624MM) - Compromised Keys](/test/Bridges/RoninBridge)
 - [PolyNetwork Bridge, Aug 2021 - (~$611MM) - Arbitrary External Calls, Access Control Bypass](/test/Bridges/PolyNetworkBridge)
-- [Arbitrum Inbox (REPORTED), Sep 2022 - (400K ETH BUG BOUNTY) - Uninitialized Implementatin](/test/Bridges/Wintermute)
+- [Arbitrum Inbox (REPORTED), Sep 2022 - (400K ETH BUG BOUNTY) - Uninitialized Implementation](/test/Bridges/AribtrumInbox)
 
 
 # <h2 align="center"> Contributing </h2>[]
@@ -77,10 +76,6 @@ To contribute, create a new file inside the most appropriate category. Use the `
 Utils that perform flashloans and swaps are provided in `test/utils` to ease the job of reproducing future attacks. Also, modules that provide enhanced features to Foundry are included in the `test/modules` folder. 
 
 The tests should `pass` if the attacker succeeded, for examples: your requires should show that the attacker has more balance after the attack than before.
-
-## Note
-
-Whenever you install new libraries using Foundry, make sure to update your `remappings.txt` file by running `forge remappings > remappings.txt`. This is required because we use `hardhat-preprocessor` and the `remappings.txt` file to allow Hardhat to resolve libraries you install with Foundry.
 
 # <h2 align="center"> Past work and further study </h2>[]
 
