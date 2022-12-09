@@ -1,11 +1,10 @@
 # <h1 align="center"> Reproduced Exploits Library </h1>
 A set of Foundry tests that reproduce exploits, reports and theoretical vulnerabilities.
 
-Want to take a quick look? Just to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken))). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
+Want to take a quick look? Just to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
 ``` bash
 $ git clone https://github.com/coinspect/reproduced-exploits-library
-# If you want to run with Foundry
 $ forge install
 $ forge test --match-contract Exploit_MBCToken -vvv
 ```
