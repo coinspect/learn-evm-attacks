@@ -22,7 +22,7 @@
 
 Another attack that relies on an arbitry `token` parameter. Here, Multichain intended the token to be an `Anytoken` (Multichain was previously called AnySwap), which they use to track account balances when doing cross-chain transaction.
 
-Anyway, the `ansSwapOutUnderlyingWithPermit()` method takes a `token` and intends to transfer funds from the token's `underlying` to the contract and then use it to `transferFrom` the underlying to the `token`.
+The `anySwapOutUnderlyingWithPermit()` method takes a `token` and intends to transfer funds from the token's `underlying` to the contract and then use it to `transferFrom` the underlying to the `token`.
 
 The contract fails to take into account that `WETH` is special: `WETH`'s fallback function triggers its `deposit()` method and returns `true` and does not implement `permit`, so calls to `permit` on `WETH` simply return `true`.
 
