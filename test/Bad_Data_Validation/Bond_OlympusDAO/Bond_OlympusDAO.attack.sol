@@ -56,7 +56,7 @@ contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
 }
 
 contract ExploitOlympusToken {
-    function underlying() external view returns(address) {
+    function underlying() external pure returns(address) {
         return OHM;
     }
 
