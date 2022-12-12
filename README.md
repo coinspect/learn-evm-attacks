@@ -1,7 +1,7 @@
 # <h1 align="center"> Learn EVM Attacks </h1>
-A set of Foundry tests that reproduce exploits, reports and theoretical vulnerabilities found on EVM chains plus explanations, diagrams and context links so to be useful as a reference and study for anyone trying to learn more about vulnerabilities in blockchain.
+A collection of Foundry tests reproducing exploits, bug bounty reports, and theoretical vulnerabilities on EVM chains. Diagrams and context links accompany each attack reproduction to make it more helpful as a reference or study material for anyone trying to learn more about vulnerabilities in smart contract systems.
 
-Want to take a quick look? Just to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
+Want to take a quick look? Just go to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
 ``` bash
 $ git clone https://github.com/coinspect/reproduced-exploits-library
