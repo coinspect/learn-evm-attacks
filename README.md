@@ -4,7 +4,7 @@ A collection of Foundry tests reproducing exploits, bug bounty reports, and theo
 Want to take a quick look? Just go to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
 ``` bash
-$ git clone https://github.com/coinspect/reproduced-exploits-library
+$ git clone https://github.com/coinspect/learn-evm-attacks
 $ forge install
 $ forge test --match-contract Exploit_MBCToken -vvv
 ```
