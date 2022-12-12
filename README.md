@@ -1,5 +1,5 @@
-# <h1 align="center"> Reproduced Exploits Library </h1>
-A set of Foundry tests that reproduce exploits, reports and theoretical vulnerabilities.
+# <h1 align="center"> Learn EVM Attacks </h1>
+A set of Foundry tests that reproduce exploits, reports and theoretical vulnerabilities found on EVM chains. 
 
 Want to take a quick look? Just to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
