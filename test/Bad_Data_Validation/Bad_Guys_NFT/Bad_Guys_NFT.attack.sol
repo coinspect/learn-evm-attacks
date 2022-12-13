@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
-import "./MerkleTree.sol";
+import {MerkleTree} from "../../utils/MerkleTree.sol";
 interface IBadGuys {
     function WhiteListMint(bytes32[] calldata _merkleProof, uint256 chosenAmount) external;
     function flipPauseMinting() external;
@@ -62,13 +62,14 @@ contract Exploit_Bad_Guys_NFT is TestHarness {
     }  
 
     function onERC721Received(
-        address /* */,
-        address /* */,
-        uint256 /* */,
-        bytes memory /* */
+        address /* _operator */,
+        address /* _from */,
+        uint256 /* _tokenId */,
+        bytes memory /* _data */
     ) external pure returns (bytes4) {
         return this.onERC721Received.selector;
     }
+
 
     function handleMerkleTreeWhitelist(bytes32[] memory data) internal returns(bytes32){
         addTreeData(data);
