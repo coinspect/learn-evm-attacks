@@ -15,7 +15,7 @@ We now have 31 reproduced exploits. Of those 31, we have chosen a few in case yo
 
 - **[Furucombo](/test/Business_Logic/Furucombo)** is an excellent way to show the dangers of `DELEGATECALL`.
 - **[MBC Token](/test/Access_Control/MBCToken)** is a primer on how sandwich attacks can be made with an interesting backstory on suspicious tokenomics. 
-- **[Uranium](/test/Bussiness_Logic/Uranium)** is a great excuse to study up on the actual code that guards the famouse AMM constant product `x*y=k`.
+- **[Uranium](/test/Business_Logic/Uranium)** is a great excuse to study up on the actual code that guards the famouse AMM constant product `x*y=k`.
 
 To run an specific exploit, you can just use:
 
