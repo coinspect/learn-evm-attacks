@@ -88,7 +88,10 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
         require(address(tokens[0]) == address(usdc), "no usdc");
         require(address(tokens[1]) == address(weth), "no weth");
-        
+
+        uint256 balanceBeforeUSDC = usdc.balanceOf(address(this)) - amounts[0];
+        uint256 balanceBeforeWETH = weth.balanceOf(address(this)) - amounts[1];
+
         uint256 usdcFlashLoanBalance = usdc.balanceOf(address(this));
         uint256 wethFlashLoanBalance = weth.balanceOf(address(this));
         
@@ -136,6 +139,11 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         emit log_named_decimal_uint("USDT", usdt.balanceOf(address(this)), 18);
         emit log_named_decimal_uint("FRAX", frax.balanceOf(address(this)), 18);
         emit log_named_decimal_uint("WETH", wethFlashLoanBalance, 18);
+
+        uint256 balanceAfterUSDC = usdc.balanceOf(address(this));
+        uint256 balanceAfterWETH = weth.balanceOf(address(this));
+        assertGe(balanceAfterUSDC, balanceBeforeUSDC);
+        assertGe(balanceAfterWETH, balanceBeforeWETH);
 
     }
 

