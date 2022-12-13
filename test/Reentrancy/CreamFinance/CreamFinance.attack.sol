@@ -81,7 +81,7 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('Attacker EOA', msg.sender);
     }
 
-    function uniswapV2Call(address sender, uint256 wiseLoanAmt, uint256 wethLoanAmt, bytes calldata ) external {
+    function uniswapV2Call(address sender, uint256 /* /wiseLoanAmt */, uint256 wethLoanAmt, bytes calldata ) external {
         require(msg.sender == address(wiseWethPair), 'Only callable by pair');
         require(sender == address(this), 'Only requested by this');
         

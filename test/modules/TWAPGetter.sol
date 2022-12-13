@@ -30,7 +30,7 @@ contract TWAPGetter {
     }
 
     function getCurrentPrice(IUniswapV3Pair pool) public view returns (uint256 price) {
-        (uint160 sqrtRatioX96, int24 tick, , , , , ) = pool.slot0();
+        (uint160 sqrtRatioX96, , , , , , ) = pool.slot0();
         price = UniswapMath.mulDiv(
             sqrtRatioX96,
             sqrtRatioX96,

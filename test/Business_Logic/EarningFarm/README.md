@@ -21,7 +21,7 @@
 
 ## Detailed Description
 
-The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol. The contract is probably intended as a leveraged pool (flashloans that are used to swap assets), althought is 
+The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol. 
 
 We can start the flow by looking at the public `withdraw` method and noting where it makes the call to `flashLoan`. 
 

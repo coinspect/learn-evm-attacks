@@ -99,12 +99,12 @@ contract Exploit_Multichain is TestHarness, TokenBalanceTracker{
     }
 
     // For _anySwapOut() that uses AnyswapV1ERC20 to wrap the token to burn it. Just return true so that call passes.
-    function burn(address, uint256) external returns(bool){
+    function burn(address, uint256) external pure returns(bool){
         return true;
     }
     
     //The AnyswapV1ERC20() wraps the token and calls, this function.
-    function depositVault(uint256 , address ) external returns (uint256){
+    function depositVault(uint256 , address ) external pure returns (uint256){
         return 1;
     }
 

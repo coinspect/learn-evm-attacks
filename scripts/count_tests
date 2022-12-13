@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+cd $(git rev-parse --show-toplevel)
+find ./test/ -type d \( -path ./test/modules -or -path ./test/utils -o -path ./test/interfaces \) -prune -or -name '*.sol' -and -type f -and -not -name 'TestHarness.sol' -print | wc -l

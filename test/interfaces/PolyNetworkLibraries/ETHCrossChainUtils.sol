@@ -112,7 +112,6 @@ library ECCUtils {
     function verifySig(bytes memory _rawHeader, bytes memory _sigList, address[] memory _keepers, uint _m) internal pure returns (bool){
         bytes32 hash = getHeaderHash(_rawHeader);
 
-        uint signed = 0;
         uint sigCount = _sigList.length / POLYCHAIN_SIGNATURE_LEN;
         address[] memory signers = new address[](sigCount);
         bytes32 r;

