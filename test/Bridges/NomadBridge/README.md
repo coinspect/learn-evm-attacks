@@ -6,7 +6,7 @@
 - **Vulnerable contracts:**
 - - [0xb92336759618f55bd0f8313bd843604592e27bd8](https://etherscan.io/address/0xb92336759618f55bd0f8313bd843604592e27bd8), bad initialization at tx [0x53fd92771d2084a9bf39a6477015ef53b7f116c79d98a21be723d06d79024cad](https://etherscan.io/tx/0x53fd92771d2084a9bf39a6477015ef53b7f116c79d98a21be723d06d79024cad)
 - **Attack transactions:**
-- - Ethereum: [0xa5fe9d044e4f3e5aa5bc4c0709333cd2190cba0f4e7f16bcf73f49f83e4a5460](https://etherscan.io/address/0xa5fe9d044e4f3e5aa5bc4c0709333cd2190cba0f4e7f16bcf73f49f83e4a5460)
+- - Ethereum: [0xa5fe9d044e4f3e5aa5bc4c0709333cd2190cba0f4e7f16bcf73f49f83e4a5460](https://etherscan.io/tx/0xa5fe9d044e4f3e5aa5bc4c0709333cd2190cba0f4e7f16bcf73f49f83e4a5460)
 - - Moonbean:[0xcca9299c739a1b538150af007a34aba516b6dade1965e80198be021e3166fe4c](https://moonscan.io/tx/0xcca9299c739a1b538150af007a34aba516b6dade1965e80198be021e3166fe4c)
 - **Attacker Addresses**: 
 - - EOA: [0xa8c83b1b30291a3a1a118058b5445cc83041cd9d](https://etherscan.io/address/0xa8c83b1b30291a3a1a118058b5445cc83041cd9d)
@@ -102,4 +102,4 @@ Because the update set `confirmAt[0x00]` at `1`, this will end up giving `true` 
 - [CertiK](https://twitter.com/CertiKAlert/status/1554305088037978113)
 - [Beosin](https://twitter.com/BeosinAlert/status/1554303803218083842)
 - [Blocksec](https://twitter.com/BlockSecTeam/status/1554335271964987395)
-- [CertiK](st-mortem : https://www.certik.com/resources/blog/28fMavD63CpZJOKOjb9DX3-nomad-bridge-exploit-incident-analysis)
+- [CertiK postmorten](https://www.certik.com/resources/blog/28fMavD63CpZJOKOjb9DX3-nomad-bridge-exploit-incident-analysis)
