@@ -106,7 +106,7 @@ An attacker could have easily exploit this by initializing the proxy, then submi
 
 ### Class
 
-![class](Wormhole/wormhole.png)
+![class](wormhole.png)
 
 ## Sources and references
 - [Writeup](https://medium.com/immunefi/wormhole-uninitialized-proxy-bugfix-review-90250c41a43a)
