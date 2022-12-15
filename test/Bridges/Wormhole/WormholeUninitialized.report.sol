@@ -69,6 +69,8 @@ contract ExploitWormhole is TestHarness {
     address[] attackerAddresses = [attacker];
     EvilWormhole evilWormhole;
 
+    // We split the test into setUp() and test_attack() because a selfdestruction is involved.
+    // As selfdestruct is enqueued for the end of the call, two independent calls need to happen for this to impact on Foundry's VM.
     function setUp() external {
         Structs.VM memory vm;
         bytes memory _vm;
