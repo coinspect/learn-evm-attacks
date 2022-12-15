@@ -23,11 +23,11 @@
 
 Wormhole is a bridge that enables interoperability between blockchains such as Ethereum, Terra, and Binance Smart Chain (BSC).
 
-The bridge implements a Proxy Standard to be able to upgrade its contract implementation logic.
+The bridge implements a proxy standard to be able to upgrade its contract implementation logic.
 
-To do this, it takes a reference to the bridge address in its `initialize`. As hinted by this method, the whole contract is behind an [Universal Upgradable Proxy](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable).
+To do this, it uses a [Universal Upgradable Proxy](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable) pattern.
 
-The problem can be found in the initialization of the implementation contract. While the upgrade procedure (`submitContractUpgrade`) is protected by a multi-sig held by its Guardians, these signatures are set by the `initialize` method. This procedure is normally protected by a lock, ensuring that this method can only be called once. However, the Wormhole proxy was Uninitialized. 
+However, there is a problem if the proxy is not properly initialized. While the upgrade procedure (`submitContractUpgrade`) is protected by a multi-sig held by its Guardians, these signatures are set by the `initialize` method. This procedure is normally protected by a lock, ensuring that this method can only be called once. However, the Wormhole proxy was left uninitialized. 
 
 ``` solidity
     function initialize(address[] memory initialGuardians, uint16 chainId, uint16 governanceChainId, bytes32 governanceContract) initializer public {
