@@ -1,4 +1,4 @@
-# Paraluni
+# Curve Pool Oracle
 - **Type:** Exploit
 - **Network:** Polygon
 - **Total lost**: 138 ETH
@@ -75,5 +75,5 @@ At this point, you only need to know that QiDAO is a lending platform which used
 ![class](paraluni.png)
 
 ## Sources and references
-- [Paraluni Tweet](https://twitter.com/paraluni/status/1502951606202994694)
-- [Slowmist Article](https://slowmist.medium.com/paraluni-incident-analysis-58be442a4f99)
+- [Curve LP Manipulation Post Mortem](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/)
+- [Beosin Tweet](https://twitter.com/BeosinAlert/status/1584551399941365763)
