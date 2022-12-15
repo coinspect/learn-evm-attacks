@@ -177,7 +177,7 @@ contract ExploitWormhole is TestHarness {
         return size;
     }
 
-    function dumpCode(address addr, uint size) internal view {
+    function dumpCode(address addr, uint size) internal {
         bytes memory bytecode;
         
         if (size >= 32)
@@ -186,7 +186,7 @@ contract ExploitWormhole is TestHarness {
           bytecode = addr.code;
         
         console.log("Wormhole Bridge implementation @", addr);
-        console.logBytes(bytecode);
+        emit log_named_bytes("Wormhole Bridge implementation bytecode", bytecode);
         console.log("");
     }
 
