@@ -31,9 +31,9 @@ Proxies have special deployment procedures, triggered by an `initialize` method.
 
 Unlike Transparent Proxies, in [UUPS](https://eips.ethereum.org/EIPS/eip-1822) the upgrade is handled by the logic implementation, which updates the contract address in the proxy’s storage space. This is typically done with the proxy contract calling `upgradeToAndCall`, through a `DELEGATECALL`, which will execute the implementation in the context of the proxy itself.
 
-The Wormhole [implementation contract](https://etherscan.io/address/0x736d2a394f7810c17b3c6fed017d5bc7d60c077d#code) was left uninitialized after a bugfix had reverted the original initialization.
+The Wormhole proxy [implementation contract](https://etherscan.io/address/0x736d2a394f7810c17b3c6fed017d5bc7d60c077d#code) was left uninitialized after a bugfix had reverted the original initialization.
 
-When the proxy is not properly initialized, there are serious security implications. The Wormhole upgrade procedure (`submitContractUpgrade`) has an additional security mechanism, being protected by a multi-sig held by its Guardians. These signatures are set by the `initialize` method. This method is protected by a lock, ensuring that it can only be called once.
+When a proxy is not properly initialized, there are serious security implications. The Wormhole implementation upgrade procedure (`submitContractUpgrade`) has an additional security mechanism, being protected by a multi-sig held by its Guardians. These signatures are set by the `initialize` method. This method is protected by a lock, ensuring that it can only be called once.
 
 ``` solidity
     function initialize(address[] memory initialGuardians, uint16 chainId, uint16 governanceChainId, bytes32 governanceContract) initializer public {
@@ -101,9 +101,11 @@ Next, the new owner can call `submitContractUpgrade` providing signatures and a 
     }
 ```
 
-An attacker could have easily exploited this by initializing the proxy, then submitting a contract to upgrade.
+An attacker could have easily exploited this by initializing the implementation, then submitting a contract to upgrade.
 
-Because the **implementation contract** was not initialized, an attacker could have easily done so, becoming its owner. Now the attacker could make an upgrade, by calling `submitContractUpgrade` on the implementation. An evil contract submitted would brick not the proxy, but its logic implementation, locking Wormhole funds forever.
+Now notice that it is the **implementation contract** that was not initialized, not the **proxy contract**. This is a twist to the story. Because the call will not go through the proxy, an attacker cannot change its storage. Strategies like setting a malicious implementation to send fake messages to its users, for instance, would not work. So one needs to be creative: (hold the implementation contract to ransome)[https://portswigger.net/daily-swig/blockchain-bridge-wormhole-pays-record-10m-bug-bounty-reward]. In this scenario an attacker could take over the implementation contract, threatening to destroy it, if not paid a requested amount.
+
+Upgrading the implementation with a contract issuing `SELFDESTRUCT` would brick the proxy's logic, locking the Wormhole bridge funds forever.
 
 ## Possible mitigations
 - Be careful when implementing proxy upgradability
