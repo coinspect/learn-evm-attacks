@@ -69,7 +69,7 @@ When a proxy is not properly initialized, there are serious security implication
 Not being initialized, anyone can trigger the `initialize` method, providing their own set of authorized guardians.
 Next, the new owner can call `submitContractUpgrade` providing signatures and a contract of choice to replace the logic implementation.
 
-```
+``` solidity
     function submitContractUpgrade(bytes memory _vm) public {
         Structs.VM memory vm = parseVM(_vm);
 
@@ -86,7 +86,7 @@ Next, the new owner can call `submitContractUpgrade` providing signatures and a 
         upgradeImplementation(upgrade.newContract);
     }
 ```
-```
+``` solidity
     function upgradeImplementation(address newImplementation) internal {
         address currentImplementation = _getImplementation();
 
