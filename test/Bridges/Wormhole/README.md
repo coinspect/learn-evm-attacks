@@ -103,7 +103,7 @@ Next, the new owner can call `submitContractUpgrade` providing signatures and a 
 
 An attacker could have easily exploited this by initializing the implementation, then submitting a contract to upgrade.
 
-Now notice that it is the **implementation contract** that was not initialized, not the **proxy contract**. This is a twist to the story. Because the call will not go through the proxy, an attacker cannot change its storage. Strategies like setting a malicious implementation to send fake messages to its users, for instance, would not work. So one needs to be creative: (hold the implementation contract to ransome)[https://portswigger.net/daily-swig/blockchain-bridge-wormhole-pays-record-10m-bug-bounty-reward]. In this scenario an attacker could take over the implementation contract, threatening to destroy it, if not paid a requested amount.
+Now notice that it is the **implementation contract** that was not initialized, not the **proxy contract**. This is a twist to the story. Because the call will not go through the proxy, an attacker cannot change its storage. Strategies like setting a malicious implementation to send fake messages to its users, for instance, would not work. So one needs to be creative: [hold the implementation contract to ransome](https://portswigger.net/daily-swig/blockchain-bridge-wormhole-pays-record-10m-bug-bounty-reward). In this scenario an attacker could take over the implementation contract, threatening to destroy it, if not paid a requested amount.
 
 Upgrading the implementation with a contract issuing `SELFDESTRUCT` would brick the proxy's logic, locking the Wormhole bridge funds forever.
 
