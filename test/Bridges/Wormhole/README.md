@@ -109,7 +109,7 @@ Upgrading the implementation with a contract issuing `SELFDESTRUCT` would brick 
 
 ## Possible mitigations
 - Be careful when implementing proxy upgradability
-- Make sure to implement secure authorization schemes
+- Make sure to implement secure authentication and authorization schemes
 - Test deploy conditions, like `contract should be initialized` and `should not be able to reinitialize contract`
 
 ## Diagrams and graphs
