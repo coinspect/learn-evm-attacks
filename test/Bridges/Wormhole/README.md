@@ -66,7 +66,7 @@ When a proxy is not properly initialized, there are serious security implication
         _;
     }
 ```
-At this point anyone can call `initialize`, providing their own set of authorized guardians.
+Not being initialized, anyone can trigger the `initialize` method, providing their own set of authorized guardians.
 Next, the new owner can call `submitContractUpgrade` providing signatures and a contract of choice to replace the logic implementation.
 
 ```
