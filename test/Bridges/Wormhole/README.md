@@ -1,7 +1,7 @@
 # Wormhole Bridge
 - **Type:** Report
 - **Network:** Ethereum 
-- **Total lost**: 10M USD (bounty price)
+- **Total lost**: 10MM USD (bounty price)
 - **Category:** Reinitialization
 - **Vulnerable contracts:**
 - - Vulnerable implementation: [0x736d2a394f7810c17b3c6fed017d5bc7d60c077d](https://etherscan.io/address/0x736d2a394f7810c17b3c6fed017d5bc7d60c077d)
