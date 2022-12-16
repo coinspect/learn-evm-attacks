@@ -103,7 +103,7 @@ Next, the new owner can call `submitContractUpgrade` providing signatures and a 
 
 An attacker could have easily exploited this by initializing the proxy, then submitting a contract to upgrade.
 
-Because the **implementation contract** was not initialized, an attacker could have easily done so, becoming its owner. Now the attacker could make an upgrade, by calling `upgradeToAndCall` in the implementation. An evil contract submitted would brick not the proxy, but its logic implementation, locking Wormhole funds forever.
+Because the **implementation contract** was not initialized, an attacker could have easily done so, becoming its owner. Now the attacker could make an upgrade, by calling `submitContractUpgrade` on the implementation. An evil contract submitted would brick not the proxy, but its logic implementation, locking Wormhole funds forever.
 
 ## Possible mitigations
 - Be careful when implementing proxy upgradability
