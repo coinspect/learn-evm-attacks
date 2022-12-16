@@ -66,7 +66,7 @@ When a proxy is not properly initialized, there are serious security implication
         _;
     }
 ```
-This results in the contract being marked as not-initialized in the saved state. At this point anyone can call `initialize`, providing their own set of authorized guardians.
+At this point anyone can call `initialize`, providing their own set of authorized guardians.
 Next, the new owner can call `submitContractUpgrade` providing signatures and a contract of choice to replace the logic implementation.
 
 ```
