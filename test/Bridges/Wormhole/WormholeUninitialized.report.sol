@@ -60,7 +60,7 @@ contract Destructor {
   }
 }
 
-contract ExploitWormhole is TestHarness {  
+contract Report_Wormhole is TestHarness {  
 
     IWormholeImpl internal wormholeImpl = IWormholeImpl(0x736D2A394f7810C17b3c6fEd017d5BC7D60c077d);
     uint256 attackerPrivateKey = 0xd0bbd8230a18b0b51c4934271cb8f6a9638ab171a7c6d570777b14c0ed58a5a1;
