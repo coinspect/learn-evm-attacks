@@ -11,7 +11,7 @@
 - **Attacker Addresses**: 
 - - [0xC8a65Fadf0e0dDAf421F28FEAb69Bf6E2E589963](https://etherscan.io/address/0xC8a65Fadf0e0dDAf421F28FEAb69Bf6E2E589963)
 - **Attack Block:**: 12996659, 12996671 
-- **Date:** Aug 10, 2022 
+- **Date:** Aug 10, 2021 
 - **Reproduce:** `forge test --match-contract Exploit_PolyNetwork -vvv` 
 
 ## Step-by-step 
