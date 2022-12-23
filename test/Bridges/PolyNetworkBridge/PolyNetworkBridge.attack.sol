@@ -122,9 +122,9 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         bytes memory toMerkleValueBs3 = serializer.serializeTx(toMerkleValue2, toMerkleValue2.makeTxParam);
 
         console.log("");
-        emit log_named_bytes("[1] Original serialized merkle tree (T)", toMerkleValueBs);
-        emit log_named_bytes("[2] De-re-serialized merkle tree (T) ..", toMerkleValueBs2);
-        emit log_named_bytes("[3] Serialized merkle tree (T') .......", toMerkleValueBs3);
+        emit log_named_bytes("[1] Original serialized merkle tree / tx value (T)", toMerkleValueBs);
+        emit log_named_bytes("[2] De-re-serialized merkle tree / tx value (T) ..", toMerkleValueBs2);
+        emit log_named_bytes("[3] Serialized merkle tree / tx value (T') .......", toMerkleValueBs3);
         console.log("");
 
         // Header
@@ -217,9 +217,9 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         bytes memory toMerkleValueBs3 = serializer.serializeTx(toMerkleValue2, toMerkleValue2.makeTxParam);
 
         console.log("");
-        emit log_named_bytes("[1] Original serialized merkle tree (T)", toMerkleValueBs);
-        emit log_named_bytes("[2] De-re-serialized merkle tree (T) ..", toMerkleValueBs2);
-        emit log_named_bytes("[3] Serialized merkle tree (T') .......", toMerkleValueBs3);
+        emit log_named_bytes("[1] Original serialized merkle tree / tx value (T)", toMerkleValueBs);
+        emit log_named_bytes("[2] De-re-serialized merkle tree / tx value (T) ..", toMerkleValueBs2);
+        emit log_named_bytes("[3] Serialized merkle tree / tx value (T') .......", toMerkleValueBs3);
         console.log("");
 
         // Header
