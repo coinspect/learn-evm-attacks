@@ -4,8 +4,7 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
 
-import "./BytesLib.sol";
-
+import {BytesLib} from "../../utils/BytesLib.sol";
 import {TestHarness} from "../../TestHarness.sol";
 
 interface Structs {
