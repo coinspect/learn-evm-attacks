@@ -36,16 +36,16 @@ The full list is below:
 - [MBC Token, Nov 2022 - (~$8MM) - External function](/test/Access_Control/MBCToken)
 
 ### Bad Data Validation
-- [Olympus DAO Bond, Oct 2022 - (~$300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/Bond_OlympusDAO.attack.sol)
-- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/Bad_Guys_NFT.attack.sol)
-- [Multichain a.k.a AnySwap, Jan 2022 - (~$960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol)
+- [Olympus DAO Bond, Oct 2022 - (~$300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/)
+- [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/)
+- [Multichain a.k.a AnySwap, Jan 2022 - (~$960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/)
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
 
 ### Business Logic
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults)
-- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance/Fantasm_Finance.attack.sol)
-- [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound/Compound.reported.sol)
+- [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance/)
+- [Compound - Mar 2022 - ($0) - Side Entrance on cToken](/test/Business_Logic/Compound/)
 - [OneRing Finance - Mar 2022 - (~$2MM) - Price Feed Manipulation](/test/Business_Logic/OneRingFinance)
 - [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse)
 - [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium)
