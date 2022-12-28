@@ -129,7 +129,6 @@ function test_attack() external {
         ECCUtils.Header memory header;
         ECCUtils.ToMerkleValue memory toMerkleValue;
         bytes memory toMerkleValueBs;
-
         headerSig = attacker_headerSig_tx2;
 
         Exploit_PolyNetwork_Serializer serializer = new Exploit_PolyNetwork_Serializer();
@@ -312,8 +311,6 @@ contract Exploit_PolyNetwork_Serializer is TestHarness {
 
     function serializeHeader(ECCUtils.Header memory header) public pure returns (bytes memory _header) {
         bytes memory head = abi.encodePacked(
-            //uint32(header.version),
-            //uint64(header.chainId),
             ZeroCopySink.WriteUint32(header.version),
             ZeroCopySink.WriteUint64(header.chainId),
             header.prevBlockHash,
