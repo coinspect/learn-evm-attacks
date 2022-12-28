@@ -85,7 +85,6 @@ function test_attack() external {
         ECCUtils.Header memory header;
         ECCUtils.ToMerkleValue memory toMerkleValue;
         bytes memory toMerkleValueBs;
-        uint64 crossChainId;
         bytes memory auditPath = hex'01362cad381a1e2432383300391908794fb71a2acd717d2f1565a40e7f8d36f9d5017b5baaca2a25e97f5afa40e98f87b0eca2eb0e9e7f24684d1b56db214aa51b3301ee1671b66cad1415453c0544d7e4425c1632e1b7dfdae3bd642ed7954e9f9b0d';
         headerSig = attacker_headerSig_tx1;
 
@@ -120,44 +119,8 @@ function test_attack() external {
         proof = encodeProof(toMerkleValueBs, auditPath);
         rawHeader = serializer.serializeHeader(header);
 
-        console.log("");
-        console.log("[ TX 1 ]");
-        console.log("Header version:", header.version);
-        console.log("Header chainID:", header.chainId);
-        console.log("Header prevBlockHash");
-        console.logBytes32(header.prevBlockHash);
-        console.log("Header transactionsRoot");
-        console.logBytes32(header.transactionsRoot);
-        console.log("Header crossStatesRoot");
-        console.logBytes32(header.crossStatesRoot);
-        console.log("Header blockRoot");
-        console.logBytes32(header.blockRoot);
-        console.log("Header timestamp:", header.timestamp);
-        console.log("Header height:", header.height);
-        console.log("Header consensusData:", header.consensusData);
-        emit log_named_bytes("Header consensusPayload", header.consensusPayload);
-        console.log("Header nextBookkeeper");
-        console.logBytes32(header.nextBookkeeper);
-        console.log("");
-        emit log_named_bytes("Cross chain tx hash", toMerkleValue.txHash);
-        console.log("From chain ID:", toMerkleValue.fromChainID);
-        emit log_named_bytes("Source chain tx hash", toMerkleValue.makeTxParam.txHash);
-        (crossChainId, ) = ZeroCopySource.NextUint64(toMerkleValue.makeTxParam.crossChainId, 0);
-        console.log("Cross chain ID:", crossChainId);
-        emit log_named_bytes("From contract", toMerkleValue.makeTxParam.fromContract);
-        console.log("To chain ID:", toMerkleValue.makeTxParam.toChainId);
-        emit log_named_bytes("To contract", toMerkleValue.makeTxParam.toContract);
-        emit log_named_bytes("Method ASCII encoded", toMerkleValue.makeTxParam.method);
-        bytes4 _methodId = bytes4(keccak256(abi.encodePacked(toMerkleValue.makeTxParam.method, "(bytes,bytes,uint64)")));
-        console.log("Method ID");
-        console.logBytes4(_methodId);
-        emit log_named_bytes("Args", toMerkleValue.makeTxParam.args);
-        console.log("");
-        emit log_named_bytes("Serialized header", rawHeader);
-        console.log("");
-        emit log_named_bytes("Serialized merkle tree / tx value", toMerkleValueBs);
-        console.log("");
-        emit log_named_bytes("Serialized proof", proof);
+        // Log to screen
+        logTx1(header, toMerkleValue, toMerkleValueBs, proof, rawHeader);
 
         return (proof, rawHeader, headerSig);
     }
@@ -201,6 +164,73 @@ function test_attack() external {
         proof = encodeProof(toMerkleValueBs, "");
         rawHeader = serializer.serializeHeader(header);
 
+        // Log to screen
+        logTx2(header, toMerkleValue, toMerkleValueBs, proof, rawHeader);
+
+        return (proof, rawHeader, headerSig);
+    }
+
+    function encodeProof(bytes memory data, bytes memory auditPath) internal pure returns (bytes memory rawProof) {
+
+        rawProof = abi.encodePacked(uint8(data.length), data, auditPath);
+
+        return rawProof;
+    }
+
+    function logTx1(ECCUtils.Header memory header,
+                    ECCUtils.ToMerkleValue memory toMerkleValue,
+                    bytes memory toMerkleValueBs,
+                    bytes memory proof,
+                    bytes memory rawHeader) internal {
+
+        uint64 crossChainId;
+        
+        console.log("");
+        console.log("[ TX 1 ]");
+        console.log("Header version:", header.version);
+        console.log("Header chainID:", header.chainId);
+        console.log("Header prevBlockHash");
+        console.logBytes32(header.prevBlockHash);
+        console.log("Header transactionsRoot");
+        console.logBytes32(header.transactionsRoot);
+        console.log("Header crossStatesRoot");
+        console.logBytes32(header.crossStatesRoot);
+        console.log("Header blockRoot");
+        console.logBytes32(header.blockRoot);
+        console.log("Header timestamp:", header.timestamp);
+        console.log("Header height:", header.height);
+        console.log("Header consensusData:", header.consensusData);
+        emit log_named_bytes("Header consensusPayload", header.consensusPayload);
+        console.log("Header nextBookkeeper");
+        console.logBytes32(header.nextBookkeeper);
+        console.log("");
+        emit log_named_bytes("Cross chain tx hash", toMerkleValue.txHash);
+        console.log("From chain ID:", toMerkleValue.fromChainID);
+        emit log_named_bytes("Source chain tx hash", toMerkleValue.makeTxParam.txHash);
+        (crossChainId, ) = ZeroCopySource.NextUint64(toMerkleValue.makeTxParam.crossChainId, 0);
+        console.log("Cross chain ID:", crossChainId);
+        emit log_named_bytes("From contract", toMerkleValue.makeTxParam.fromContract);
+        console.log("To chain ID:", toMerkleValue.makeTxParam.toChainId);
+        emit log_named_bytes("To contract", toMerkleValue.makeTxParam.toContract);
+        emit log_named_bytes("Method ASCII encoded", toMerkleValue.makeTxParam.method);
+        bytes4 _methodId = bytes4(keccak256(abi.encodePacked(toMerkleValue.makeTxParam.method, "(bytes,bytes,uint64)")));
+        console.log("Method ID");
+        console.logBytes4(_methodId);
+        emit log_named_bytes("Args", toMerkleValue.makeTxParam.args);
+        console.log("");
+        emit log_named_bytes("Serialized header", rawHeader);
+        console.log("");
+        emit log_named_bytes("Serialized merkle tree / tx value", toMerkleValueBs);
+        console.log("");
+        emit log_named_bytes("Serialized proof", proof);
+    }
+
+    function logTx2(ECCUtils.Header memory header,
+                    ECCUtils.ToMerkleValue memory toMerkleValue,
+                    bytes memory toMerkleValueBs,
+                    bytes memory proof,
+                    bytes memory rawHeader) internal {
+        
         console.log("");
         console.log("[ TX 2 ]");
         console.log("Header version:", header.version);
@@ -240,14 +270,6 @@ function test_attack() external {
         emit log_named_bytes("Serialized merkle tree / tx value", toMerkleValueBs);
         console.log("");
         emit log_named_bytes("Serialized proof", proof);
-        return (proof, rawHeader, headerSig);
-    }
-
-    function encodeProof(bytes memory data, bytes memory auditPath) internal pure returns (bytes memory rawProof) {
-
-        rawProof = abi.encodePacked(uint8(data.length), data, auditPath);
-
-        return rawProof;
     }
 }
 
