@@ -129,10 +129,6 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         require(priceDuringCallback > priceAfterCallback, "Price during the attack smaller than the ending price");
     }
 
-    fallback() external payable {
-        // _fallback();
-    }
-
     receive() external payable {
         _fallback();
     }
