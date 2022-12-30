@@ -16,6 +16,7 @@ library ECCUtils {
         bytes32 blockRoot;
         bytes consensusPayload;
         bytes20 nextBookkeeper;
+        bytes padding;
     }
 
     struct ToMerkleValue {

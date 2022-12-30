@@ -11,7 +11,7 @@
 - **Attacker Addresses**: 
 - - [0xC8a65Fadf0e0dDAf421F28FEAb69Bf6E2E589963](https://etherscan.io/address/0xC8a65Fadf0e0dDAf421F28FEAb69Bf6E2E589963)
 - **Attack Block:**: 12996659, 12996671 
-- **Date:** Aug 10, 2022 
+- **Date:** Aug 10, 2021 
 - **Reproduce:** `forge test --match-contract Exploit_PolyNetwork -vvv` 
 
 ## Step-by-step 
@@ -77,7 +77,7 @@ This is intended to be implemented by contracts that want to receive cross-chain
 
 This federation is managed by the [EthCrossChainData contract](https://github.com/polynetwork/eth-contracts/blob/d16252b2b857eecf8e558bd3e1f3bb14cff30e9b/contracts/core/cross_chain_manager/data/EthCrossChainData.sol#L45).
 
-Now, the attacker expoloited two facts:
+Now, the attacker exploited two facts:
 1. The `EthCrossmainManager` is set as the `owner` of the `EthCrossChainData` contract.
 2. The sighash is only 4 bytes long, making it vulnerable to bruteforce.
 
@@ -102,8 +102,8 @@ $ cast keccak 'f1121318093(bytes,bytes,uint64)'                                 
 Once this is done, the attacker can simply forge cross chain messages.
 
 ## Possible mitigations
-- Do not rely on `sighash` to be non-reversable by bruteforce.
-- Always implement as much restrictions as possible on calls to external contracts. In this case, a restriction should have been made so that cross-chain transactions to the manager are not possible for the public.
+- Do not rely on `sighash` to be non-reversible by bruteforce.
+- Always implement as many restrictions as possible on calls to external contracts. In this case, a restriction should have been made so that cross-chain transactions to the manager are not possible for the public.
 
 ## Diagrams and graphs
 
