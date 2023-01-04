@@ -12,8 +12,8 @@ interface IBondFixedExpiryTeller {
     function redeem(ExploitOlympusToken token_, uint256 amount_) external;
 }
 
-// forge test --match-contract Exploit_OlympusDao -vvv
-contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
+// forge test --match-contract Exploit_OlympusDAO -vvv
+contract Exploit_OlympusDAO is TestHarness, TokenBalanceTracker {
 
     address constant internal BOND_FIXED_EXPIRY_TELLER = 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156;
     // actual attacker address: 0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be;
