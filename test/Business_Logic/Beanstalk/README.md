@@ -17,13 +17,11 @@
 
 ## Description
 
-Beanstalk is described as a permissionless fiat stablecoin protocol. It attempts to provide a stablecoin using existing AMM (like 3Curve) as tools, and it attempts to be a Decentrilized Autonomous Organization (DAO). For this purpose there's a Governance contract implemented using the [EIP-2535, Diamonds, Multi-Facet Proxy<>](https://eips.ethereum.org/EIPS/eip-2535).
+Beanstalk is described as a permissionless fiat stablecoin protocol. It attempts to provide a stablecoin using existing AMM (like 3Curve) as tools, and it attempts to be a Decentralized Autonomous Organization (DAO). For this purpose there's a Governance contract implemented using the [EIP-2535, Diamonds, Multi-Facet Proxy<>](https://eips.ethereum.org/EIPS/eip-2535).
 
 In this contract, users submit Beanstalk Improvement Proposals (BIP), which are calls that when gathering enough votes, the governance will make using the delegate call instruction.
-
-The attack exploit an issue in the governance contract. The attacker will perform a delegate call into a malicious contract and steal funds from the governance.
-
-The governance has the ability to immediatelly execute an `emergencyProposal` if enough votes are gathered for it (2/3 of voting power, considered a supermajority). This characteristic combined with flash loans created the scenario for this exploit.
+The attack exploits an issue in the governance contract. The attacker will perform a delegate call into a malicious contract and steal funds from the governance.
+The governance contract can immediately execute an `emergencyProposal` if enough votes are gathered for it (2/3 of voting power, considered a supermajority). This characteristic combined with flash loans created the scenario for this exploit.
 
 Vulnerable code:
 ```solidity
@@ -57,20 +55,20 @@ Vulnerable code:
         emit Incentivization(account, amount);
     }
 ```
-The `emergencyCommit` function execute the proposal if `getGovernanceEmergencyThreshold` is reached, which is 2/3 of the votes, and only after 1 day has passed since the BIP was submitted.
+The `emergencyCommit` function executes the proposal if `getGovernanceEmergencyThreshold` is reached, which is 2/3 of the votes, and only after 1 day has passed since the BIP was submitted.
 
-The attackers first submit porpsals bip18 and bip19. The first one being the real exploit while the later a probable disguease, where it donates funds to the Ukraine foundation.
+The attackers first submit proposals bip18 and bip19. The first one is the real exploit while the latter is a probable disguise, where it donates funds to the Ukraine foundation.
 
-After 1 day, the exploit was produced using flashlons from aave, uniswap and sushi. The attackers flashloan funds in USDT, USDC, DAI, BEAN and LUSD. Using these funds the swap the values for BEAN tokens and call `emergencyCommit`. Once the delegateCall is produced from the beanstalk silo contract, they send funds in multiple tokens to the `0x79224bc0bf70ec34f0ef56ed8251619499a59def` address hold by the attacker. These funds are then used to pay the flashloans and are swapped into WETH which is later deposited in Tornado.
+After 1 day, the exploit was produced using flashlons from aave, uniswap and sushi. The attackers flashloan funds in USDT, USDC, DAI, BEAN and LUSD. Using these funds they swap the values for BEAN tokens and call `emergencyCommit`. Once the delegateCall is produced from the beanstalk silo contract, they send funds in multiple tokens to the `0x79224bc0bf70ec34f0ef56ed8251619499a59def` address held by the attacker. These funds are then used to pay the flashloans and are swapped into WETH which is later deposited in Tornado.
 
 The attacker was cautious.
-1. They disuised the attack by submitting an incomplete proposal and sending the relevant data during the exploit
+1. They disguised the attack by submitting an incomplete proposal and sending the relevant data during the exploit
 2. They added a simple proposal sending funds to a foundation to look well intended
-3. They called multiple flashloans so funds would be enough even when only one would've been enough
+3. They performed multiple flashloans so funds would be enough even when only one would've been enough
 
-Point 3. added some extra cost on the attack which could've been saved if checking for voting power before voting.
+Point 3. added some extra cost to the attack which could've been saved if checking for voting power before voting.
 
-This vulnerability is exploited here with a few difference from the original exploit: no disguise is performed, everything uses the same contract and funds are not exchanged for WETH.
+This vulnerability is exploited here with a few differences from the original exploit: no disguise is performed, everything uses the same contract and funds are not exchanged for WETH.
 
 ## Further readings
 https://rekt.news/beanstalk-rekt/
