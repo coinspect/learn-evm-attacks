@@ -15,7 +15,13 @@
 - **Date:** Apr 17, 2022
 - **Reproduce:** `forge test --match-contract Exploit_Beanstalk`
 
-The attack exploit an issue in the governance contract.
+## Description
+
+Beanstalk is described as a permissionless fiat stablecoin protocol. It attempts to provide a stablecoin using existing AMM (like 3Curve) as tools, and it attempts to be a Decentrilized Autonomous Organization (DAO). For this purpose there's a Governance contract implemented using the [EIP-2535, Diamonds, Multi-Facet Proxy<>](https://eips.ethereum.org/EIPS/eip-2535).
+
+In this contract, users submit Beanstalk Improvement Proposals (BIP), which are calls that when gathering enough votes, the governance will make using the delegate call instruction.
+
+The attack exploit an issue in the governance contract. The attacker will perform a delegate call into a malicious contract and steal funds from the governance.
 
 The governance has the ability to immediatelly execute an `emergencyProposal` if enough votes are gathered for it (2/3 of voting power, considered a supermajority). This characteristic combined with flash loans created the scenario for this exploit.
 
@@ -51,7 +57,7 @@ Vulnerable code:
         emit Incentivization(account, amount);
     }
 ```
-The `emergencyCommit` function execute the proposal if `getGovernanceEmergencyThreshold` is reached, which is 2/3 of the votes.
+The `emergencyCommit` function execute the proposal if `getGovernanceEmergencyThreshold` is reached, which is 2/3 of the votes, and only after 1 day has passed since the BIP was submitted.
 
 The attackers first submit porpsals bip18 and bip19. The first one being the real exploit while the later a probable disguease, where it donates funds to the Ukraine foundation.
 
@@ -66,7 +72,7 @@ Point 3. added some extra cost on the attack which could've been saved if checki
 
 This vulnerability is exploited here with a few difference from the original exploit: no disguise is performed, everything uses the same contract and funds are not exchanged for WETH.
 
-Further readings
+## Further readings
 https://rekt.news/beanstalk-rekt/
 https://medium.com/coinmonks/beanstalkfarms-attack-event-analysis-6980482a9b00
 
