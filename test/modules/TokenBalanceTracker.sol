@@ -101,11 +101,6 @@ contract TokenBalanceTracker {
 
     function addTokenToTracker(address _token) public {
         uint256 lenTrackedTokens = trackedTokens.length;
-        if(lenTrackedTokens == 0){
-            trackedTokens.push(_token);
-            return;
-        }
-
         bool alreadyTracked;
         for(uint256 i = 0; i < lenTrackedTokens; i++ ){ 
             if(_token == trackedTokens[i]){
@@ -151,10 +146,45 @@ contract TokenBalanceTracker {
         console.log('\n');
     }
 
+    function createPaddingOfLength(uint256 length) pure internal returns(string memory) {
+      string memory result;
+      for (uint8 i = 0; i < length; i++) {
+         result = string.concat(result,'0');
+      }
+      return result;
+    }
+
+    function StringLength(string memory s) internal pure returns (uint256) {
+        uint256 len;
+        uint256 i = 0;
+        uint256 bytelength = bytes(s).length;
+        for (len = 0; i < bytelength; len++) {
+            bytes1 b = bytes(s)[i];
+            if (b < 0x80) {
+                i += 1;
+            } else if (b < 0xE0) {
+                i += 2;
+            } else if (b < 0xF0) {
+                i += 3;
+            } else if (b < 0xF8) {
+                i += 4;
+            } else if (b < 0xFC) {
+                i += 5;
+            } else {
+                i += 6;
+            }
+        }
+        return len;
+    }
+
     function toStringWithDecimals(uint256 _number, uint8 decimals) internal pure returns(string memory){
         uint256 integerToPrint = _number / (10**decimals);
-        uint256 decimalsToPrint = _number - (_number / (10**decimals)) * (10**decimals);
-        return string.concat(integerToPrint.toString(), '.', decimalsToPrint.toString());
+        uint256 decimalsToPrint = (_number % (10**decimals));
+        string memory decimalsString = decimalsToPrint.toString();
+        if (keccak256(abi.encodePacked(decimalsString)) == keccak256(abi.encodePacked('0'))) {
+          return integerToPrint.toString();
+        }
+        return string.concat(integerToPrint.toString(), '.', createPaddingOfLength(decimals - StringLength(decimalsString)), decimalsString);
     }
 
     function updateBalanceTracker(address _user) internal {
