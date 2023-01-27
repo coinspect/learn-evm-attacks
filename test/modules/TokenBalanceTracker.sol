@@ -84,7 +84,7 @@ contract TokenBalanceTracker {
     //     0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599, // WBTC
     //     0x86ed939B500E121C0C5f493F399084Db596dAd20, // SPC
     //     0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421, // VSP
-    //     0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2  // WETH 
+    //     0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2  // WETH
     // ];
 
     struct BalanceDeltaReturn {
@@ -102,12 +102,12 @@ contract TokenBalanceTracker {
     function addTokenToTracker(address _token) public {
         uint256 lenTrackedTokens = trackedTokens.length;
         bool alreadyTracked;
-        for(uint256 i = 0; i < lenTrackedTokens; i++ ){ 
+        for(uint256 i = 0; i < lenTrackedTokens; i++ ){
             if(_token == trackedTokens[i]){
                 alreadyTracked = true;
             }
         }
-        
+
         if(!alreadyTracked){
             trackedTokens.push(_token);
         }
@@ -181,7 +181,7 @@ contract TokenBalanceTracker {
         uint256 integerToPrint = _number / (10**decimals);
         uint256 decimalsToPrint = (_number % (10**decimals));
         string memory decimalsString = decimalsToPrint.toString();
-        if (keccak256(abi.encodePacked(decimalsString)) == keccak256(abi.encodePacked('0'))) {
+        if (decimalsString == 0) {
           return integerToPrint.toString();
         }
         return string.concat(integerToPrint.toString(), '.', createPaddingOfLength(decimals - StringLength(decimalsString)), decimalsString);
@@ -196,19 +196,19 @@ contract TokenBalanceTracker {
         for(uint i = 0; i < tokensLength; i++){
             IERC20Local curToken = IERC20Local(trackedTokens[i]);
             balanceTracker[_user][trackedTokens[i]] = curToken.balanceOf(_user);
-        }        
+        }
     }
 
     function getBalanceTrackers(address _user) public view returns(uint256 nativeBalance, uint256[] memory tokenBalances){
         nativeBalance = balanceTracker[_user][address(0)];
-        
+
         uint256 tokensLength = trackedTokens.length;
         if(tokensLength > 0) {
             uint256[] memory memBalances = new uint256[](tokensLength);
             for(uint i = 0; i < tokensLength; i++){
                 memBalances[i] = balanceTracker[_user][trackedTokens[i]];
-            } 
-            tokenBalances = memBalances;    
+            }
+            tokenBalances = memBalances;
         }
     }
 
@@ -226,7 +226,7 @@ contract TokenBalanceTracker {
 
                 memDeltas[i].value = currentTokenBalance  > prevTokenBalance[i] ? (currentTokenBalance - prevTokenBalance[i]) : (prevTokenBalance[i] - currentTokenBalance);
                 memDeltas[i].sign = currentTokenBalance  > prevTokenBalance[i] ? ('+') : ('-');
-            }    
+            }
             tokenDeltas = memDeltas;
         }
     }
