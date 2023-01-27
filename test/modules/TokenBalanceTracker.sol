@@ -1,78 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
+import {UintToString} from "../utils/Strings/StringsLib.sol";
 interface IERC20Local {
     function name() external view returns(string memory);
     function decimals() external view returns(uint8);
     function balanceOf(address account) external view returns (uint256);
 }
-
-library Strings {
-    bytes16 private constant _SYMBOLS = "0123456789abcdef";
-    uint8 private constant _ADDRESS_LENGTH = 20;
-
-        function log10(uint256 value) internal pure returns (uint256) {
-        uint256 result = 0;
-        unchecked {
-            if (value >= 10**64) {
-                value /= 10**64;
-                result += 64;
-            }
-            if (value >= 10**32) {
-                value /= 10**32;
-                result += 32;
-            }
-            if (value >= 10**16) {
-                value /= 10**16;
-                result += 16;
-            }
-            if (value >= 10**8) {
-                value /= 10**8;
-                result += 8;
-            }
-            if (value >= 10**4) {
-                value /= 10**4;
-                result += 4;
-            }
-            if (value >= 10**2) {
-                value /= 10**2;
-                result += 2;
-            }
-            if (value >= 10**1) {
-                result += 1;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
-     */
-    function toString(uint256 value) internal pure returns (string memory) {
-        unchecked {
-            uint256 length = log10(value) + 1;
-            string memory buffer = new string(length);
-            uint256 ptr;
-            /// @solidity memory-safe-assembly
-            assembly {
-                ptr := add(buffer, add(32, length))
-            }
-            while (true) {
-                ptr--;
-                /// @solidity memory-safe-assembly
-                assembly {
-                    mstore8(ptr, byte(mod(value, 10), _SYMBOLS))
-                }
-                value /= 10;
-                if (value == 0) break;
-            }
-            return buffer;
-        }
-    }
-}
-
 contract TokenBalanceTracker {
-    using Strings for uint256;
+    using UintToString for uint256;
 
     mapping(address => mapping (address => uint256)) public balanceTracker; // tracks: user => (token => amount).
     address[] public trackedTokens;
@@ -123,9 +59,9 @@ contract TokenBalanceTracker {
 
         // NATIVE TOKENS HANDLING (12-9)
         if(nativeTokenDelta.value == 0) {
-            console.log('Native Tokens: %s', toStringWithDecimals(_from.balance, 18));
+            console.log('Native Tokens: %s', _from.balance.toStringWithDecimals(18));
         } else {
-            console.log('Native Tokens: %s (%s%s)', toStringWithDecimals(_from.balance, 18), nativeTokenDelta.sign, toStringWithDecimals(nativeTokenDelta.value, 18));
+            console.log('Native Tokens: %s (%s%s)', _from.balance.toStringWithDecimals(18), nativeTokenDelta.sign, nativeTokenDelta.value.toStringWithDecimals(18));
         }
 
         // Other tokens
@@ -134,57 +70,16 @@ contract TokenBalanceTracker {
             for(uint i = 0; i < tokensLength; i++){
                 IERC20Local curToken = IERC20Local(trackedTokens[i]);
                 if(tokensDelta[i].value == 0) {
-                    console.log('%s: %s', curToken.name(), toStringWithDecimals(curToken.balanceOf(_from), curToken.decimals()));
+                    console.log('%s: %s', curToken.name(), curToken.balanceOf(_from).toStringWithDecimals(curToken.decimals()));
                 } else {
-                    string memory deltaAndSign = string.concat(tokensDelta[i].sign, toStringWithDecimals(tokensDelta[i].value, curToken.decimals()));
-                    console.log('%s: %s (%s)',  curToken.name(), toStringWithDecimals(curToken.balanceOf(_from), curToken.decimals()), deltaAndSign);
+                    string memory deltaAndSign = string.concat(tokensDelta[i].sign, tokensDelta[i].value.toStringWithDecimals(curToken.decimals()));
+                    console.log('%s: %s (%s)',  curToken.name(), curToken.balanceOf(_from).toStringWithDecimals(curToken.decimals()), deltaAndSign);
                 }
             }
         }
 
         updateBalanceTracker(_from);
         console.log('\n');
-    }
-
-    function createPaddingOfLength(uint256 length) pure internal returns(string memory) {
-      string memory result;
-      for (uint8 i = 0; i < length; i++) {
-         result = string.concat(result,'0');
-      }
-      return result;
-    }
-
-    function StringLength(string memory s) internal pure returns (uint256) {
-        uint256 len;
-        uint256 i = 0;
-        uint256 bytelength = bytes(s).length;
-        for (len = 0; i < bytelength; len++) {
-            bytes1 b = bytes(s)[i];
-            if (b < 0x80) {
-                i += 1;
-            } else if (b < 0xE0) {
-                i += 2;
-            } else if (b < 0xF0) {
-                i += 3;
-            } else if (b < 0xF8) {
-                i += 4;
-            } else if (b < 0xFC) {
-                i += 5;
-            } else {
-                i += 6;
-            }
-        }
-        return len;
-    }
-
-    function toStringWithDecimals(uint256 _number, uint8 decimals) internal pure returns(string memory){
-        uint256 integerToPrint = _number / (10**decimals);
-        uint256 decimalsToPrint = (_number % (10**decimals));
-        string memory decimalsString = decimalsToPrint.toString();
-        if (decimalsString == 0) {
-          return integerToPrint.toString();
-        }
-        return string.concat(integerToPrint.toString(), '.', createPaddingOfLength(decimals - StringLength(decimalsString)), decimalsString);
     }
 
     function updateBalanceTracker(address _user) internal {
