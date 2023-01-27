@@ -11,7 +11,9 @@ library Strings {
       return result;
     }
 
-
+    /**
+     * @dev Returns the length of the string assuming UTF-8 encoding
+     */
     function length(string memory s) internal pure returns (uint256) {
         uint256 len;
         uint256 i = 0;
