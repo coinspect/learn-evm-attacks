@@ -21,7 +21,7 @@
 The Punk protocol pools did not prevent someone from calling `initialize` after
 the contracts were already initialized.
 
-The attacker called `initialize` throught the proxy and set their own `forge_` address, which allowed them to later call `withdrawToForge`, which, as the name implies, withdraws all the funds to the forge address.
+The attacker called `initialize` through the proxy and set their own `forge_` address, which allowed them to later call `withdrawToForge`, which, as the name implies, withdraws all the funds to the forge address.
 
 ``` solidity
     function initialize( 
