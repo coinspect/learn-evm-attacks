@@ -9,7 +9,7 @@
 - - https://etherscan.io/tx/0x34516ee081c221d8576939f68aee71e002dd5557180d45194209d6692241f7b1
 - **Attack Block:** 14163042
 - **Date:** Feb 08, 2022
-- **Reproduce:** `forge test --match-contract Exploit_Sandbox -vvv`
+- **Reproduce:** `forge test --match-contract Exploit_SandBox -vvv`
 
 ## Step-by-step 
 1. Find a player you don't like
