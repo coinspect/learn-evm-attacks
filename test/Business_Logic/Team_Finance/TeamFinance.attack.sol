@@ -6,6 +6,7 @@ import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from '../../interfaces/IWETH9.sol';
+import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
 
 // forge test --match-contract Exploit_PROTOCOL_NAME -vvv
 /*
@@ -91,7 +92,7 @@ interface ITeamFinanceLock {
 
 contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     ITeamFinanceLock internal teamFinanceLock = ITeamFinanceLock(0xE2fE530C047f2d85298b07D9333C05737f1435fB);
-    address internal lockTokenImplementation = 0x48D118C9185e4dBAFE7f3813F8F29EC8a9745-F4556248359;
+    address internal lockTokenImplementation = 0x48D118C9185e4dBAFE7f3813F8F29EC8a6248359;
 
     SpoofERC20 internal maliciousToken;
     address internal attackerAddress_Two = address(0x912);
