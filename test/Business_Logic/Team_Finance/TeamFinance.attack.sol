@@ -9,34 +9,51 @@ import {IWETH9} from '../../interfaces/IWETH9.sol';
 import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
 import {ICurve} from "../../utils/ICurve.sol";
 
-// forge test --match-contract Exploit_PROTOCOL_NAME -vvv
+// forge test --match-contract Exploit_TeamFinance -vvv
 /*
-On DATE an attacker stole AMOUNT in TYPE tokens from an PROTOCOL.
 
+On Oct 27, 2022 an attacker stole ~$15MM in various tokens from Team Finance. 
+Approximately a $7MM worth were returned later by the attacker.
 
 // Attack Overview
 Total Lost: 
-Locking Tokens Tx: 0xe8f17ee00906cd0cfb61671937f11bd3d26cdc47c1534fedc43163a7e89edc6f
-Attack Tx
+- 880 ETH
+- 642,932 DAI
+- 74,613,6575 CAW
+- 11,837,577 TSUKA
 
-Ethereum Transaction Viewer:
-- Lock: https://openchain.xyz/trace/ethereum/0xe8f17ee00906cd0cfb61671937f11bd3d26cdc47c1534fedc43163a7e89edc6f
-- Attack: 
+Attack Tx : https://etherscan.io/tx/0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e563b9b5b26119b2601277ce
+    Setup 1: lockToken()
+       tx: https://etherscan.io/tx/0xe8f17ee00906cd0cfb61671937f11bd3d26cdc47c1534fedc43163a7e89edc6f
+    Setup 2: extendLockDuration()
+         id 15324: https://etherscan.io/tx/0x2972f75d5926f8f948ab6a0cabc517a05f0da5b53e20f670591afbaa501aa436
+         id 15325: https://etherscan.io/tx/0xec75bb553f50af37f8dd8f4b1e2bfe4703b27f586187741b91db770ad9b230cb
+         id 15326: https://etherscan.io/tx/0x79ec728612867b3d82c0e7401e6ee1c533b240720c749b3968dea1464e59b2c4
+         id 15327: https://etherscan.io/tx/0x51185fb580892706500d3b6eebb8698c27d900618021fb9b1797f4a774fffb04
 
-Exploited Contract: 
-Attacker Address: 
-Attacker Contract: 
-Malicious Token: 0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF
-Attack Block:  
+Ethereum Transaction Viewer: https://openchain.xyz/trace/ethereum/[INSERT TX HASH]
+
+
+Exploited Contract Implementation: https://etherscan.io/address/0x48d118c9185e4dbafe7f3813f8f29ec8a6248359#code
+Exploited Contract Proxy: https://etherscan.io/address/0xE2fE530C047f2d85298b07D9333C05737f1435fB#code
+
+Attacker Deployer: https://etherscan.io/address/0x161cebB807Ac181d5303A4cCec2FC580CC5899Fd
+Attacker Recipient: https://etherscan.io/address/0xBa399a2580785A2dEd740F5e30EC89Fb3E617e6E
+
+Attacker Contract: https://etherscan.io/address/0xCFF07C4e6aa9E2fEc04DAaF5f41d1b10f3adAdF4
+Malicious Token: https://etherscan.io/address/0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF
+Attack Block: 15837165
 
 // Key Info Sources
-Twitter: 
-Writeup: 
-Article: 
-Code: 
+Beiosin Analysis: https://medium.com/@Beosin_com/beosins-analysis-of-team-finance-s-13m-exploit-f0be090cce16
+
+Team Finance Official : https://twitter.com/TeamFinance_/status/1585770918873542656
+PeckShield : https://twitter.com/peckshield/status/1585587858978623491
+Solid Group : https://twitter.com/solid_group_1/status/1585643249305518083
+Beiosin Alert : https://twitter.com/BeosinAlert/status/1585578499125178369
 
 
-Principle: VULN PRINCIPLE
+Principle:  Business Logic - Arbitrary Token Attack
 
 
 ATTACK:
