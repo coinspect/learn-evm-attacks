@@ -42,6 +42,7 @@ The full list is below:
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
 
 ### Business Logic
+- [TeamFinance - Oct 2022 - (~$15MM / $7MM returned) - Arbitrary Input Parameters / Migrate Authentication Bypass](/test/Business_Logic/Team_Finance)
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults)
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance/)
