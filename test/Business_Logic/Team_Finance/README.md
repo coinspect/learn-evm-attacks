@@ -7,13 +7,11 @@
 - - [Exploited Contract Implementation](https://etherscan.io/address/0x48d118c9185e4dbafe7f3813f8f29ec8a6248359#code)
 - - [Exploited Contract Proxy](https://etherscan.io/address/0xE2fE530C047f2d85298b07D9333C05737f1435fB#code)
 - - [V3 Migrator Proxy Deployment](https://etherscan.io/tx/0x350dd9d6cdaba277af927345b7f1421d60b84601f7271799157204f3993766d2#eventlog)
-
 - **Tokens Lost**
 - - 880 ETH
 - - 642,932 DAI
 - - 74,613,6575 CAW
 - - 11,837,577 TSUKA
-
 - **Attack transactions:**
 - - [Attack Tx](https://etherscan.io/tx/0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e563b9b5b26119b2601277ce)
 
@@ -23,12 +21,10 @@
         [Id 15325](https://etherscan.io/tx/0xec75bb553f50af37f8dd8f4b1e2bfe4703b27f586187741b91db770ad9b230cb),
         [Id 15326](https://etherscan.io/tx/0x79ec728612867b3d82c0e7401e6ee1c533b240720c749b3968dea1464e59b2c4),
         [Id 15327](https://etherscan.io/tx/0x51185fb580892706500d3b6eebb8698c27d900618021fb9b1797f4a774fffb04)
-
 - **Attacker Addresses**: 
 - - Deployer EOA: [0x161cebB807Ac181d5303A4cCec2FC580CC5899Fd](https://etherscan.io/address/0x161cebB807Ac181d5303A4cCec2FC580CC5899Fd)
 - - Contract: [0xCFF07C4e6aa9E2fEc04DAaF5f41d1b10f3adAdF4](https://etherscan.io/address/0xCFF07C4e6aa9E2fEc04DAaF5f41d1b10f3adAdF4)
 - - Malicious Token: [0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF](https://etherscan.io/address/0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF)
-
 - **Attack Block:**: 15837165 
 - **Date:** Oct 27, 2022
 - **Reproduce:** `forge test --match-contract Exploit_TeamFinance -vvv`
