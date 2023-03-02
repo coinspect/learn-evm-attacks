@@ -14,7 +14,6 @@
 - - 11,837,577 TSUKA
 - **Attack transactions:**
 - - [Attack Tx](https://etherscan.io/tx/0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e563b9b5b26119b2601277ce)
-
 - - [Setup 1: lockToken()](https://etherscan.io/tx/0xe8f17ee00906cd0cfb61671937f11bd3d26cdc47c1534fedc43163a7e89edc6f)
 - - Setup 2: extendLockDuration():
         [Id 15324](https://etherscan.io/tx/0x2972f75d5926f8f948ab6a0cabc517a05f0da5b53e20f670591afbaa501aa436),
