@@ -42,6 +42,7 @@ The full list is below:
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
 
 ### Business Logic
+- [TeamFinance - Oct 2022 - (~$15MM / $7MM returned) - Arbitrary Input Parameters / Migrate Authentication Bypass](/test/Business_Logic/Team_Finance)
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults)
 - [Fantasm Finance, Mar 2022 - ($2.4MM) - Unchecked Payments While Minting](/test/Business_Logic/Fantasm_Finance/)
@@ -80,3 +81,10 @@ The tests should `pass` if the attacker succeeded, for examples: your requires s
 # <h2 align="center"> Past work and further study </h2>
 
 - [DefiHackLabs](https://github.com/SunWeb3Sec/DeFiHackLabs) has a similar repository with more exploits and more focus on the test reproductions alone, with no context or further explanations. It is nevertheless great if you only care about the attack reproductions! Go check it out.
+
+## Troubleshooting
+
+If a reproduction is failing (ie: it reverts), try to:
+
+- Clean Forge's cache: `forge cache clean`
+- Update Foundry: `foundryup`
