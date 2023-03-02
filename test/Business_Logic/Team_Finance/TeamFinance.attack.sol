@@ -196,7 +196,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     }
 
     // ====================================== END OF FIRST TRANSACTION LOGIC ========================================
-    fallback() external payable {
+    receive() external payable {
         if(afterCallingLockToken){
             console.log('Received %s ETH refund after locking token', address(this).balance);
         }
@@ -248,7 +248,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     }
 
     // This function appears as guessed_f9b65204 in the traces.
-    function _exchangeAndTransfer(uint256 _tokenId, IERC20 _from, IERC20 _to, IUniswapV2Pair _pair) internal {
+    function _exchangeAndTransfer(uint256 /*_tokenId*/, IERC20 _from, IERC20 /*_to*/, IUniswapV2Pair /*_pair*/) internal {
         if(address(_from) == address(maliciousToken)) return; // There's no logic executed when the origin is the malicious token
         if(_from.balanceOf(address(this)) == 0) return; // Do nothing if there's no USDC
 

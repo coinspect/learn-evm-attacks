@@ -33,8 +33,15 @@
 - **Date:** Oct 27, 2022
 - **Reproduce:** `forge test --match-contract Exploit_TeamFinance -vvv`
 
+## Step-by-step Overview
 
-## Step-by-step 
+1. Get a Team Finance Lock NFT by providing malicious tokens
+2. Extend the lock duration period of each NFT
+3. Call `migrate()` using the Lock NFTs providing a migration target (V2 pair)
+4. Swap and Transfer the loot to an external account
+
+
+## Detailed Step-by-step 
 
 The process has two main parts: The Setup and The Attack. 
 
@@ -66,7 +73,7 @@ the malicious tokens as additional liquidity provided.
 
 ## Detailed Description
 
-The main vulnerability being exploited is locking a custom token using the setup of the locking position to perform a the migration
+The main vulnerability being exploited is locking a custom token using the setup of the locking position to perform the migration
 from a Uniswap V2 pool to a V3. The attacker bypassed the migration controls by using protocol's NFT lock positions backed by thes malicious token. 
 
 ```solidity
