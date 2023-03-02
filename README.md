@@ -81,3 +81,10 @@ The tests should `pass` if the attacker succeeded, for examples: your requires s
 # <h2 align="center"> Past work and further study </h2>
 
 - [DefiHackLabs](https://github.com/SunWeb3Sec/DeFiHackLabs) has a similar repository with more exploits and more focus on the test reproductions alone, with no context or further explanations. It is nevertheless great if you only care about the attack reproductions! Go check it out.
+
+## Troubleshooting
+
+If a reproduction is failing (ie: it reverts), try to:
+
+- Clean Forge's cache: `forge cache clean`
+- Update Foundry: `foundryup`
