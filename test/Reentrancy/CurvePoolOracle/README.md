@@ -70,10 +70,6 @@ At this point, you only need to know that QiDAO is a lending platform which used
 
 ## Diagrams and graphs
 
-### Class
-
-![class](paraluni.png)
-
 ## Sources and references
 - [Curve LP Manipulation Post Mortem](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/)
 - [Beosin Tweet](https://twitter.com/BeosinAlert/status/1584551399941365763)
