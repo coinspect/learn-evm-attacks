@@ -53,6 +53,7 @@ The full list is below:
 - [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
 
 ### Reentrancy
+- [Qi Dao / Curve Pool - Nov 2022 - (~$156K) - Read Only Reentrancy](/test/Reentrancy/CurvePoolOracle)
 - [DFX Finance - Nov 2022 - (~$6MM) - Reentrancy / Side Entrance](/test/Reentrancy/DFXFinance)
 - [Fei Protocol, Apr 2022 - (~$80MM) - Cross Function Reentrancy / FlashLoan Attack](/test/Reentrancy/FeiProtocol)
 - [Revest Protocol, Mar 2022 - (~$2MM) - ERC1155 Reentrancy / Flashswap Attack](/test/Reentrancy/RevestFinance)
