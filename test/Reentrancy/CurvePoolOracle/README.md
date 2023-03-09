@@ -55,6 +55,22 @@ for i in range(N_COINS):
 
 Note that if `i == 0` the `value` is sent natively. This means `msg.sender` is suddenly executed. At this point, the contract has burned the LP tokens but has only sent part of the underlyings. If you remember, `get_virtual_price` was `total_underlying_supply / total_lp_token_supply`: this number is now off, as only a part of the `total_underlying_supply` has been sent while all of the corresponding `total_lp_token_supply` has been burned.
 
+Here is a the implementation of `get_virtual_price`:
+``` vyper
+@view
+@external
+def get_virtual_price() -> uint256:
+    """
+    @notice The current virtual price of the pool LP token
+    @dev Useful for calculating profits
+    @return LP token virtual price normalized to 1e18
+    """
+    D: uint256 = self.get_D(self._balances(), self._A())
+    # D is in the units similar to DAI (e.g. converted to precision 1e18)
+    # When balanced, D = n * x_u - total virtual value of the portfolio
+    token_supply: uint256 = ERC20(self.lp_token).totalSupply()
+    return D * PRECISION / token_supply
+```
 If an attacker finds a protocol that uses `get_virtual_price` as a price oracle for LP tokens, they could be exploited.
 
 Unfortunately, this is exactly what QiDao and Market XYZ did. For the purposes of this reproduction, we are gonna concentrate on QiDAO but the concept for Market XYZ is the same.
