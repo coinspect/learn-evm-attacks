@@ -55,6 +55,8 @@ interface ICERC20Delegator {
 
     function redeemUnderlying(uint256 redeemAmount) external payable returns (uint256);
 
+    function underlying() external returns (address);
+
     function liquidateBorrow(address borrower, uint256 repayAmount, address cTokenCollateral)
         external
         returns (uint256);
