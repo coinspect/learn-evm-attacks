@@ -42,7 +42,7 @@ The full list is below:
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
 
 ### Business Logic
-- [Sperax USDS, Feb 2023 - (9.7B tokens / ~309K) - Faulty Migration Process & Balance Accounting](/test/Business_Logic/Usds)
+- [Sperax USDS, Feb 2023 - (9.7B tokens / ~$309K) - Faulty Migration Process & Balance Accounting](/test/Business_Logic/Usds)
 - [TeamFinance - Oct 2022 - (~$15MM / $7MM returned) - Arbitrary Input Parameters / Migrate Authentication Bypass](/test/Business_Logic/Team_Finance)
 - [EarningFarm, Oct 2022 - (200 ETH) - Unchecked Flashloan reception](/test/Business_Logic/EarningFarm)
 - [BVaults, Oct 2022 - ($35,000) - DEX Pair Manipulation](/test/Business_Logic/Bvaults)
