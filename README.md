@@ -85,7 +85,13 @@ The tests should `pass` if the attacker succeeded, for examples: your requires s
 
 ## Troubleshooting
 
-If a reproduction is failing (ie: it reverts), try to:
+The main reason why tests fail is due to failures on the RPC providers we have set up as defaults. Please either:
+
+- Try again
+- Change the corresponding provider in the `foundry.toml`
+
+If a reproduction is _still_ failing (ie: it reverts), try to:
 
 - Clean Forge's cache: `forge cache clean`
 - Update Foundry: `foundryup`
+
