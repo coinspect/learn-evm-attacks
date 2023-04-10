@@ -45,7 +45,7 @@ The implementation of `isContract()` is the following:
     }
 ```
 
-This implementation was before performed by using the low level `extcodesize` call, now checking directly the `account.code.length` property. If `isContract` returns false, it does not assures that the address checked won't have deployed code across its lifecycle. Some examples that return false when calling `isContract`:
+If `isContract` returns false, it does not assures that the address checked won't have deployed code across its lifecycle. Some examples that return false when calling `isContract`:
 
 - an externally-owned account
 - a contract in construction
