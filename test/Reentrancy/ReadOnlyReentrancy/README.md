@@ -1,5 +1,5 @@
-# Paraluni
-- **Type:** Theory
+# Read Only Reentrancy
+- **Type:** Education
 - **Category:** Reentrancy
 - **Reproduce:** `forge test --match-contract Exploit_ReadOnly -vvv`
 
@@ -11,7 +11,7 @@
 
 
 ## Detailed Description
-So far, no attacks that follow this path were identified. However, it is worth exploring this example for educational purposes.
+Several recent attacks followed this novel pattern. In here, a theoretical example is provided to for educational purposes.
 
 ```solidity
     mapping(address => uint256) public userLocked;
@@ -40,5 +40,6 @@ So far, no attacks that follow this path were identified. However, it is worth e
 ![class](readonly.png)
 
 ## Sources and references
+- [ChainSecurity Blog: Initial report of read-only reentrancy on Curve](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/)
 - [SmartContractProgrammer Repo](https://github.com/stakewithus/defi-by-example/blob/main/read-only-reentrancy/src/Hack.sol)
 
