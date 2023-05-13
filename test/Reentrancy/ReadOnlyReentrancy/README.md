@@ -42,4 +42,4 @@ Several recent attacks followed this novel pattern. In here, a theoretical examp
 ## Sources and references
 - [ChainSecurity Blog: Initial report of read-only reentrancy on Curve](https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/)
 - [SmartContractProgrammer Repo](https://github.com/stakewithus/defi-by-example/blob/main/read-only-reentrancy/src/Hack.sol)
-
+- [Github Issue tracking read-only reentrancy hacks](https://github.com/coinspect/learn-evm-attacks/issues/43)
