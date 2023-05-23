@@ -5,6 +5,11 @@ libs = ['lib']
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
 
+[fmt]
+line_length = 110
+number_underscore = "thousands"
+wrap_comments = true
+
 [rpc_endpoints]
 mainnet = "https://rpc.ankr.com/eth"
 optimism = "https://rpc.ankr.com/optimism"
