@@ -217,7 +217,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
     function _labelAccounts() internal {
         cheat.label(address(tornToken), "TORN");
 
-        cheat.label(address(this), "ATTACKER CONTRACT");
+        cheat.label(address(this), "TEST CONTRACT");
     }
 
     function _tokenTrackerSetup() internal {
