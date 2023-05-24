@@ -243,6 +243,9 @@ contract Malicious_Proposal_20 is Ownable {
 
         // Added code to sstore over the lockedBalance mapping the new value for the minions
         address[] memory minions = Attacker1Contract(minionFactory).getMinions();
+        // The previous external call was not made.
+        // Meaning that the addresses were somehow added as immutables or hardcoded
+
         // =============== WIP ===============
         // We need to calculate the lockedBalanceSlot so we can then calculate the offset for each minion
 
