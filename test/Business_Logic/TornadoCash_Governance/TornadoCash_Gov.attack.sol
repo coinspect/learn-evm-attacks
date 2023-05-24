@@ -173,7 +173,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 
         // Deploy the proposal through a transient deploying the benign proposal
         (address proposal, address transient) =
-            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), false);
+            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), false, address(0));
 
         proposal_20 = Proposal_20(proposal);
         transientContract = TransientContract(transient);
