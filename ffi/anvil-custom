@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail 
+
+if [[ "$1" == "mine" ]]; then
+    PAYLOAD='{"jsonrpc": "2.0", "method": "anvil_mine", "params":[], "id":67 }'
+elif [[ "$1" == "impersonate-whale" ]]; then
+    PAYLOAD='{"jsonrpc": "2.0", "method": "anvil_impersonateAccount", "params":["0xF977814e90dA44bFA03b6295A0616a897441aceC"], 
+    "id":67 }'
+elif [[ "$1" == "auto-impersonation" ]]; then
+    PAYLOAD='{"jsonrpc": "2.0", "method": "anvil_autoImpersonateAccount", "params":[], "id":67 }'
+elif [[ "$1" == "stop-impersonation" ]]; then
+    PAYLOAD='{"jsonrpc": "2.0", "method": "anvil_stopImpersonatingAccount", "params":[], "id":67 }'    
+else
+    echo "[E] Argument $1 not recognized"
+    exit 1
+fi
+
+curl -s -X POST http://localhost:8545 --data "$PAYLOAD" -H "Content-Type: application/json"
