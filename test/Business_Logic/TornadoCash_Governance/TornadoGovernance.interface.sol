@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 interface IReinitializableContractFactory {
-    function getInitializationCode() external returns (bytes memory);
+    function deployMaliciousProposal() external returns (bool);
 }
 
 interface IMaliciousSelfDestruct {
