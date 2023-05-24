@@ -28,4 +28,6 @@ interface ITornadoGovernance {
     function lockWithApproval(uint256 amount) external;
     function unlock(uint256 amount) external;
     function propose(address target, string memory description) external returns (uint256);
+    function execute(uint256 proposalId) external payable;
+    function lockedBalance(address from) external returns (uint256);
 }

