@@ -100,5 +100,5 @@ If a reproduction is _still_ failing (ie: it reverts), try to:
 
 For the **Tornado Cash Governance** attack in particular, `foundryup` 
 will not be enough and you will need to build Foundry from source 
-to reproduce it. See its [README]((/test/Business_Logic/TornadoCash_Governance/README.md).
+to reproduce it. See its [README](/test/Business_Logic/TornadoCash_Governance/README.md).
 
