@@ -1,7 +1,7 @@
 # TornadoCash Governance Takeover
 - **Type:** Exploit
 - **Network:** Ethereum 
-- **Total lost**: ~2.7MM USD (1M TORN)
+- **Total lost**: ~2.7MM USD (1M `TORN`)
 - **Category:** Business Logic
 - **Vulnerable contracts:**
 - - [Tornado Cash Governance](https://etherscan.io/address/0x5efda50f22d34f262c29268506c5fa42cb56a1ce#code)
@@ -38,7 +38,7 @@
 ## Step-by-step Overview
 The Tornado Cash Governance system faced an attack that was initiated with what seemed to be a benign proposal. Yet, it contained a concealed instruction that allowed for its replacement. Once governance participants unknowingly approved this seemingly harmless proposal, the attacker overwrote the code at the same address with a new proposal implementation. This sequence of events resulted in the alteration of the Governance storage, followed by the unauthorized removal of `TORN` tokens.
 
-Two accounts played pivotal roles in the incident: Attacker 2 (Proposal Handler) and Attacker 1 (Drainer Controller). Attacker 2 was responsible for managing the proposal's life cycle including its deployment, submission, destruction, re-deployment, and execution. Attacker 1, on the other hand, controlled the drainer contracts which facilitated the unlocking of TORN from Tornado Cash.
+Two accounts played pivotal roles in the incident: Attacker 2 (Proposal Handler) and Attacker 1 (Drainer Controller). Attacker 2 was responsible for managing the proposal's life cycle including its deployment, submission, destruction, re-deployment, and execution. Attacker 1, on the other hand, controlled the drainer contracts which facilitated the unlocking of `TORN` from Tornado Cash.
 
 ### **Stage 0: Initial Transactions [Proposal Handler]**
 Attacker 2 [withdrawn 10 ETH](https://etherscan.io/tx/0xf1f298d6168cac774cfe356a73380d29aed5429abc1ba785f162a59c85de7867) from Tornado Cash and then [swapped](https://etherscan.io/tx/0x82dca5a88a43377cab4748073a3a46c8aa120d42c5c5d802789cf17df22f0acd) these into 1017 TORN through `1inch`. Concurrently, a `proposal factory`, a `middle` or `transient` and a `proposal` contracts were deployed. Attacker 2 then locked the `1017 TORN` into the Tornado Cash Governance, enabling proposal submission.
@@ -101,7 +101,7 @@ The legacy `create` [opcode](https://www.evm.codes/#f0?fork=shanghai) deploys co
 address = keccak256(rlp([sender_address,sender_nonce]))[12:]
 ```
 
-**How all comes together after selfdestruct?**
+**How all comes together after `selfdestruct`?**
 
 The `selfdestruct` [opcode](https://www.evm.codes/#ff?fork=shanghai) empties a contract account setting its `balance` and `nonce` to 0 as well as deleting its code (code size is also set to 0). 
 
