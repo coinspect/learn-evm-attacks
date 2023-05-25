@@ -81,7 +81,7 @@ contract Exploit_TornadoCashForkFoundry is TestHarness, TokenBalanceTracker {
         console2.log("Funds successfully locked \n");
 
         cheat.rollFork(17_275_000);
-        console2.log("Cating vote...");
+        console2.log("Casting vote...");
         TORNADO_GOVERNANCE.castVote(proposalId, true);
         console2.log("Vote successfully casted");
         vm.stopPrank();
