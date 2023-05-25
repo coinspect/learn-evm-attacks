@@ -9,6 +9,11 @@ import "forge-std/Test.sol";
 // Contracts deployed and operated by the attacker 1
 // The attacker 2 wrote the lockedBalances for each minion deployed by the attacker 1 through this factory
 
+/*
+* This is our interpretation of the funcionality the attacker contracts' had, as we don't have the source
+* code deployed by the attacker.
+*/
+
 // No cheatcodes are used for best representation of reality. Only logs.
 contract Attacker1Contract {
     IERC20 tornToken = IERC20(0x77777FeDdddFfC19Ff86DB637967013e6C6A116C);
