@@ -9,12 +9,20 @@ import "forge-std/Test.sol";
 // Possible implementations of what the attacked 2 used
 // The following contracts handle the deployment and redeployment of the proposal
 
-// Factory capable of deploying contracts that selfdestruct changing their implementation
-// using a combination of create2 and create with a transient contract
-// Deployed at tx:
-// https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
+/*
+* Factory capable of deploying contracts that selfdestruct changing their implementation
+* using a combination of create2 and create with a transient contract
+* Deployed at tx:
+* https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
+*/
 
 // No cheatcodes are used for best representation of reality. Only logs.
+
+/*
+* This is our interpretation of the funcionality the attacker contracts' had, as we don't have the source
+* code deployed by the attacker.
+*/
+
 contract ReinitializableContractFactory is Ownable {
     address public proposal;
     address public transient;
