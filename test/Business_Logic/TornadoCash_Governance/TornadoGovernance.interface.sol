@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 interface IReinitializableContractFactory {
     function deployMaliciousProposal() external returns (bool);
-    function minionFactory() external returns (address);
 }
 
 interface IMaliciousSelfDestruct {

