@@ -6,29 +6,31 @@
 - **Vulnerable contracts:**
 - - [Tornado Cash Governance](https://etherscan.io/address/0x5efda50f22d34f262c29268506c5fa42cb56a1ce#code)
 - **Attack transactions:**
-- - **Step 0**
+- - **Stage 0**
 - - - [Proposal Factory Deploy - Attacker 2](https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a)
 - - - [Initial Torn Lock - Attacker 2](https://etherscan.io/tx/0xf93536162943bd36df11de6ed11233589bb5f139ff4e9e425cb5256e4349a9b4)
-- - **Step 1**
+- - **Stage 1**
 - - - [Submit Proposal - Attacker 2](https://etherscan.io/tx/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d)
-- - **Step 2**
+- - **Stage 2**
 - - - [Deploy multiple accounts - Attacker 1](https://etherscan.io/tx/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529)
-- - **Step 3**
+- - **Stage 3**
 - - - [Destroy proposal - Attacker 2](https://etherscan.io/tx/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb)
-- - **Step 4**
+- - **Stage 4**
 - - - [Redeploy proposal - Attacker 2](https://etherscan.io/tx/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122)
-- - **Step 5**
+- - **Stage 5**
 - - - [Execute proposal - Attacker 2](https://etherscan.io/tx/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d)
-- - **Step 6**
+- - **Stage 6**
 - - - [Drain TORN - Attacker 1](https://etherscan.io/tx/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94)
 - **Attacker Addresses**: 
 - - Attacker 1 EOA: [0x592340957ebc9e4afb0e9af221d06fdddf789de9](https://etherscan.io/address/0x592340957ebc9e4afb0e9af221d06fdddf789de9)
 - - Attacker 2 EOA: [0x092123663804f8801b9b086b03b98d706f77bd59](https://etherscan.io/address/0x092123663804f8801b9b086b03b98d706f77bd59)
 - **Attack Block:**: From `17,248,593` up to `17,304,425`  
 - **Date:** May 21, 2023
-- **Reproduce:** `forge test --match-contract Exploit_TornadoCashForkFoundry -vvv`
+- **Reproduce:** `forge test --match-contract Exploit_TornadoCashGovernance -vvv`
 
 ## Step-by-step Overview
+The Tornado Cash Governance system faced an attack that was initiated with what seemed to be a benign proposal. Yet, it contained a concealed instruction that allowed for its replacement. Once governance participants unknowingly approved this seemingly harmless proposal, the attacker overwrote the code at the same address with a new proposal implementation. This sequence of events resulted in the alteration of the Governance storage, followed by the unauthorized removal of `TORN` tokens.
+
 Two accounts played pivotal roles in the incident: Attacker 2 (Proposal Handler) and Attacker 1 (Drainer Controller). Attacker 2 was responsible for managing the proposal's life cycle including its deployment, submission, destruction, re-deployment, and execution. Attacker 1, on the other hand, controlled the drainer contracts which facilitated the unlocking of TORN from Tornado Cash.
 
 ### **Stage 0: Initial Transactions [Proposal Handler]**
