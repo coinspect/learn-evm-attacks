@@ -1,3 +1,5 @@
+The mapping lockedBalances starts at the slot #59 (0x3b). By knowing each key, the hash of the slot can be calculated.
+
 storage[0x6d3aadf46657098374577ba61c2d96d7adfad4046c8b3d0de09a97478f27ac89] = 0x021e19e0c9bab2400000;
 storage[0x72f687bcd6c747751d745ed2c8b6408d07c76055e3bd7647b995fd8bf8ca6c3a] = 0x021e19e0c9bab2400000;
 storage[0xba41ee557ea1dbd704632da5f6f57632b2ad3a9ab7769d61f3f79f55959e7fec] = 0x021e19e0c9bab2400000;
