@@ -1,33 +1,29 @@
-# Exploited Protocol Name
+# TornadoCash Governance Takeover
 - **Type:** Exploit
-- **Network:** Mainnet
-- **Total lost:** ~2.5MM USD 
-- **Category:**  Business Logic - Proposal Code Validation
+- **Network:** Ethereum 
+- **Total lost**: ~2.5MM USD (1M TORN)
+- **Category:** Business Logic
 - **Vulnerable contracts:**
 - - [Tornado Cash Governance](https://etherscan.io/address/0x5efda50f22d34f262c29268506c5fa42cb56a1ce#code)
-- **Tokens Lost**
-- - TORN ~ 1,000,000 (10,000 torn per account, used 100 accounts)
-
 - **Attack transactions:**
-- **Step 0**
-- - [Proposal Factory Deploy - Attacker 2](https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a)
-- - [Initial Torn Lock - Attacker 2](https://etherscan.io/tx/0xf93536162943bd36df11de6ed11233589bb5f139ff4e9e425cb5256e4349a9b4)
-- **Step 1**
-- - [Submit Proposal - Attacker 2](https://etherscan.io/tx/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d)
-- **Step 2**
-- - [Deploy multiple accounts - Attacker 1](https://etherscan.io/tx/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529)
--  **Step 3**
-- - [Destroy proposal - Attacker 2](https://etherscan.io/tx/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb)
--  **Step 4**
-- - [Redeploy proposal - Attacker 2](https://etherscan.io/tx/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122)
--  **Step 5**
-- - [Execute proposal - Attacker 2](https://etherscan.io/tx/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d)
--  **Step 6**
-- - [Drain TORN - Attacker 1](https://etherscan.io/tx/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94)
-
+- - **Step 0**
+- - - [Proposal Factory Deploy - Attacker 2](https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a)
+- - - [Initial Torn Lock - Attacker 2](https://etherscan.io/tx/0xf93536162943bd36df11de6ed11233589bb5f139ff4e9e425cb5256e4349a9b4)
+- - **Step 1**
+- - - [Submit Proposal - Attacker 2](https://etherscan.io/tx/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d)
+- - **Step 2**
+- - - [Deploy multiple accounts - Attacker 1](https://etherscan.io/tx/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529)
+- - **Step 3**
+- - - [Destroy proposal - Attacker 2](https://etherscan.io/tx/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb)
+- - **Step 4**
+- - - [Redeploy proposal - Attacker 2](https://etherscan.io/tx/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122)
+- - **Step 5**
+- - - [Execute proposal - Attacker 2](https://etherscan.io/tx/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d)
+- - **Step 6**
+- - - [Drain TORN - Attacker 1](https://etherscan.io/tx/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94)
+- **Attacker Addresses**: 
 - - Attacker 1 EOA: [0x592340957ebc9e4afb0e9af221d06fdddf789de9](https://etherscan.io/address/0x592340957ebc9e4afb0e9af221d06fdddf789de9)
 - - Attacker 2 EOA: [0x092123663804f8801b9b086b03b98d706f77bd59](https://etherscan.io/address/0x092123663804f8801b9b086b03b98d706f77bd59)
-
 - **Attack Block:**: From `17,248,593` up to `17,304,425`  
 - **Date:** May 21, 2023
 - **Reproduce:** `forge test --match-contract Exploit_TornadoCashForkFoundry -vvv`
@@ -106,7 +102,7 @@ The attacker destroyed the `transient` to reset its nonce, allowing this contrac
 
 
 ### Calculating the memory slots
-Once the attacker is able to execute their malicious code on the Governance's storage - because proposals are executed via `delegatecall` - they need to know which storage slots to manipulate. 
+Once the attacker is able to perform arbitrary modifications on the Governance's storage - because proposals are executed via `delegatecall` - they need to know which storage slots to manipulate. 
 
 The slot that a variable occupies in the storage is predictable and [well documented](https://docs.soliditylang.org/en/v0.8.20/internals/layout_in_storage.html). A variable is put into the position `p`
 following the order in which they were defined after applying C3-linearization. We also know that mapping keys are stored on the 
@@ -119,7 +115,7 @@ Because inheritance is used, linearization order is actually important.
 contract Governance is Initializable, Configuration, Delegation, EnsResolve {
 ```
 
-At this point, the attacker has several options to calculate the slot, including some pen and paper. For us, the most reliable way 
+At this point, the attacker has several options to calculate to find `p`, including some pen and paper. For us, the most reliable way 
 was simply to go to the bytecode of the contract. We know there is a `lockedBalance(address)` method, as the mapping is public. 
 We can calculate its signature using `cast`:
 
@@ -209,7 +205,6 @@ Because the call is executed in the context of Tornado Cash the attacker was abl
         }
     }
 ```
-
 ## Possible mitigations
 
 1. 
