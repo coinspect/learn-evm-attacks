@@ -14,7 +14,6 @@ import "forge-std/Test.sol";
 // Deployed at tx:
 // https://etherscan.io/tx/0x3e93ee75ffeb019f1d841b84695538571946fd9477dcd3ecf0790851f48fbd1a
 
-// More reference about this type of contracts could be found at https://github.com/0age/metamorphic
 // No cheatcodes are used for best representation of reality. Only logs.
 contract ReinitializableContractFactory is Ownable {
     address public proposal;
