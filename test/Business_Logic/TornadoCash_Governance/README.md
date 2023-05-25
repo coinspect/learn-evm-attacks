@@ -45,7 +45,7 @@ $ git clone https://github.com/foundry-rs/foundry
 $ cd foundry && cargo build 
 ```
 
-Then just run `$PATH_TO_YOUR_FOUNDRY/target/debug/forge test --match-contract Exploit_TornadoCashForkFoundry -vvv`.
+Then just run `$PATH_TO_YOUR_FOUNDRY/target/debug/forge test --match-contract Exploit_TornadoCashGovernance -vvv`.
 
 ## Step-by-step Overview
 The Tornado Cash Governance system faced an attack that was initiated with what seemed to be a benign proposal. Yet, it contained a concealed instruction that allowed for its replacement. Once governance participants unknowingly approved this seemingly harmless proposal, the attacker overwrote the code at the same address with a new proposal implementation. This sequence of events resulted in the alteration of the Governance storage, followed by the unauthorized removal of `TORN` tokens.
