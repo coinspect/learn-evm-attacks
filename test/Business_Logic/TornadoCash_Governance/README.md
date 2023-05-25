@@ -111,7 +111,7 @@ following the order in which they were defined after applying C3-linearization. 
 The mapping to manipulate, `lockedBalance`, is not actually defined in `Governance`, but instead in `Core`, a contract the `Governance` indirectly inherits from (by inheriting from `Delegation`). 
 Because inheritance is used, linearization order is actually important.
 
-```solidity t
+```solidity
 contract Governance is Initializable, Configuration, Delegation, EnsResolve {
 ```
 
@@ -207,7 +207,7 @@ Because the call is executed in the context of Tornado Cash the attacker was abl
 ```
 ## Possible mitigations
 
-1. 
+1. Governance contracts should check that the `code` that was voted is exactly the same that is going to be executed and revert otherwise.
 
 ## Sources and references
 
