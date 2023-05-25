@@ -60,10 +60,50 @@ Once the balance of each minion account was updated, Attacker 1 initiated the `u
 
 This attack relies on several important concepts such as different ways of deploying contracts (`create2` and `create`), context of execution (proposals are executed with `delegatecall`), mapping slot calculation (implemented in the malicious proposal). We will dissect them in this section.  
 
+### Deployments with `create` and `create2`
+
+The attacker 2 managed to deploy, destruct and redeploy the `proposal` on the same address. This was possible thanks to the following process:
+
+1) Deploy a factory capable of:
+   1) Storing or retrieving the creation code for the initial proposal and the malicious one.
+   2) Deploying a `transient` contract with `create2`
+   3) Triggering the destruction of the `transient` and the `proposal`
+2) The transient deployed, used `create` to deploy the `proposal` and its code was immutable. The attacker was able to deploy two different implementations of the proposal as this was coordinated by the main factory.
+
+**Using `create2` to deploy the `transient`**
+
+The attacker leveraged from salted deployments of an immutable `transient` contract with `create2`:
 
 ```solidity
-
+        deployedTransientContract = address(new TransientContract{salt: _salt}());
 ```
+
+This type of deployments where introduced in the [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014) by Vitalik Buterin (@vbuterin):
+
+> Adds a new opcode (`CREATE2`) at `0xf5`, which takes 4 stack arguments: `endowment`, `memory_start`, `memory_length`, `salt`. Behaves identically to `CREATE` (`0xf0`), except using `keccak256( 0xff ++ address ++ salt ++ keccak256(init_code))[12:]` instead of the usual sender-and-nonce-hash as the address where the contract is initialized at.
+
+```solidity
+initialisation_code = memory[offset:offset+size]
+address = keccak256(0xff + sender_address + salt + keccak256(initialisation_code))[12:]
+```
+By not changing the implementation at any point of the `transient` contract, if the deployment is made passing the same `salt`, its address would be always the same, even after `selfdestruct`.
+
+**Using `create` to deploy the `transient`**
+
+The legacy `create` [opcode](https://www.evm.codes/#f0?fork=shanghai) deploys contracts where the destination address is calculated as the rightmost 20 bytes (160 bits) of the `Keccak-256` hash of the encoding of the `sender` address followed by its `nonce`:
+
+```solidity
+address = keccak256(rlp([sender_address,sender_nonce]))[12:]
+```
+
+**How all comes together after selfdestruct?**
+
+The `selfdestruct` [opcode](https://www.evm.codes/#ff?fork=shanghai) empties a contract account setting its `balance` and `nonce` to 0 as well as deleting its code (code size is also set to 0). 
+
+Using a constant implementation of the `transient` allowed the attacker to deploy via the factory with `create2` the `transient` two times at the same address (before and after the destruction). Allowing the subsequent `create` call to also deploy two different proposals in the same address.
+
+The attacker destroyed the `transient` to reset its nonce, allowing this contract to deploy the new malicious proposal to the same address as the sender will be always the same and the nonce will be reset to the same value as the current one when first deploying the initial proposal's implementation. Because the `proposal` is deployed using `create`, the attacker was able to change its implementation at will as `create` does not depend on the deployed bytecode.
+
 
 ### Calculating the memory slots
 Once the attacker is able to execute their malicious code on the Governance's storage - because proposals are executed via `delegatecall` - they need to know which storage slots to manipulate. 
@@ -120,7 +160,55 @@ That looks exactly like what we are after: it concatenates `address | 0x3b` and 
 
 So know we know that `p` is `0x3b` and we can now write in the appropriate storage slots by doing an `SSTORE`.
 
+### Context of execution
+Tornado Cash Governance [executes](https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=2&debugLine=2) proposals with `delegatecall()`:
 
+```solidity
+  function execute(uint256 proposalId) external payable virtual {
+    require(state(proposalId) == ProposalState.AwaitingExecution, "Governance::execute: invalid proposal state");
+    Proposal storage proposal = proposals[proposalId];
+    proposal.executed = true;
+
+    address target = proposal.target;
+    require(Address.isContract(target), "Governance::execute: not a contract");
+    (bool success, bytes memory data) = target.delegatecall(abi.encodeWithSignature("executeProposal()"));
+    if (!success) {
+      if (data.length > 0) {
+        revert(string(data));
+      } else {
+        revert("Proposal execution failed");
+      }
+    }
+
+    emit ProposalExecuted(proposalId);
+  }
+```
+
+This opcode executes foreign code in the context of the caller, essentially doing what it's name says: delegates the logic of a call in a foreign implementation but taking responsibility of its impact. This impact can be: reading and writing variables, executing arbitrary logic, etc. 
+
+Because the call is executed in the context of Tornado Cash the attacker was able to write the mapping slots for each one of the minions with the process shown above by executing the malicious proposal with the additional `sstore` instructions:
+
+```solidity
+    // For educational purposes, how to get the slot for a mapping key, knowing the mapping's slot
+    function getStorageSlot(address account, uint256 slot) public pure returns (bytes32 hashSlot) {
+        assembly {
+            // Store account in memory scratch space
+            mstore(0, account)
+            // Store slot number in memory after the account
+            mstore(32, slot)
+            // Get the hash from previously stored account and slot
+            hashSlot := keccak256(0, 64)
+        }
+    }
+
+    // Write the slot for a mapping key, the initial mapping slot must be known (storage stack)
+    function writeSlot(address account, uint256 value, uint256 slot) public {
+        bytes32 slotHash = getStorageSlot(account, slot);
+        assembly {
+            sstore(slotHash, value)
+        }
+    }
+```
 
 ## Possible mitigations
 
