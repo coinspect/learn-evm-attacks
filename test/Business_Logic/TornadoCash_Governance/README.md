@@ -180,7 +180,7 @@ Tornado Cash Governance [executes](https://explorer.phalcon.xyz/tx/eth/0x3274b60
   }
 ```
 
-This opcode executes foreign code in the context of the caller, essentially doing what it's name says: delegates the logic of a call in a foreign implementation but taking responsibility of its impact. This impact can be: reading and writing variables, executing arbitrary logic, etc. 
+This opcode works by running the code of another contract (referred to as an external implementation) within the context of the initiating contract. While the operations are governed by the code of the external contract, any changes made during the execution, such as variable modifications and logical operations, directly impact the state of the initiating contract.
 
 Because the call is executed in the context of Tornado Cash the attacker was able to write the mapping slots for each one of the minions with the process shown above by executing the malicious proposal with the additional `sstore` instructions:
 
@@ -208,8 +208,4 @@ Because the call is executed in the context of Tornado Cash the attacker was abl
 ## Possible mitigations
 
 1. Governance contracts should check that the `code` that was voted is exactly the same that is going to be executed and revert otherwise.
-
-## Sources and references
-
-- [Source](https://link_to_source)
 
