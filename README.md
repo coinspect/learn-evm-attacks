@@ -11,9 +11,10 @@ $ forge test --match-contract Exploit_MBCToken -vvv
 
 ## Index
 
-We now have 35 reproduced exploits. Of those 35, we have chosen a few in case you want to start studying up with some of the most interesting ones.
+We now have 40 reproduced exploits. Of those 40, we have chosen a few in case you want to start studying up with some of the most interesting ones.
 
-- **[Furucombo](/test/Business_Logic/Furucombo)** is an excellent way to show the dangers of `DELEGATECALL`.
+- **[Tornado Cash Governance Takeover](/test/Business_Logic/TornadoCash_Governance)** is an excellent way to show the dangers of `DELEGATECALL` and the perils of governance systems.
+- **[Furucombo](/test/Business_Logic/Furucombo)** _another_ excellent way to show the dangers of `DELEGATECALL`.
 - **[MBC Token](/test/Access_Control/MBCToken)** is a primer on how sandwich attacks can be made with an interesting backstory on suspicious tokenomics. 
 - **[Uranium](/test/Business_Logic/Uranium)** is a great excuse to study up on the actual code that guards the famouse AMM constant product `x*y=k`.
 
@@ -53,6 +54,7 @@ The full list is below:
 - [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium)
 - [Furucombo - Feb 2021 - ($15MM) - DELEGATECALL to proxy](/test/Business_Logic/Furucombo)
 - [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
+- [Tornado Cash Governance - May 2023 - ($1M) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
 
 ### Reentrancy
 - [Qi Dao / Curve Pool - Nov 2022 - (~$156K) - Read Only Reentrancy](/test/Reentrancy/CurvePoolOracle)
@@ -95,4 +97,8 @@ If a reproduction is _still_ failing (ie: it reverts), try to:
 
 - Clean Forge's cache: `forge cache clean`
 - Update Foundry: `foundryup`
+
+For the **Tornado Cash Governance** attack in particular, `foundryup` 
+will not be enough and you will need to build Foundry from source 
+to reproduce it. See its [README]((/test/Business_Logic/TornadoCash_Governance/README.md).
 
