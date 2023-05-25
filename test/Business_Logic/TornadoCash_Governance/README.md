@@ -1,7 +1,7 @@
 # TornadoCash Governance Takeover
 - **Type:** Exploit
 - **Network:** Ethereum 
-- **Total lost**: ~2.5MM USD (1M TORN)
+- **Total lost**: ~2.7MM USD (1M TORN)
 - **Category:** Business Logic
 - **Vulnerable contracts:**
 - - [Tornado Cash Governance](https://etherscan.io/address/0x5efda50f22d34f262c29268506c5fa42cb56a1ce#code)
