@@ -65,6 +65,62 @@ This attack relies on several important concepts such as different ways of deplo
 
 ```
 
+### Calculating the memory slots
+Once the attacker is able to execute their malicious code on the Governance's storage - because proposals are executed via `delegatecall` - they need to know which storage slots to manipulate. 
+
+The slot that a variable occupies in the storage is predictable and [well documented](https://docs.soliditylang.org/en/v0.8.20/internals/layout_in_storage.html). A variable is put into the position `p`
+following the order in which they were defined after applying C3-linearization. We also know that mapping keys are stored on the 
+`keccak256(h(k).p)` slot (where `h` is a simple pad to 32-bytes).
+
+The mapping to manipulate, `lockedBalance`, is not actually defined in `Governance`, but instead in `Core`, a contract the `Governance` indirectly inherits from (by inheriting from `Delegation`). 
+Because inheritance is used, linearization order is actually important.
+
+```solidity t
+contract Governance is Initializable, Configuration, Delegation, EnsResolve {
+```
+
+At this point, the attacker has several options to calculate the slot, including some pen and paper. For us, the most reliable way 
+was simply to go to the bytecode of the contract. We know there is a `lockedBalance(address)` method, as the mapping is public. 
+We can calculate its signature using `cast`:
+
+```bash
+$ cast sig 'lockedBalance(address)'
+0x9ae697bf
+```
+
+Using a [Solidity decompiler](https://ethervm.io/decompile), we find the dispatch entry for that method in the bytecode:
+
+```
+    } else if (var0 == 0x9ae697bf) {
+        // Dispatch table entry for lockedBalance(address)
+        var1 = msg.value;
+    
+        if (var1) { revert(memory[0x00:0x00]); }
+    
+        var1 = 0x03b7;
+        var2 = 0x063b;
+        var3 = msg.data.length;
+        var4 = 0x04;
+        var2 = func_2982(var3, var4);
+        var2 = func_063B(var2);
+        goto label_03B7;
+```
+
+After some digging, we realize `func_063B` must be our candidate, and `var2` must be the `address` used as input.
+
+```
+   function func_063B(var arg0) returns (var arg0) {
+        memory[0x20:0x40] = 0x3b;
+        memory[0x00:0x20] = arg0;
+        return storage[keccak256(memory[0x00:0x40])];
+    }
+```
+
+That looks exactly like what we are after: it concatenates `address | 0x3b` and returns the storage at point `storage[keccak256(h(address)|h(0x3b))]`.
+
+So know we know that `p` is `0x3b` and we can now write in the appropriate storage slots by doing an `SSTORE`.
+
+
 
 ## Possible mitigations
 
