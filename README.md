@@ -54,7 +54,7 @@ The full list is below:
 - [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium)
 - [Furucombo - Feb 2021 - ($15MM) - DELEGATECALL to proxy](/test/Business_Logic/Furucombo)
 - [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
-- [Tornado Cash Governance - May 2023 - ($1M) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
+- [Tornado Cash Governance - May 2023 - (~$2.7MM) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
 
 ### Reentrancy
 - [Qi Dao / Curve Pool - Nov 2022 - (~$156K) - Read Only Reentrancy](/test/Reentrancy/CurvePoolOracle)
@@ -97,8 +97,3 @@ If a reproduction is _still_ failing (ie: it reverts), try to:
 
 - Clean Forge's cache: `forge cache clean`
 - Update Foundry: `foundryup`
-
-For the **Tornado Cash Governance** attack in particular, `foundryup` 
-will not be enough and you will need to build Foundry from source 
-to reproduce it. See its [README](/test/Business_Logic/TornadoCash_Governance/README.md).
-

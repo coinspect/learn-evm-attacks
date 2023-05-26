@@ -36,16 +36,19 @@
 - **Reproduce:** `forge test --match-contract Exploit_TornadoCashGovernance -vvv`
 
 > **NOTE** 
-This reproduction uses a new feature introduced by Coinspect into Foundry in [PR 5033](https://github.com/foundry-rs/foundry/pull/5033). 
-It is possible that this feature still has not made it into the latest Foundry release, so to reproduce this attack you will need 
-to build Foundry from source. Luckily, that's pretty simple:
+This reproduction uses a new feature introduced by Coinspect into Foundry in [PR 5033](https://github.com/foundry-rs/foundry/pull/5033) and included in [this nightly release](https://github.com/foundry-rs/foundry/releases/tag/nightly-33f3fee86e502285e01949f3f5249fe0b0e2b6f8)
+
+Make sure to update your foundry version with:
 
 ```
-$ git clone https://github.com/foundry-rs/foundry
-$ cd foundry && cargo build 
+$ foundryup
 ```
 
-Then just run `$PATH_TO_YOUR_FOUNDRY/target/debug/forge test --match-contract Exploit_TornadoCashGovernance -vvv`.
+Ensure that the installed version is the following or newer:
+
+```
+foundryup: installed - forge 0.2.0 (33f3fee 2023-05-26T00:09:41.611811000Z)
+```
 
 ## Step-by-step Overview
 The Tornado Cash Governance system faced an attack that was initiated with what seemed to be a benign proposal. Yet, it contained a concealed instruction that allowed for its replacement. Once governance participants unknowingly approved this seemingly harmless proposal, the attacker overwrote the code at the same address with a new proposal implementation. This sequence of events resulted in the alteration of the Governance storage, followed by the unauthorized removal of `TORN` tokens.
