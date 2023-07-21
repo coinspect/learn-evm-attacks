@@ -247,13 +247,13 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
     // destroying means: balance will be zero, code will be empty, nonce will be zero
     // similar to selfdestruct but not identical: selfdestruct destroys code and nonce
     // only after tx ends, this will run inmediatly
-    function destroyAccount(address who, address beneficiary) internal virtual {
-        uint256 currBalance = who.balance;
-        vm.etch(who, abi.encode());
-        vm.deal(who, 0);
-        vm.resetNonce(who);
+    // function destroyAccount(address who, address beneficiary) internal virtual {
+    //     uint256 currBalance = who.balance;
+    //     vm.etch(who, abi.encode());
+    //     vm.deal(who, 0);
+    //     vm.resetNonce(who);
 
-        uint256 beneficiaryBalance = beneficiary.balance;
-        vm.deal(beneficiary, currBalance + beneficiaryBalance);
-    }
+    //     uint256 beneficiaryBalance = beneficiary.balance;
+    //     vm.deal(beneficiary, currBalance + beneficiaryBalance);
+    // }
 }
