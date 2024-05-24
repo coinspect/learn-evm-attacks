@@ -78,6 +78,13 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
             require(weth.balanceOf(address(this)) >= wethMin, "not enought weth");
             require(dai.balanceOf(address(this)) >= daiMin, "not enought dai");
         */
+
+        /*
+        // Next steps:
+        1. Mint CGT tokens via executor's contract
+        2. Evaluate if the other previous calls that only emit events (likely changing only some attacker's
+           contract storage)  are necessary
+        */
     }
 
     function deployInitialContracts() internal {
