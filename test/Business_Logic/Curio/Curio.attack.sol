@@ -6,9 +6,9 @@ import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 import "./AttackerContract.sol";
 import "./Interfaces.sol";
-import "./vat.sol";
-import "./join.sol";
-import "./Chief/chief.sol";
+import "./ds-contracts/vat.sol";
+import "./ds-contracts/join.sol";
+import "./ds-contracts/Chief/chief.sol";
 
 contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     // Instances of tokens involved
