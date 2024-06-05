@@ -5,6 +5,22 @@ interface IDSToken is IERC20 {
     function mint(address to, uint256 amount) external;
 }
 
+interface IMERC20 is IERC20 {
+    function mint(address guy, uint256 wad) external;
+    function burn(address guy, uint256 wad) external;
+    function start() external;
+    function stop() external;
+}
+
+interface IVat {
+    function suck(address u, address v, uint256 rad) external;
+    function hope(address usr) external;
+}
+
+interface IJoin {
+    function exit(address usr, uint256 wad) external;
+}
+
 interface IForeignOmnibridge {
     function relayTokens(address token, uint256 _value) external;
 }
