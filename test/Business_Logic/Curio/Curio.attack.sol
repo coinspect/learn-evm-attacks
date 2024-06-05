@@ -8,6 +8,7 @@ import "./AttackerContract.sol";
 import "./Interfaces.sol";
 import "./vat.sol";
 import "./join.sol";
+import "./Chief/chief.sol";
 
 contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     // Instances of tokens involved
@@ -17,7 +18,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     // Instances of relevant contracts
     // Attacker contracts
     Action attackerContract;
-    Chief chief;
+    DSChief chief;
     DSPause pause;
     Vat vat;
     DaiJoin daiJoin;
@@ -104,7 +105,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         console.log("IOU token contract deployement successful at: %s", address(IOU));
 
         cheat.prank(ATTACKER);
-        chief = new Chief(address(cgtToken), address(IOU), type(uint256).max);
+        chief = new DSChief(DSToken(address(cgtToken)), DSToken(address(IOU)), type(uint256).max);
         require(address(chief).code.length != 0, "Chief deployment failed");
         console.log("Chief contract deployement successful at: %s", address(chief));
 
