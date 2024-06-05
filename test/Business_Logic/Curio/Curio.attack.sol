@@ -33,7 +33,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         // Attack tx: 0x4ff4028b03c3df468197358b99f5160e5709e7fce3884cc8ce818856d058e106
 
         // Create a fork right before the attack started
-        cheat.createSelectFork("mainnet", 19_491_672);
+        cheat.createSelectFork("mainnet", 19_498_910);
 
         // Setup attackers account
         deal(address(cgtToken), ATTACKER, 100 ether);
@@ -129,6 +129,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
 
         cheat.label(address(foreignOmniBridge), "ForeignOmniBridge");
         cheat.label(address(cgtToken), "CGT Token");
+        cheat.label(address(curioCSCToken), "CSC Token");
     }
 
     function _tokenTrackerSetup() internal {

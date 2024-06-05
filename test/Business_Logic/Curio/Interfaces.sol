@@ -34,7 +34,6 @@ interface IDSChief {
     function lock(uint256 wad) external;
     function vote(address[] memory yays) external returns (bytes32);
     function lift(address whom) external;
-    function free(uint256 wad) external;
 }
 
 interface IDSPause {
