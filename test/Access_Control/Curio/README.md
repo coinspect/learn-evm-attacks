@@ -19,11 +19,11 @@
 - **Reproduce:** `forge test --match-contract=Exploit_Curio -vvv`
 
 ## Step-by-step 
-1. The attacker locked tokens into the DSChief contract.
-2. The attacker accumulated enough voting power .
-3. The attacker displaced (lifted) the current hat and set their contract as the new hat (without requiring many tokens).
-4. The DSPause contract, upon making a `delegatecall`, checked DSChief.canCall, which returned true for the attacker's contract.
-5. Consuming the authorized minter role of DSPause, the attacker executed a malicious instructions through a custom `Spell` contract to mint tokens directly to themselves.
+1. The attacker locked tokens into the `DSChief` contract.
+2. Accumulated enough voting power.
+3. Displaced (lifted) the current hat and set their contract as the new hat (without requiring many tokens).
+4. The `DSPause` contract, upon making a `delegatecall`, checked `DSChief.canCall`, which returned true for the attacker's contract.
+5. Consuming the authorized minter role from `DSPause`, the attacker executed a malicious instructions through a custom `Spell` contract to mint tokens directly to themselves.
 
 
 ## Detailed Description
