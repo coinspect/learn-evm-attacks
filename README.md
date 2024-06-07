@@ -35,6 +35,7 @@ The full list is below:
 - [Sandbox, Feb 2022 - (1 NFT, possibly more) - Public Burn](/test/Access_Control/Sandbox)
 - [Punk Protocol, Aug 2021 - (~$8MM) - Non initialized contract](/test/Access_Control/PunkProtocol)
 - [MBC Token, Nov 2022 - (~$8MM) - External function](/test/Access_Control/MBCToken)
+- [Curio Token, Mar 2024 - (~$16MM) - Privilege escalation](/test/Access_Control/MBCToken)
 
 ### Bad Data Validation
 - [Olympus DAO Bond, Oct 2022 - (~$300,000) - Arbitrary Tokens / Unchecked transfers](/test/Bad_Data_Validation/Bond_OlympusDAO/)
