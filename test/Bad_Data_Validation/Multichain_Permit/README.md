@@ -6,7 +6,7 @@
 - **Exploited contracts:**
 - - [0x6b7a87899490EcE95443e979cA9485CBE7E71522](https://etherscan.io/address/0x6b7a87899490EcE95443e979cA9485CBE7E71522)
 - **Attack transactions:**
-- - [https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7](https://etherscan.io/tx/https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7)
+- - [https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7](https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7)
 - **Attacker Addresses**: 
 - - [0xfa2731d0bede684993ab1109db7ecf5bf33e8051](https://etherscan.io/address/0xfa2731d0bede684993ab1109db7ecf5bf33e8051)
 - **Attack Block:**: 14037237
@@ -26,7 +26,7 @@ The `anySwapOutUnderlyingWithPermit()` method takes a `token` and will call `per
 
 The contract fails to take into account that `WETH` is special: `WETH`'s fallback function triggers its `deposit()` method and returns `true` and does not implement `permit`, so calls to `permit` on `WETH` simply return `true`.
 
-To make matters worst, most of the user of Multichain had given an unlimited `permit`to the contract, so when the contract uses `transferFrom` it can use an arbitrary amount.
+To make matters worst, most of the users of Multichain had given an unlimited token `allowance` to the Protocol, so when the contract uses `transferFrom` it can use an arbitrary amount.
 
 ``` solidity
     function anySwapOutUnderlyingWithPermit(
@@ -62,7 +62,7 @@ Then it is just a matter of findings victims.
 
 ## Possible mitigations
 - Implement a whitelist of allowed tokens.
-- Avoid asking users to sign unlimited `permit`s.
+- Avoid asking users to sign unlimited `allowances`.
 
 ## Diagrams and graphs
   

@@ -53,7 +53,7 @@ Anyway, this update made the left hand side of the equation (which does `newX * 
 
 ### Class
 
-![class](onering.png)
+![class](uranium.png)
 
 ## Sources and references
 - [FrankResearcher Twitter Thread](https://twitter.com/FrankResearcher/status/1387347001172398086?s=20&t=Ki5iBMAXIitQS80Cl6BhSA)
