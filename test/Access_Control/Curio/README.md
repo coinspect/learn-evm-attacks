@@ -1,4 +1,4 @@
-# Curio Public Mint
+# Curio Privilege Escalation
 - **Type:** Exploit
 - **Network:** Ethereum 
 - **Total lost**: ~16MM USD 
