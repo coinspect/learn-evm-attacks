@@ -30,7 +30,7 @@
 Curio Finance leverages MakerDAO contracts for managing specific protocol functionalities. Their CSC Curio token, a `DSToken`, designates the `DSPauseProxy` contract as its minter. The `DSPause` contract relies on `DSChief.canCall` to verify if an authorized (privileged) call is permitted.
 Then, executes a `delegatecall` through its proxy.
 
-The operational vulnerability resided in the `DSChief` contract, which manages a HAT account that can be reconfigured with sufficient voting power. The attacker exploited this by locking tokens in `DSChief`, getting enough votes to lift and displace the current hat, subsequently positioning their contract as the new hat. The main issue was that the current hat did not have enough voting power which allowed the easy displacement. 
+The operational vulnerability resided in the `DSChief` contract, which manages a HAT account that can be reconfigured with not much voting power. The attacker exploited this by locking tokens in `DSChief`, getting enough votes to lift and displace the current hat, subsequently positioning their contract as the new hat. The main issue was that the previous hat (Curio's `DSSSpell`) did not have enough voting power to consider the system safe, which allowed the easy and cheap displacement. 
 
 The attacker was able to displace the `hat` by making the following calls on [chief.sol](https://github.com/CurioTeam/ds-chief/blob/simplify/src/chief.sol).
 
@@ -82,7 +82,7 @@ the escalation made on the Chief the attacker was able to make the arbitrary `de
 
 - [`roles.sol`](https://github.com/dapphub/ds-roles/blob/495863375b87efe062eb3b723e6a199633ec7e51/src/roles.sol#L40):
 
-These function were called from the pause contract to validate the caller's privileges.
+These functions were called from the pause contract to validate the caller's privileges.
 ```solidity
     function canCall(address caller, address code, bytes4 sig)
         constant
@@ -168,7 +168,7 @@ Finally, make the `delegatecall` from the `DSPauseProxy`:
     }
 ```
 
-Upon making that `delegatecall`, `DSPause` verifies through `DSChief.canCall`, which returned true given the attacker's contract was now the hat. Since `DSPause` executes actions with delegatecall and possessed minting authority for the token, the attacker deployed a malicious custom `Spell` contract to mint tokens directly to their address. 
+Upon making that `delegatecall`, `DSPause` verifies through `DSChief.canCall`, which returned true given the attacker's contract was now the hat. Since `DSPause` executes actions with `delegatecall` and got minting authority for the token, the attacker deployed a malicious custom `Spell` contract to mint tokens directly to their address. 
 
 - `Spell` contract:
 ```solidity
@@ -188,6 +188,9 @@ Upon making that `delegatecall`, `DSPause` verifies through `DSChief.canCall`, w
 Then, the attacker made multiple swaps and cross-chain transfers using different providers.
 
 ## Possible mitigations
+1. Implement stringent access controls to prevent unauthorized role changes
+2. Simulate and test safe operative values for voting power. 
+3. The system's voting power and privileges setup should be robust enough to prevent/handle voting power manipulation attacks, collusion, among others.
 
 ## Sources and references
 - [Curio Tweet](https://twitter.com/curio_invest/status/1771635979192774674)
