@@ -1,6 +1,9 @@
 # <h1 align="center"> Learn EVM Attacks </h1>
 A collection of Foundry tests reproducing exploits, bug bounty reports, and theoretical vulnerabilities on EVM chains. Diagrams and context links accompany each attack reproduction to make it more helpful as a reference or study material for anyone trying to learn more about vulnerabilities in smart contract systems.
 
+> [!IMPORTANT]  
+> Some tests need access to archive data as they require state from old blocks. If a test is failing, make sure to set up an archive node as the JSON-RPC URL in `foundry.toml`. [Infura](https://docs.infura.io/api/networks/ethereum/concepts/archive-data) provides free access to archive data.
+
 Want to take a quick look? Just go to a vulnerability folder (say, [MBCToken](/test/Access_Control/MBCToken)). Read the README or jump ahead to running the reproduction in your computer! You only need [Foundry](https://github.com/foundry-rs/foundry) installed. 
 
 ``` bash
