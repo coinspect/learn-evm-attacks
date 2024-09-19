@@ -239,4 +239,23 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(ATTACKER1);
         updateBalanceTracker(ATTACKER2);
     }
+
+    // New cheatcode created by @joaquinlpereyra @Coinspect merged in foundry at
+    // https://github.com/foundry-rs/foundry/pull/5033
+
+    // destroys an account inmediatly, sending the balance to beneficiary
+    // destroying means: balance will be zero, code will be empty, nonce will be zero
+    // similar to selfdestruct but not identical: selfdestruct destroys code and nonce
+    // only after tx ends, this will run inmediatly
+
+    // This function was added to Foundry, so instead of overriding we will comment it
+    // function destroyAccount(address who, address beneficiary) internal virtual {
+    //     uint256 currBalance = who.balance;
+    //     vm.etch(who, abi.encode());
+    //     vm.deal(who, 0);
+    //     vm.resetNonce(who);
+
+    //     uint256 beneficiaryBalance = beneficiary.balance;
+    //     vm.deal(beneficiary, currBalance + beneficiaryBalance);
+    // }
 }
