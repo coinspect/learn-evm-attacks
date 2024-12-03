@@ -58,6 +58,7 @@ The full list is below:
 - [Furucombo - Feb 2021 - ($15MM) - DELEGATECALL to proxy](/test/Business_Logic/Furucombo)
 - [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
 - [Tornado Cash Governance - May 2023 - (~$2.7MM) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
+- [Polter Finance - Nov 2024 - (~$8.7MM) - Oracle Manipulation](/test/Business_Logic/Polter_Finance/)
 
 ### Reentrancy
 - [Qi Dao / Curve Pool - Nov 2022 - (~$156K) - Read Only Reentrancy](/test/Reentrancy/CurvePoolOracle)
