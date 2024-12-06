@@ -59,6 +59,8 @@ The full list is below:
 - [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
 - [Tornado Cash Governance - May 2023 - (~$2.7MM) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
 - [Onyx Protocol - Nov 2023 - (~$2.1MM) - Empty Market Manipulation / Rounding Error](/test/Business_Logic/OnyxProtocol)
+- [Polter Finance - Nov 2024 - (~$8.7MM) - Oracle Manipulation](/test/Business_Logic/Polter_Finance/)
+
 
 ### Reentrancy
 - [Qi Dao / Curve Pool - Nov 2022 - (~$156K) - Read Only Reentrancy](/test/Reentrancy/CurvePoolOracle)
