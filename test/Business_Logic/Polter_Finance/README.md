@@ -26,6 +26,10 @@
 
 ## Step-by-step Overview
 
+The Polter Finance protocol's critical vulnerability stemmed from trusting SpookySwap V2/V3 pool prices for their BOO token oracle. This meant the protocol's lending decisions were based on potentially manipulatable price feeds from DEX pools, which the attacker exploited through flash loans. The vulnerability manifested in `ILendingPool.borrow()` function where borrowing power was calculated using these manipulated prices.
+
+Here's how the attacker leveraged this vulnerability:
+
 1. Setup (Get Initial Flash Loan)
     - Flash loan BOO tokens from SpookySwap V3 pool
     - Prepare for subsequent operations with obtained liquidity
