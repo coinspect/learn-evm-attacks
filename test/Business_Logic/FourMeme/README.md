@@ -49,5 +49,5 @@ To mitigate this attack, [four.meme]() should have set appropriate `amount0Min` 
 ![PlantUML](./FourMemeExploitDiagram.png)
 
 ## Sources and references
-- [FourMeme Incident Analysis by PANews](https://followin.io/en/feed/16280900)
+- [FourMeme Incident Analysis by Zero Time Technology](https://www.chaincatcher.com/en/article/2167296)
 - [TenArmor Security Alert on X](https://x.com/TenArmorAlert/status/1889515007404286019)
