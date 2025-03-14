@@ -154,7 +154,7 @@ contract TokenBalanceTracker {
     function toStringWithDecimals(uint256 _number, uint8 decimals) internal pure returns(string memory){
         uint256 integerToPrint = _number / (10**decimals);
         uint256 decimalsToPrint = _number - (_number / (10**decimals)) * (10**decimals);
-        return string.concat(integerToPrint.toString(), '.', decimalsToPrint.toString());
+        return string.concat(integerToPrint.toString(), '.', addLeadingZeros(decimalsToPrint, decimals));
     }
 
     function updateBalanceTracker(address _user) internal {
@@ -180,6 +180,36 @@ contract TokenBalanceTracker {
             } 
             tokenBalances = memBalances;    
         }
+    }
+
+    function addLeadingZeros(uint256 value, uint256 desiredLength) public pure returns (string memory) {
+        // Use your existing toString function
+        string memory str = value.toString();
+        uint256 currentLength = bytes(str).length;
+
+        // If the string is already at or exceeding the desired length, return it as is
+        if (currentLength >= desiredLength) {
+            return str;
+        }
+
+        // Calculate how many zeros to add
+        uint256 zerosToAdd = desiredLength - currentLength;
+
+        // Add leading zeros
+        bytes memory result = new bytes(desiredLength);
+        bytes memory strBytes = bytes(str);
+
+        // Add leading zeros
+        for (uint256 i = 0; i < zerosToAdd; i++) {
+            result[i] = bytes1("0");
+        }
+
+        // Copy the original string after the zeros
+        for (uint256 i = 0; i < currentLength; i++) {
+            result[zerosToAdd + i] = strBytes[i];
+        }
+
+        return string(result);
     }
 
     function calculateBalanceDelta(address _user) internal view returns(BalanceDeltaReturn memory nativeDelta, BalanceDeltaReturn[] memory tokenDeltas){
