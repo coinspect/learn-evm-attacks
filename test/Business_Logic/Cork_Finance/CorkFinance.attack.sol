@@ -15,7 +15,8 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
     address exchangeRateProvider = 0x7b285955DdcbAa597155968f9c4e901bb4c99263;
     IERC20 wstETH = IERC20(0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0);
     IERC20 weETH5CT = IERC20(0xD7CAc118c007E6427ABD693e193E90a6918ce404);
-    IPSMProxy psmProxy = IPSMProxy(0x55B90B37416DC0Bd936045A8110d1aF3B6Bf0fc3);
+    IPSMProxy flashSwapProxy = IPSMProxy(0x55B90B37416DC0Bd936045A8110d1aF3B6Bf0fc3);
+    IPSMProxy psmProxy = IPSMProxy(0xCCd90F6435dd78C4ECCED1FA4db0D7242548a2a9);
 
     // Declaring a malicious MTK (MyToken)
     IMyToken internal mtk;
@@ -45,6 +46,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
             address(weETH5CT),
             address(corkHook),
             address(psmProxy),
+            address(flashSwapProxy),
             exchangeRateProvider
         );
 
