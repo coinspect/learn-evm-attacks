@@ -93,7 +93,8 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
             etherfiWETH,
             corkConfig,
             uniV4PoolManager,
-            exchangeRateProvider
+            exchangeRateProvider,
+            flashSwapProxy
         );
 
         /*

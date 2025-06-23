@@ -18,6 +18,29 @@ interface ICorkConfig {
 }
 
 interface IUniV4PoolManager {
+    struct PoolKey {
+        /// @notice The lower currency of the pool, sorted numerically
+        address currency0;
+        /// @notice The higher currency of the pool, sorted numerically
+        address currency1;
+        /// @notice The pool LP fee, capped at 1_000_000. If the highest bit is 1, the pool has a dynamic fee and must be exactly equal to 0x800000
+        uint24 fee;
+        /// @notice Ticks that involve positions must be a multiple of tick spacing
+        int24 tickSpacing;
+        /// @notice The hooks of the pool
+        address hooks;
+    }
+
+
+    struct SwapParams {
+        /// Whether to swap token0 for token1 or vice versa
+        bool zeroForOne;
+        /// The desired input amount if negative (exactIn), or the desired output amount if positive (exactOut)
+        int256 amountSpecified;
+        /// The sqrt price at which, if reached, the swap will stop executing
+        uint160 sqrtPriceLimitX96;
+    }
+    
     /// @notice All interactions on the contract that account deltas require unlocking. A caller that calls
     /// `unlock` must implement
     /// `IUnlockCallback(msg.sender).unlockCallback(data)`, where they interact with the remaining functions
@@ -26,6 +49,8 @@ interface IUniV4PoolManager {
     /// @param data Any data to pass to the callback, via `IUnlockCallback(msg.sender).unlockCallback(data)`
     /// @return The data returned by the call to `IUnlockCallback(msg.sender).unlockCallback(data)`
     function unlock(bytes calldata data) external returns (bytes memory);
+
+    function sync(address currency) external;
 }
 
 interface ICorkHook {
@@ -68,6 +93,13 @@ interface ICorkHook {
         returns (uint256 baseFeePercentage, uint256 actualFeePercentage);
 
     function getMarketSnapshot(address ra, address ct) external view returns (MarketSnapshot memory);
+
+    function beforeSwap(
+        address sender,
+        bytes key,
+        bytes  params,
+        bytes calldata hookData
+    ) external  returns (bytes4, int256 delta, uint24)
 }
 
 interface IMyToken is IERC20 {
