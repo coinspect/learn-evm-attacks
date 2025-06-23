@@ -3,9 +3,30 @@ pragma solidity ^0.8.17;
 
 import {IERC20} from "../../interfaces/IERC20.sol";
 
-interface ICorkConfig {}
+interface ICorkConfig {
+    error OnlyConfigAllowed();
 
-interface IUniV4PoolManager {}
+    // Used by the deployer
+    function issueNewDs(bytes32 id, uint256 ammLiquidationDeadline) external;
+    function initializeModuleCore(
+        address pa,
+        address ra,
+        uint256 initialArp,
+        uint256 expiryInterval,
+        address exchangeRateProvider
+    ) external;
+}
+
+interface IUniV4PoolManager {
+    /// @notice All interactions on the contract that account deltas require unlocking. A caller that calls
+    /// `unlock` must implement
+    /// `IUnlockCallback(msg.sender).unlockCallback(data)`, where they interact with the remaining functions
+    /// on this contract.
+    /// @dev The only functions callable without an unlocking are `initialize` and `updateDynamicLPFee`
+    /// @param data Any data to pass to the callback, via `IUnlockCallback(msg.sender).unlockCallback(data)`
+    /// @return The data returned by the call to `IUnlockCallback(msg.sender).unlockCallback(data)`
+    function unlock(bytes calldata data) external returns (bytes memory);
+}
 
 interface ICorkHook {
     error OnlyConfigAllowed();
@@ -133,20 +154,28 @@ interface IPSMProxy {
         uint8 limit
     ) external view returns (address[] memory ct, address[] memory ds);
 
-    // Used by the deployer
-    function issueNewDs(
-        bytes32 id,
-        uint256 decayDiscountRateInDays, // protocol-level config
-        // won't have effect on first issuance
-        uint256 rolloverPeriodInblocks, // protocol-level config
-        uint256 ammLiquidationDeadline
-    ) external;
-
     function lastDsId(bytes32 id) external returns (uint256 dsId);
     function underlyingAsset(bytes32 id) external view returns (address ra, address pa);
     function swapAsset(bytes32 id, uint256 dsId) external view returns (address ct, address ds);
+    function getId(
+        address pa,
+        address ra,
+        uint256 initialArp,
+        uint256 expiryInterval,
+        address exchangeRateProvider
+    ) external returns (bytes32);
+
+    function depositLv(
+        bytes32 id,
+        uint256 amount,
+        uint256 raTolerance,
+        uint256 ctTolerance,
+        uint256 minimumLvAmountOut,
+        uint256 deadline
+    ) external returns (uint256 received);
 }
 
 interface IExchangeRateProvider {
     function rate(bytes32 id) external view returns (uint256);
+    function rate() external view returns (uint256);
 }

