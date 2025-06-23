@@ -87,7 +87,7 @@ interface IPSMProxy {
         OffchainGuess memory offchainGuess
     ) external returns (SwapRaForDsReturn memory result);
 
-    function depositPSM(bytes32 id, uint256 amount)
+    function depositPsm(bytes32 id, uint256 amount)
         external
         returns (uint256 received, uint256 exchangeRate);
 }

