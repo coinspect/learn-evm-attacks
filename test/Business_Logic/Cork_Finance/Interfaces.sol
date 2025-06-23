@@ -3,7 +3,26 @@ pragma solidity ^0.8.17;
 
 import {IERC20} from "../../interfaces/IERC20.sol";
 
+interface ICorkConfig {}
+
+interface IUniV4PoolManager {}
+
 interface ICorkHook {
+    error OnlyConfigAllowed();
+
+    struct MarketSnapshot {
+        address ra;
+        address ct;
+        uint256 reserveRa;
+        uint256 reserveCt;
+        uint256 oneMinusT;
+        uint256 baseFee;
+        address liquidityToken;
+        uint256 startTimestamp;
+        uint256 endTimestamp;
+        uint256 treasuryFeePercentage;
+    }
+
     function addLiquidity(
         address ra,
         address ct,
@@ -15,6 +34,19 @@ interface ICorkHook {
     ) external returns (uint256 amountRa, uint256 amountCt, uint256 mintedLp);
 
     function getLiquidityToken(address ra, address ct) external view returns (address);
+    function getReserves(address ra, address ct) external view returns (uint256, uint256);
+    function swap(address ra, address ct, uint256 amountRaOut, uint256 amountCtOut, bytes calldata data)
+        external
+        returns (uint256 amountIn);
+
+    function updateBaseFeePercentage(address ra, address ct, uint256 baseFeePercentage) external;
+    function updateTreasurySplitPercentage(address ra, address ct, uint256 treasurySplit) external;
+    function getFee(address ra, address ct)
+        external
+        view
+        returns (uint256 baseFeePercentage, uint256 actualFeePercentage);
+
+    function getMarketSnapshot(address ra, address ct) external view returns (MarketSnapshot memory);
 }
 
 interface IMyToken is IERC20 {
@@ -90,6 +122,29 @@ interface IPSMProxy {
     function depositPsm(bytes32 id, uint256 amount)
         external
         returns (uint256 received, uint256 exchangeRate);
+
+    function getDeployedSwapAssets(
+        address ra,
+        address pa,
+        uint256 initialArp,
+        uint256 expiryInterval,
+        address exchangeRateProvider,
+        uint8 page,
+        uint8 limit
+    ) external view returns (address[] memory ct, address[] memory ds);
+
+    // Used by the deployer
+    function issueNewDs(
+        bytes32 id,
+        uint256 decayDiscountRateInDays, // protocol-level config
+        // won't have effect on first issuance
+        uint256 rolloverPeriodInblocks, // protocol-level config
+        uint256 ammLiquidationDeadline
+    ) external;
+
+    function lastDsId(bytes32 id) external returns (uint256 dsId);
+    function underlyingAsset(bytes32 id) external view returns (address ra, address pa);
+    function swapAsset(bytes32 id, uint256 dsId) external view returns (address ct, address ds);
 }
 
 interface IExchangeRateProvider {
