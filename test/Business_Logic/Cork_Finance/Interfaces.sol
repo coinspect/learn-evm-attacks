@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.0;
 
 import {IERC20} from "../../interfaces/IERC20.sol";
 
@@ -23,7 +23,8 @@ interface IUniV4PoolManager {
         address currency0;
         /// @notice The higher currency of the pool, sorted numerically
         address currency1;
-        /// @notice The pool LP fee, capped at 1_000_000. If the highest bit is 1, the pool has a dynamic fee and must be exactly equal to 0x800000
+        /// @notice The pool LP fee, capped at 1_000_000. If the highest bit is 1, the pool has a dynamic fee
+        /// and must be exactly equal to 0x800000
         uint24 fee;
         /// @notice Ticks that involve positions must be a multiple of tick spacing
         int24 tickSpacing;
@@ -31,16 +32,16 @@ interface IUniV4PoolManager {
         address hooks;
     }
 
-
     struct SwapParams {
         /// Whether to swap token0 for token1 or vice versa
         bool zeroForOne;
-        /// The desired input amount if negative (exactIn), or the desired output amount if positive (exactOut)
+        /// The desired input amount if negative (exactIn), or the desired output amount if positive
+        /// (exactOut)
         int256 amountSpecified;
         /// The sqrt price at which, if reached, the swap will stop executing
         uint160 sqrtPriceLimitX96;
     }
-    
+
     /// @notice All interactions on the contract that account deltas require unlocking. A caller that calls
     /// `unlock` must implement
     /// `IUnlockCallback(msg.sender).unlockCallback(data)`, where they interact with the remaining functions
@@ -49,7 +50,7 @@ interface IUniV4PoolManager {
     /// @param data Any data to pass to the callback, via `IUnlockCallback(msg.sender).unlockCallback(data)`
     /// @return The data returned by the call to `IUnlockCallback(msg.sender).unlockCallback(data)`
     function unlock(bytes calldata data) external returns (bytes memory);
-
+    function settleFor(address recipient) external returns (uint256);
     function sync(address currency) external;
 }
 
@@ -96,10 +97,14 @@ interface ICorkHook {
 
     function beforeSwap(
         address sender,
-        bytes key,
-        bytes  params,
+        IUniV4PoolManager.PoolKey memory key,
+        IUniV4PoolManager.SwapParams memory params,
         bytes calldata hookData
-    ) external  returns (bytes4, int256 delta, uint24)
+    ) external returns (bytes4, int256 delta, uint24);
+
+    function getAmountIn(address ra, address ct, bool raForCt, uint256 amountOut)
+        external
+        returns (uint256 amountIn);
 }
 
 interface IMyToken is IERC20 {
@@ -205,6 +210,8 @@ interface IPSMProxy {
         uint256 minimumLvAmountOut,
         uint256 deadline
     ) external returns (uint256 received);
+
+    function returnRaWithCtDs(bytes32 id, uint256 amount) external returns (uint256 ra);
 }
 
 interface IExchangeRateProvider {

