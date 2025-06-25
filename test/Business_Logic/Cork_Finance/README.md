@@ -155,7 +155,7 @@ CorkSwapCallback(sender).CorkCall(sender, hookData, paymentAmount, paymentToken,
 ```
 
 ```solidity
-// FlashSwapRouter.sol, logic inside beforeSwap() call.
+// FlashSwapRouter.sol, logic inside corkCalll() call.
         {
             // make sure only hook and forwarder can call this function
             assert(msg.sender == address(hook) || msg.sender == address(hook.getForwarder()));
@@ -206,5 +206,5 @@ Based on the identified vulnerabilities and the post-mortem's action plan, sever
 ## Sources and References
 
 - Cork Protocol Post-Mortem: [https://www.cork.tech/blog/post-mortem](https://www.cork.tech/blog/post-mortem)
-- Rekt News Article: [text](https://rekt.news/cork-protocol-rekt)
-- Uniswap V4 Reference Docs: [text](https://docs.uniswap.org/contracts/v4/overview)
+- Rekt News Article: [https://rekt.news/cork-protocol-rekt](https://rekt.news/cork-protocol-rekt)
+- Uniswap V4 Reference Docs: [https://docs.uniswap.org/contracts/v4/overview](https://docs.uniswap.org/contracts/v4/overview)
