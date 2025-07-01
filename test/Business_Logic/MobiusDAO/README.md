@@ -32,7 +32,7 @@ Decimal precision is critical when performing arithmetic operations between toke
 The vulnerability lies in the `deposit` function, which is responsible for minting MBU tokens in exchange for assets like WBNB or USDT. When WBNB is used, the number of MBU tokens to mint is calculated through a chain of internal calls that involves functions `0x38d0` and `0x31ee`.
 
 ```solidity
-function deposit(address _userAddress, uint256 _wantAmt) public nonPayable {  find similar
+function deposit(address _userAddress, uint256 _wantAmt) public nonPayable {
     //...
 
     v3 = 0x38d0(_userAddress, _wantAmt);

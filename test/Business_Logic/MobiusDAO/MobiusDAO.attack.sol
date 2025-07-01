@@ -25,8 +25,6 @@ contract Exploit_MobiusDAO is TestHarness, TokenBalanceTracker{
     function setUp() external {
         cheat.createSelectFork("bsc", 49470429);
 
-        // TODO: Here would be better to make the attacker send some BNB to the contract when calling the attack function
-
         // The attacker funds the contract with 1 BNB to start the attack
         cheat.deal(address(this), 1 ether);
 
