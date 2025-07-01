@@ -90,11 +90,10 @@ Because the `mint` function is eventually called with the inflated amount, the a
 
 1. Clearly document the expected decimal precision of all inputs and outputs in functions dealing with value conversions or token minting
 2. Always verify the output format of external data sources like price oracles to ensure their values are properly scaled before using them in calculations
-3. Avoid multiplying already 18-decimal price values by 10**18 again
-4. Include unit tests that use mock tokens with varying decimals (e.g., 6, 8, 18) to catch conversion errors across different token standards.
+3. Pay close attention to decimal handling when performing operations involving tokens, ensuring that all calculations correctly account for the token's decimal precision
+4. Include unit tests that use mock tokens with varying decimals (e.g., 6, 8, 18) to catch conversion errors across different token standards
 
 ## Sources and references
 
 - [Blockaid Twitter Thread](https://x.com/blockaid_/status/1921476644092452922)
 - [Quill Audits Exploit Breakdown](https://www.quillaudits.com/blog/hack-analysis/mobius-token-exploit-breakdown)
-
