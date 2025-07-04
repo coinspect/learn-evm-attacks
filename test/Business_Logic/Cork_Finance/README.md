@@ -61,7 +61,7 @@ The Cork Finance exploit unfolded in two primary, interconnected phases, orchest
 
 ## Detailed Description
 
-The Cork Finance exploit exemplifies a multi-stage attack that abused a combination of economic oracle manipulation and access control bypasses within a complex DeFi protocol architecture. The attacker shown understanding of the interdependencies between Cork's core modules, specifically the `ModuleCore`, `FlashSwapRouter`, and the custom Cork Hook implementation alongside their business logic related to the pricing mechanisms.
+The Cork Finance exploit exemplifies a multi-stage attack that abused a combination of economic oracle manipulation and access control bypasses within a complex DeFi protocol architecture. The attacker showed understanding of the interdependencies between Cork's core modules, specifically the `ModuleCore`, `FlashSwapRouter`, and the custom Cork Hook implementation alongside their business logic related to the pricing mechanisms.
 
 ### Phase 1: Cover Token Extraction via Rollover Pricing Exploit
 
