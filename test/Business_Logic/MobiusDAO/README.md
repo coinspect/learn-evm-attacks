@@ -2,7 +2,7 @@
 
 - **Type:** Exploit
 - **Network:** BSC
-- **Total lost:** ~2.15MM
+- **Total lost:** ~2.15 million USD
 - **Category:** Bad Arithmetic
 - **Vulnerable contracts:**
 - - [Exploited Contract](https://bscscan.com/address/0x95e92b09b89cf31fa9f1eca4109a85f88eb08531) (Unverified Implementation)
@@ -20,14 +20,16 @@
 
 ## Step-by-step Overview
 
-1. Set up a malicious contract
-2. Call MobiusDAO's `deposit` function through the exploit contract with 0.001 WBNB
-3. Receive over 9.7 quadrillion tokens
-4. Swap the tokens for USDT using PancakeSwapV2
+1. Call MobiusDAO's `deposit` function with 0.001 WBNB
+2. Function `0x38d0` converts WBNB amount to USD value using BNB price (18 decimals)
+3. Function `0x31ee` incorrectly multiplies this USD value by 10^18 again
+4. The inflated value is divided by the actual BNB price
+5. Receive over 9.7 quadrillion MBU tokens, resulting in 10^18 times more MBU tokens than intended
+6. Swaps the tokens for USDT using PancakeSwapV2
 
 ## Detailed Description
 
-Decimal precision is critical when performing arithmetic operations between tokens in smart contracts. In the case of MobiusDAO, a miscalculation involving decimals resulted in a severe vulnerability that ultimately led to a loss of approximately $2.15 million. The contract involved was not verified on-chain and, based on its behavior, was likely not audited either.
+An arithmetic error in the token minting calculation resulted in a severe vulnerability that led to a loss of approximately $2.15 million. The contract incorrectly applied an additional 10^18 multiplier to an already properly scaled price value. The contract involved was not verified.
 
 The vulnerability lies in the `deposit` function, which is responsible for minting MBU tokens in exchange for assets like WBNB or USDT. When WBNB is used, the number of MBU tokens to mint is calculated through a chain of internal calls that involves functions `0x38d0` and `0x31ee`.
 
