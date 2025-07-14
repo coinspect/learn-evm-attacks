@@ -60,7 +60,9 @@ The full list is below:
 - [Tornado Cash Governance - May 2023 - (~$2.7MM) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
 - [Onyx Protocol - Nov 2023 - (~$2.1MM) - Empty Market Manipulation / Rounding Error](/test/Business_Logic/OnyxProtocol)
 - [Polter Finance - Nov 2024 - (~$8.7MM) - Oracle Manipulation](/test/Business_Logic/Polter_Finance/)
-- [FourMeme - Feb 2025 - (~$185k) - Price Manipulation & Frontrunning](/test/Business_Logic/FourMeme/)
+- [SIR Trading - Mar 2025 - (~$355k) - Bad Usage of Transient Storage](/test/Business_Logic/SIRTrading/)
+- [MobiusDAO - Mar 2025 - (~$2.15MM) - Bad Arithmetic](/test/Business_Logic/MobiusDAO/)
+- [Cork Finance - May 2025 - (~$7.2MM) - Price Manipulation + Poor Access Control](/test/Business_Logic/FourMeme/)
 
 
 ### Reentrancy
