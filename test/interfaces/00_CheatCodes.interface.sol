@@ -31,9 +31,7 @@ interface CheatCodes {
     function store(address account, bytes32 slot, bytes32 value) external;
 
     // Signs data
-    function sign(uint256 privateKey, bytes32 digest)
-        external
-        returns (uint8 v, bytes32 r, bytes32 s);
+    function sign(uint256 privateKey, bytes32 digest) external returns (uint8 v, bytes32 r, bytes32 s);
 
     // Computes address for a given private key
     function addr(uint256 privateKey) external returns (address);
@@ -68,35 +66,21 @@ interface CheatCodes {
     function envBytes(string calldata) external returns (bytes memory);
 
     // Read environment variables as arrays, (name, delim) => (value[])
-    function envBool(string calldata, string calldata)
-        external
-        returns (bool[] memory);
-    function envUint(string calldata, string calldata)
-        external
-        returns (uint256[] memory);
-    function envInt(string calldata, string calldata)
-        external
-        returns (int256[] memory);
-    function envAddress(string calldata, string calldata)
-        external
-        returns (address[] memory);
-    function envBytes32(string calldata, string calldata)
-        external
-        returns (bytes32[] memory);
-    function envString(string calldata, string calldata)
-        external
-        returns (string[] memory);
-    function envBytes(string calldata, string calldata)
-        external
-        returns (bytes[] memory);
+    function envBool(string calldata, string calldata) external returns (bool[] memory);
+    function envUint(string calldata, string calldata) external returns (uint256[] memory);
+    function envInt(string calldata, string calldata) external returns (int256[] memory);
+    function envAddress(string calldata, string calldata) external returns (address[] memory);
+    function envBytes32(string calldata, string calldata) external returns (bytes32[] memory);
+    function envString(string calldata, string calldata) external returns (string[] memory);
+    function envBytes(string calldata, string calldata) external returns (bytes[] memory);
 
     // Convert Solidity types to strings
-    function toString(address) external returns(string memory);
-    function toString(bytes calldata) external returns(string memory);
-    function toString(bytes32) external returns(string memory);
-    function toString(bool) external returns(string memory);
-    function toString(uint256) external returns(string memory);
-    function toString(int256) external returns(string memory);
+    function toString(address) external returns (string memory);
+    function toString(bytes calldata) external returns (string memory);
+    function toString(bytes32) external returns (string memory);
+    function toString(bool) external returns (string memory);
+    function toString(uint256) external returns (string memory);
+    function toString(int256) external returns (string memory);
 
     // Sets the *next* call's msg.sender to be the input address
     function prank(address) external;
@@ -132,9 +116,7 @@ interface CheatCodes {
 
     // Gets all accessed reads and write slot from a recording session,
     // for a given address
-    function accesses(address)
-        external
-        returns (bytes32[] memory reads, bytes32[] memory writes);
+    function accesses(address) external returns (bytes32[] memory reads, bytes32[] memory writes);
 
     // Record all the transaction logs
     function recordLogs() external;
@@ -206,7 +188,8 @@ interface CheatCodes {
     function projectRoot() external returns (string memory);
     // Reads next line of file to string, (path) => (line)
     function readLine(string calldata) external returns (string memory);
-    // Writes data to file, creating a file if it does not exist, and entirely replacing its contents if it does.
+    // Writes data to file, creating a file if it does not exist, and entirely replacing its contents if it
+    // does.
     // (path, data) => ()
     function writeFile(string calldata, string calldata) external;
     // Writes line to file, creating a file if it does not exist.
@@ -215,13 +198,14 @@ interface CheatCodes {
     // Closes file for reading, resetting the offset and allowing to read it from beginning with readLine.
     // (path) => ()
     function closeFile(string calldata) external;
-    // Removes file. This cheatcode will revert in the following situations, but is not limited to just these cases:
+    // Removes file. This cheatcode will revert in the following situations, but is not limited to just these
+    // cases:
     // - Path points to a directory.
     // - The file doesn't exist.
     // - The user lacks permissions to remove the file.
     // (path) => ()
     function removeFile(string calldata) external;
-    
+
     // Return the value(s) that correspond to 'key'
     function parseJson(string memory json, string memory key) external returns (bytes memory);
     // Return the entire json file
@@ -245,9 +229,7 @@ interface CheatCodes {
 
     // Creates _and_ also selects a new fork with the given endpoint and block,
     // and returns the identifier of the fork
-    function createSelectFork(string calldata, uint256)
-        external
-        returns (uint256);
+    function createSelectFork(string calldata, uint256) external returns (uint256);
     // Creates _and_ also selects a new fork with the given endpoint and the
     // latest block and returns the identifier of the fork
     function createSelectFork(string calldata) external returns (uint256);
