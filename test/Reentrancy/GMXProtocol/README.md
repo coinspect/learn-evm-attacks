@@ -69,6 +69,29 @@
 
 ## Step-by-step Overview
 
+The GMX exploit consisted in multiple phases:
+
+1. Setup phase:
+    - Attacker deploys a contract with functionality to interact with the GMX protocol and a custom `receive()` function containing the exploit logic.
+    - The attacker funds the contract.
+    - The attacker creates an order for a long position using the `createIncreaseOrder` function in the `OrderBook` contract.
+    - A keeper executes this order.
+    - The attacker then creates a decrease order for the long position using the `createDecreaseOrder` function in the `OrderBook` contract.
+    - The keeper executes this decrease order, returning eth to the malicious contract and triggering the exploit logic in the `receive()` function.
+
+2. Primary Exploit Phase:
+    - The `receive()` function in the malicious contract checks the ratio between `wbtcMaxPrice` and `wbtcGlobalShortAveragePrice`.
+    - If the ratio is not greater than 50, calls `increasePosition` directly in the `Vault` contract while leverage is still enabled.
+    - This call bypasses the intermediary contracts that would normally update the average short price, creating a state inconsistency.
+    - Then, creates a new decrease position using the `createDecreasePosition` function in the `PositionRouter` contract, passing itself as the callback target.
+    - The exploit creates a recursive loop where the `UPDATER` periodically executes pending decrease positions, which in turn calls the malicious contract's `gmxPositionCallback` function, creating new decrease orders and perpetuating the cycle.
+    - This loop continues until the ratio condition is met, allowing the attacker to execute a final withdrawal of funds from the `Vault`.
+
+3. Final Exploit Phase:
+    - When the ratio condition is met, the `receive()` function executes a flash loan from the Uniswap V3 pool.
+    - The attacker mints GLP at its market price and opens a massive short position
+    - Due to the manipulated average short price, the system calculates an inflated "short loss," which artificially inflates the AUM for GLP.
+    - The attacker redeems the minted GLP at this inflated price, draining the assets from the pool.
 
 ## Detailed Description
 
@@ -495,7 +518,14 @@ function uniswapV3FlashCallback(
 
 ## Possible mitigations
 
-1. 
+1. Restrict Direct Vault Access
+    Remove the ability to call `increasePosition` directly on the Vault contract. All position operations should be forced through authorized router contracts (PositionRouter, PositionManager) that properly handle state synchronization.
+
+2. Atomic Global Short Data Updates
+    Calculate and update `globalShortSizes` and `globalShortAveragePrices` together atomically in a single location, rather than having the logic split between different contracts.
+
+3. Gas-Limited ETH Transfers
+    Implement gas limits on ETH transfers (e.g., 2300 gas) to prevent recipient contracts from executing arbitrary code during the transfer. This gas limit could be configurable through governance to allow adjustments if needed, but should default to a value that only allows basic receive functions without complex logic.
 
 ## Sources and references
 
