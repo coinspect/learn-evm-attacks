@@ -72,9 +72,128 @@
 
 ## Detailed Description
 
-The GMX protocol exploit was a sophisticated multi-transaction attack that leveraged a cross-contract reentrancy vulnerability to manipulate the average short price of an asset, ultimately leading to the draining of approximately $42 million USD from the GLP vault.
+### Root Cause
 
-The root cause of the exploit was a reentrancy vulnerability within the `OrderBook.sol` contract, specifically at the `_transferOutETH` function (https://github.com/gmx-io/gmx-contracts/blob/master/contracts/core/OrderBook.sol#L874). While OrderBook.sol utilizes a nonReentrant modifier, this modifier only prevents reentrancy within the same contract. The attacker exploited this limitation by re-entering the `Vault` contract directly from a malicious contract, bypassing intended access controls and business logic.
+GMX is a decentralized perpetual trading protocol that allows users to trade with leverage while providing liquidity in a multi-token liquidity pool model. The protocol's core components include:
+
+- GLP tokens represent shares in a diversified basket of assets.
+- Perpetual positions can be opened against this liquidity pool.
+- Price oracles provide asset pricing for both trading and liquidity operations.
+- Fee collection generates yield for GLP holders.
+
+The economic foundation of the protocol relies on accurate AUM (Assets Under Management) calculations, which determine GLP token redemption values:
+
+```
+redeem_amount= ( user_GLP / total_GLP_supply ) × AUM
+```
+
+Where AUM represents the total value of assets in the GLP pool:
+
+```
+AUM = sum(token_pool_value) + unrealized_losses_from_shorts 
+      - unrealized_profits_from_shorts - reserved_amounts - fees
+```
+
+The exploit centered on a cross-contract reentrancy vulnerability that allowed manipulation of the global short position tracking mechanism. The protocol maintains two critical state variables for short positions:
+
+```solidity
+mapping(address => uint256) public globalShortSizes;
+mapping(address => uint256) public globalShortAveragePrices;
+```
+
+These values directly influence AUM calculations and, consequently, GLP token pricing through unrealized PnL.
+
+Under normal conditions, position increases follow two executions paths trough intermediary contracts that update the state correctly:
+
+- PositionRouter's `increasePosition` function, which calls `updateGlobalShortData` in the `ShortsTracker` contract to update the average short price before the position is updated in the `Vault`:
+    ```solidity
+    function increasePosition(
+        address _vault,
+        address _router,
+        address _shortsTracker,
+        address _account,
+        address _collateralToken,
+        address _indexToken,
+        uint256 _sizeDelta,
+        bool _isLong,
+        uint256 _price
+    ) external {
+        //...
+
+        // should be called strictly before position is updated in Vault
+        IShortsTracker(_shortsTracker).updateGlobalShortData(_account, _collateralToken, _indexToken, _isLong, _sizeDelta, markPrice, true);
+
+        ITimelock(timelock).enableLeverage(_vault);
+        IRouter(_router).pluginIncreasePosition(_account, _collateralToken, _indexToken, _sizeDelta, _isLong);
+        ITimelock(timelock).disableLeverage(_vault);
+    }
+    ```
+
+- PositionManager's `executeIncreaseOrder` function, which also calls `updateGlobalShortData` before updating the position in the `Vault`.
+    ```solidity
+    function executeIncreaseOrder(address _account, uint256 _orderIndex, address payable _feeReceiver) external onlyOrderKeeper {
+        //...
+
+        // should be called strictly before position is updated in Vault
+        IShortsTracker(shortsTracker).updateGlobalShortData(_account, collateralToken, indexToken, isLong, sizeDelta, markPrice, true);
+
+        ITimelock(timelock).enableLeverage(_vault);
+        IOrderBook(orderBook).executeIncreaseOrder(_account, _orderIndex, _feeReceiver);
+        ITimelock(timelock).disableLeverage(_vault);
+
+        _emitIncreasePositionReferral(_account, sizeDelta);
+    }
+    ```
+
+Both paths ensure that `updateGlobalShortData` is called before the position is updated in the Vault.
+
+The attacker exploited a cross-contract reentrancy during the order execution path.
+
+A legitimate order execution through `PositionManager.executeDecreaseOrder` was triggered by the keeper, and when eth is transferred back to the attacker, it invoked the `receive()` function in the attacker's malicious contract. This function contained logic that allowed the attacker to call `increasePosition` directly in the `Vault` contract while leverage was still enabled. This call bypassed the intermediary contracts that would normally update the average short price.
+
+```solidity
+function increasePosition(address _account, address _collateralToken, address _indexToken, uint256 _sizeDelta, bool _isLong) external override nonReentrant {
+    _validate(isLeverageEnabled, 28);  // ← This check passes during legitimate operations
+    
+    //...
+
+    if (_isLong) {
+            // guaranteedUsd stores the sum of (position.size - position.collateral) for all positions
+            // if a fee is charged on the collateral then guaranteedUsd should be increased by that fee amount
+            // since (position.size - position.collateral) would have increased by `fee`
+            _increaseGuaranteedUsd(_collateralToken, _sizeDelta.add(fee));
+            _decreaseGuaranteedUsd(_collateralToken, collateralDeltaUsd);
+            // treat the deposited collateral as part of the pool
+            _increasePoolAmount(_collateralToken, collateralDelta);
+            // fees need to be deducted from the pool since fees are deducted from position.collateral
+            // and collateral is treated as part of the pool
+            _decreasePoolAmount(_collateralToken, usdToTokenMin(_collateralToken, fee));
+        } else {
+            if (globalShortSizes[_indexToken] == 0) {
+                globalShortAveragePrices[_indexToken] = price;
+            } else {
+                globalShortAveragePrices[_indexToken] = getNextGlobalShortAveragePrice(_indexToken, price, _sizeDelta);
+            }
+
+            _increaseGlobalShortSize(_indexToken, _sizeDelta);
+        }
+
+    //...
+}
+```
+
+This bypass created a critical state inconsistency in the `ShortsTracker` contract:
+
+- globalShortSizes: Correctly incremented by the direct vault call
+- globalShortAveragePrices: Remained stale, not updated to reflect the new position
+
+The protocol's AUM calculation interpreted the increased short size with an outdated average price as an artificial unrealized loss, inflating the calculated value. This manipulation directly increased GLP redemption rates.
+
+### Attack Overview
+
+The exploit was a sophisticated multi-transaction attack that leveraged a cross-contract reentrancy vulnerability to manipulate the average short price of an asset, ultimately leading to the draining of approximately $42 million USD from the GLP vault.
+
+The attacker exploited a reentrancy vulnerability within the `OrderBook.sol` contract, specifically at the `_transferOutETH` function (https://github.com/gmx-io/gmx-contracts/blob/master/contracts/core/OrderBook.sol#L874). While `OrderBook.sol` utilizes a nonReentrant modifier, this modifier only prevents reentrancy within the same contract. The attacker exploited this limitation by re-entering the `Vault` contract directly from a malicious contract, bypassing intended access controls and business logic.
 
 Under normal operation, the `increasePosition` function in the `Vault` contract is designed to be called exclusively by the `PositionRouter` and `PositionManager` contracts. These intermediary contracts are crucial for correctly calculating and updating the average short price, which directly influences the price of GLP (GMX Liquidity Provider token) by affecting the pending Profit and Loss (PnL) calculation.
 
@@ -113,7 +232,6 @@ Following this, he funded the contract with some USDC and used it to initiate an
 After that, the attacker created a decrease order for the long position, which was also filled by the keeper bot. 
 
 A crucial factor for the exploit lay in the `executeDecreaseOrder` function of the `PositionManager` contract, which the keeper called. Within this function, leverage is explicitly enabled via `ITimelock(timelock).enableLeverage(_vault)` before the call to `IOrderBook(orderBook).executeDecreaseOrder`, and then disabled after it with `ITimelock(timelock).disableLeverage(_vault)`.
-
 
 ```solidity
 function executeDecreaseOrder(address _account, uint256 _orderIndex, address payable _feeReceiver) external onlyOrderKeeper {
@@ -369,7 +487,7 @@ function uniswapV3FlashCallback(
     }
 
     // ... Further position manipulation and GLP mint/redeem
-    
+
     // Repay the flashloan
     USDC.transfer(msg.sender, value1 + value2 + fee1);
 }
