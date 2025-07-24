@@ -88,10 +88,10 @@ The GMX exploit consisted in multiple phases:
     - This loop continues until the ratio condition is met, allowing the attacker to execute a final withdrawal of funds from the `Vault`.
 
 3. Final Exploit Phase:
-    - When the ratio condition is met, the `receive()` function executes a flash loan from the Uniswap V3 pool.
-    - The attacker mints GLP at its market price and opens a massive short position
-    - Due to the manipulated average short price, the system calculates an inflated "short loss," which artificially inflates the AUM for GLP.
-    - The attacker redeems the minted GLP at this inflated price, draining the assets from the pool.
+    - When the ratio condition is met, the `receive()` function executes a flash loan from the `Uniswap V3 Pool`.
+    - The attacker mints `GLP` at its market price and opens a massive short position
+    - Due to the manipulated average short price, the system calculates an inflated "short loss," which artificially inflates the `AUM` for `GLP`.
+    - The attacker redeems the minted `GLP` at this inflated price, draining the assets from the pool.
 
 ## Detailed Description
 
@@ -99,18 +99,18 @@ The GMX exploit consisted in multiple phases:
 
 GMX is a decentralized perpetual trading protocol that allows users to trade with leverage while providing liquidity in a multi-token liquidity pool model. The protocol's core components include:
 
-- GLP tokens represent shares in a diversified basket of assets.
+- `GLP` tokens represent shares in a diversified basket of assets.
 - Perpetual positions can be opened against this liquidity pool.
 - Price oracles provide asset pricing for both trading and liquidity operations.
-- Fee collection generates yield for GLP holders.
+- Fee collection generates yield for `GLP` holders.
 
-The economic foundation of the protocol relies on accurate AUM (Assets Under Management) calculations, which determine GLP token redemption values:
+The economic foundation of the protocol relies on accurate `AUM` (Assets Under Management) calculations, which determine `GLP` token redemption values:
 
 ```
 redeem_amount= ( user_GLP / total_GLP_supply ) × AUM
 ```
 
-Where AUM represents the total value of assets in the GLP pool:
+Where `AUM` represents the total value of assets in the `GLP` pool:
 
 ```
 AUM = sum(token_pool_value) + unrealized_losses_from_shorts 
@@ -124,7 +124,7 @@ mapping(address => uint256) public globalShortSizes;
 mapping(address => uint256) public globalShortAveragePrices;
 ```
 
-These values directly influence AUM calculations and, consequently, GLP token pricing through unrealized PnL.
+These values directly influence `AUM` calculations and, consequently, `GLP` token pricing through unrealized PnL.
 
 Under normal conditions, position increases follow two executions paths trough intermediary contracts that update the state correctly:
 
@@ -168,7 +168,7 @@ Under normal conditions, position increases follow two executions paths trough i
     }
     ```
 
-Both paths ensure that `updateGlobalShortData` is called before the position is updated in the Vault.
+Both paths ensure that `updateGlobalShortData` is called before the position is updated in the `Vault`.
 
 The attacker exploited a cross-contract reentrancy during the order execution path.
 
@@ -181,16 +181,7 @@ function increasePosition(address _account, address _collateralToken, address _i
     //...
 
     if (_isLong) {
-            // guaranteedUsd stores the sum of (position.size - position.collateral) for all positions
-            // if a fee is charged on the collateral then guaranteedUsd should be increased by that fee amount
-            // since (position.size - position.collateral) would have increased by `fee`
-            _increaseGuaranteedUsd(_collateralToken, _sizeDelta.add(fee));
-            _decreaseGuaranteedUsd(_collateralToken, collateralDeltaUsd);
-            // treat the deposited collateral as part of the pool
-            _increasePoolAmount(_collateralToken, collateralDelta);
-            // fees need to be deducted from the pool since fees are deducted from position.collateral
-            // and collateral is treated as part of the pool
-            _decreasePoolAmount(_collateralToken, usdToTokenMin(_collateralToken, fee));
+            //...
         } else {
             if (globalShortSizes[_indexToken] == 0) {
                 globalShortAveragePrices[_indexToken] = price;
@@ -214,11 +205,11 @@ The protocol's AUM calculation interpreted the increased short size with an outd
 
 ### Attack Overview
 
-The exploit was a sophisticated multi-transaction attack that leveraged a cross-contract reentrancy vulnerability to manipulate the average short price of an asset, ultimately leading to the draining of approximately $42 million USD from the GLP vault.
+The exploit was a multi-transaction attack that leveraged a cross-contract reentrancy vulnerability to manipulate the average short price of an asset, ultimately leading to the draining of approximately $42 million USD from the `GLP` vault.
 
-The attacker exploited a reentrancy vulnerability within the `OrderBook.sol` contract, specifically at the `_transferOutETH` function (https://github.com/gmx-io/gmx-contracts/blob/master/contracts/core/OrderBook.sol#L874). While `OrderBook.sol` utilizes a nonReentrant modifier, this modifier only prevents reentrancy within the same contract. The attacker exploited this limitation by re-entering the `Vault` contract directly from a malicious contract, bypassing intended access controls and business logic.
+The attacker exploited a reentrancy vulnerability within the `OrderBook.sol` contract, specifically at the `_transferOutETH` function (https://github.com/gmx-io/gmx-contracts/blob/master/contracts/core/OrderBook.sol#L874). While `OrderBook.sol` utilizes a `nonReentrant` modifier, this modifier only prevents reentrancy within the same contract. The attacker exploited this limitation by re-entering the `Vault` contract directly from a malicious contract, bypassing intended access controls and business logic.
 
-Under normal operation, the `increasePosition` function in the `Vault` contract is designed to be called exclusively by the `PositionRouter` and `PositionManager` contracts. These intermediary contracts are crucial for correctly calculating and updating the average short price, which directly influences the price of GLP (GMX Liquidity Provider token) by affecting the pending Profit and Loss (PnL) calculation.
+Under normal operation, the `increasePosition` function in the `Vault` contract is designed to be called exclusively by the `PositionRouter` and `PositionManager` contracts. These intermediary contracts are crucial for correctly calculating and updating the average short price, which directly influences the price of `GLP` (GMX Liquidity Provider token) by affecting the pending Profit and Loss (PnL) calculation.
 
 The attacker's strategy involved setting up a malicious contract that would be used to interact with the GMX protocol, and had custom logic in the `receive` function to handle incoming Ether and execute the exploit logic.
 
@@ -250,17 +241,16 @@ contract ExploitSC {
 }
 ```
 
-Following this, he funded the contract with some USDC and used it to initiate an order for a long position by calling `createIncreaseOrder`, which was fulfilled by an off-chain keeper bot in another transaction.
+Following this, he funded the contract with some `USDC` and used it to initiate an order for a long position by calling `createIncreaseOrder`, which was fulfilled by an off-chain keeper bot in another transaction.
 
 After that, the attacker created a decrease order for the long position, which was also filled by the keeper bot. 
 
-A crucial factor for the exploit lay in the `executeDecreaseOrder` function of the `PositionManager` contract, which the keeper called. Within this function, leverage is explicitly enabled via `ITimelock(timelock).enableLeverage(_vault)` before the call to `IOrderBook(orderBook).executeDecreaseOrder`, and then disabled after it with `ITimelock(timelock).disableLeverage(_vault)`.
+A key element of the exploit was the `executeDecreaseOrder` function of the `PositionManager` contract, which was called by the keeper. Within this function, leverage is explicitly enabled via `ITimelock(timelock).enableLeverage(_vault)` before the call to `IOrderBook(orderBook).executeDecreaseOrder`, and then disabled after it with `ITimelock(timelock).disableLeverage(_vault)`.
 
 ```solidity
 function executeDecreaseOrder(address _account, uint256 _orderIndex, address payable _feeReceiver) external onlyOrderKeeper {
     //...
 
-    // should be called strictly before position is updated in Vault
     IShortsTracker(shortsTracker).updateGlobalShortData(_account, collateralToken, indexToken, isLong, sizeDelta, markPrice, false);
 
     ITimelock(timelock).enableLeverage(_vault);
@@ -321,10 +311,7 @@ if (wbtcMaxPrice / wbtcGlobalShortAveragePrice > 50) {
         address(VAULT),
         usdcBalance
     );
-
-    uint256 maxPrice = VAULT.getMaxPrice(address(USDC));
-    uint256 sizeDelta = (maxPrice * usdcBalance * 30) / (10 ** 6);
-    
+    //...
     VAULT.increasePosition(
         address(this),
         address(USDC),
@@ -332,16 +319,7 @@ if (wbtcMaxPrice / wbtcGlobalShortAveragePrice > 50) {
         sizeDelta,
         false
     );
-
-    IVault.Position memory position = VAULT.getPosition(
-        address(this),
-        address(USDC),
-        address(WBTC),
-        false
-    );
-
-    ROUTER.approvePlugin(address(POSITION_ROUTER));
-
+    //...
     address[] memory path = new address[](1);
     path[0] = address(USDC);
 
@@ -361,7 +339,7 @@ if (wbtcMaxPrice / wbtcGlobalShortAveragePrice > 50) {
 }
 ```
 
-Here, it transfers USDC to the `Vault` and invokes `VAULT.increasePosition` while leverage was still enabled. This allowed the attacker to create positions with manipulated leverage, bypassing the `PositionRouter` and `PositionManager` contracts. This direct call was instrumental in manipulating the `wbtcGlobalShortAveragePrice` without undergoing the proper calculation and update mechanisms. Subsequently, the `receive()` function would create a new `decreasePosition` order, setting the callback target back to the malicious contract itself.
+Here, it transfers USDC to the `Vault` and invokes `VAULT.increasePosition` while leverage was still enabled. This allowed the attacker to create positions with manipulated leverage, bypassing the `PositionRouter` and `PositionManager` contracts. This direct call was key in manipulating the `wbtcGlobalShortAveragePrice` without undergoing the proper calculation and update mechanisms. After that, the `receive()` function would create a new `decreasePosition` order, setting the callback target back to the malicious contract itself.
 
 The exploit then transitioned into a recursive loop. The `UPDATER` periodically invoked the `setPricesWithBitsAndExecute` function in the `FastPriceFeed` contract, which, as part of its operation, executed pending `decreasePosition` orders, including those newly created by the malicious contract.
 
@@ -383,14 +361,10 @@ function setPricesWithBitsAndExecute(
 }
 ```
 
-Upon the execution of `executeDecreasePosition` in the `PositionRouter` contract by the UPDATER, the `_callRequestCallback` function was called and the callback was directed back to the malicious contract:
+Upon the execution of `executeDecreasePosition` in the `PositionRouter` contract by the `UPDATER`, the `_callRequestCallback` function was called and the callback was directed back to the malicious contract:
 
 ```solidity
 function executeDecreasePosition(bytes32 _key, address payable _executionFeeReceiver) public nonReentrant returns (bool) {
-    //...
-
-    uint256 amountOut = _decreasePosition(request.account, request.path[0], request.indexToken, request.collateralDelta, request.sizeDelta, request.isLong, address(this), request.acceptablePrice);
-
     //...
 
     _callRequestCallback(request.callbackTarget, _key, true, false);
@@ -417,9 +391,9 @@ function gmxPositionCallback(bytes32 positionKey, bool isExecuted, bool isIncrea
 }
 ```
 
-This continuous creation and execution of decreaseOrders between the UPDATER and the KEEPER combined with the direct calls to `increasePosition` in the `Vault` allowed the attacker to systematically drive down the `wbtcGlobalShortAveragePrice` from its legitimate value of approximately $109,505.77 to an artificially depressed $1,913.70. A crucial oversight was that while `globalShortSizes` (the total short position size) was correctly updated by the attacker's actions, the averagePrice within the `getGlobalShortAveragePrice` function, used for AUM calculation, remained uncorrected for these "virtual" short positions opened via reentrancy. This created a deceptive impression within the system that existing short positions were opened at a much lower (manipulated) average price, leading to an artificially inflated perceived AUM (Assets Under Management) for the GLP.
+This continuous creation and execution of decreaseOrders between the `UPDATER` and the `KEEPER` combined with the direct calls to `increasePosition` in the `Vault` allowed the attacker to systematically drive down the `wbtcGlobalShortAveragePrice` from its legitimate value of approximately $109,505.77 to $1,913.70. While `globalShortSizes` (the total short position size) was correctly updated by the attacker's actions, the averagePrice within the `getGlobalShortAveragePrice` function, used for `AUM` calculation, remained uncorrected for these "virtual" short positions opened via reentrancy. This created a deceptive impression within the system that existing short positions were opened at a much lower (manipulated) average price, leading to an artificially inflated perceived `AUM` (Assets Under Management) for the `GLP`.
 
-After some iterations of this loop, the ratio between `wbtcMaxPrice` and `wbtcGlobalShortAveragePrice` reached a point where it was greater than 50, triggering the first branch of the `receive()` function. This allowed the attacker to execute a final withdrawal of funds from the `Vault`, draining all the assets. The first step of this final withdrawal involved a flash loan from the Uniswap V3 pool, which was used to get the necessary funds.
+After some iterations of this loop, the ratio between `wbtcMaxPrice` and `wbtcGlobalShortAveragePrice` reached a point where it was greater than 50, triggering the first branch of the `receive()` function. This allowed the attacker to execute a final withdrawal of funds from the `Vault`, draining all the assets. The first step of this final withdrawal involved a flash loan from the `Uniswap V3 Pool`, which was used to get the necessary funds.
 
 ```solidity
 receive() external payable {
@@ -447,9 +421,9 @@ receive() external payable {
 }
 ```
 
-Within the `uniswapV3FlashCallback` function, the attacker executed the core draining logic. The attacker minted GLP at its then-fair market price. Immediately after, a massive short position was opened. Due to the severely manipulated average short price, the system's calculations reported an astronomical "short loss" for this newly opened position. This fabricated loss catastrophically inflated the calculated AUM for GLP.
+Within the `uniswapV3FlashCallback` function, the attacker executed the core draining logic. The attacker minted `GLP` at its then-fair market price. Immediately after, a massive short position was opened. Due to the severely manipulated average short price, the system's calculations reported a "short loss" for this newly opened position. This fabricated loss inflated the calculated `AUM` for `GLP`.
 
-This inflated AUM, directly influenced by the short losses, caused the GLP price to increase. The attacker then proceeded to redeem the previously minted GLP at this drastically inflated price. It iterated over multiple tokens held in the vault calculating the available amounts and redeeming GLP for each, effectively draining the assets from the pool.
+This inflated `AUM`, directly influenced by the short losses, caused the `GLP` price to increase. The attacker then proceeded to redeem the previously minted `GLP` at this inflated price. It iterated over multiple tokens held in the vault calculating the available amounts and redeeming `GLP` for each, effectively draining the assets from the pool.
 
 
 ```solidity
@@ -458,15 +432,11 @@ function uniswapV3FlashCallback(
     uint256 fee1,
     bytes calldata data
 ) external {
-    (uint256 value1, uint256 value2) = abi.decode(data, (uint256, uint256));
-
-    USDC.approve(address(GLP_MANAGER), value2);
+    //...
     REWARD_ROUTER_V2.mintAndStakeGlp(address(USDC), value2, 0, 0);
+    
     USDC.transfer(address(VAULT), value1);
-
-    uint256 maxPrice = VAULT.getMaxPrice(address(USDC));
-    uint256 sizeDelta = (maxPrice * value1 * 10) / (10 ** 6);
-
+    //...
     VAULT.increasePosition(
         address(this),
         address(USDC),
@@ -478,28 +448,8 @@ function uniswapV3FlashCallback(
     for (uint256 i = 0; i < tokens.length; i++) {
         IERC20 token = IERC20(tokens[i]);
         uint256 tokenDecimal = tokenDecimals[i];
-        uint256 aum = GLP_MANAGER.getAum(false);
-        uint256 glpTotalSupply = GLP.totalSupply();
-        uint256 reservedAmount = VAULT.reservedAmounts(address(token));
-        uint256 poolAmount = VAULT.poolAmounts(address(token));
-        uint256 tokenMinPrice = VAULT.getMinPrice(address(token));
-
-        // Calculate the value of the 'available' token amount in a normalized format (e.g., USD equivalent)
-        // (poolAmount - reservedAmount) gives the truly available liquidity for the token.
-        // Multiplying by tokenMinPrice and dividing by 10^tokenDecimal converts this into a standard value unit,
-        // effectively removing the token's specific decimal scaling.
-        uint256 availableTokenValueNormalized = (tokenMinPrice *
-            (poolAmount - reservedAmount)) / (10 ** tokenDecimal);
-
-        // Apply a small cut (0.1%) to the calculated value
-        uint256 adjustedAvailableTokenValue = (availableTokenValueNormalized *
-                900) / 1000;
-
-        // Calculate the amount of GLP tokens that corresponds to the adjusted available token value.
-        // This uses the standard GMX formula: (AssetValue / AUM) * GLP_TotalSupply = Redeemable GLP Amount
-        uint256 glpAmountToRedeem = (adjustedAvailableTokenValue *
-            glpTotalSupply) / aum;
-
+        
+        //...
 
         REWARD_ROUTER_V2.unstakeAndRedeemGlp(
             address(token),
@@ -509,7 +459,7 @@ function uniswapV3FlashCallback(
         );
     }
 
-    // ... Further position manipulation and GLP mint/redeem
+    //... Further position manipulation and GLP mint/redeem
 
     // Repay the flashloan
     USDC.transfer(msg.sender, value1 + value2 + fee1);
@@ -518,13 +468,16 @@ function uniswapV3FlashCallback(
 
 ## Possible mitigations
 
-1. Restrict Direct Vault Access
-    Remove the ability to call `increasePosition` directly on the Vault contract. All position operations should be forced through authorized router contracts (PositionRouter, PositionManager) that properly handle state synchronization.
+1. Restrict Direct Vault Access:
 
-2. Atomic Global Short Data Updates
+    Remove the ability to call `increasePosition` directly on the Vault contract. All position operations should be forced through authorized router contracts (`PositionRouter`, `PositionManager`) that properly handle state synchronization.
+
+2. Atomic Global Short Data Updates:
+
     Calculate and update `globalShortSizes` and `globalShortAveragePrices` together atomically in a single location, rather than having the logic split between different contracts.
 
-3. Gas-Limited ETH Transfers
+3. Gas-Limited ETH Transfers:
+    
     Implement gas limits on ETH transfers (e.g., 2300 gas) to prevent recipient contracts from executing arbitrary code during the transfer. This gas limit could be configurable through governance to allow adjustments if needed, but should default to a value that only allows basic receive functions without complex logic.
 
 ## Sources and references
