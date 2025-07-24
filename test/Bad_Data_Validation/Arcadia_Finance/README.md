@@ -5,99 +5,52 @@
 - **Total lost:** ~ 3.6 million USD
 - **Category:** Data validation
 - **Vulnerable contracts:**
-    - [Vault](https://arbiscan.io/address/0x489ee077994b6658eafa855c308275ead8097c4a#code)
-    - [GLP Manager](https://arbiscan.io/address/0x321f653eed006ad1c29d174e17d96351bde22649#code)
-
-- **Tokens Lost**
-    - ~ 9749629 USDC
-    
+    - [Rebalancer Spot](https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code)
+    - [Target Account](https://basescan.org/address/0x9529e5988ced568898566782e88012cf11c3ec99#code)
 
 - **Attack transactions:**
 
-    - Setup:
+    - Bait Phase:
 
-        - Exploit contract calls createIncreaseOrder
-        createIncreaseOrder 0
-        https://arbiscan.io/tx/0x0b8cd648fb585bc3d421fc02150013eab79e211ef8d1c68100f2820ce90a4712
-
-        - Keeper executes increase order
-        executeIncreaseOrder 0
-        https://arbiscan.io/tx/0x28a000501ef8e3364b0e7f573256b04b87d9a8e8173410c869004b987bf0beef
-
-        - Exploit contract calls createDecreaseOrder
-        createDecreaseOrder 0
-        https://arbiscan.io/tx/0x20abfeff0206030986b05422080dc9e81dbb53a662fbc82461a47418decc49af
-
-        - Keeper executes decrease order and initiates the loop
-        executeDecreaseOrder 0
-        https://arbiscan.io/tx/0x1f00da742318ad1807b6ea8283bfe22b4a8ab0bc98fe428fbfe443746a4a7353
-
-        - Updater sets prices, executes order and creates a new decrease order
-        setPricesWithBitsAndExecute / createDecreaseOrder 1
-        https://arbiscan.io/tx/0x222cdae82a8d28e53a2bddfb34ae5d1d823c94c53f8a7abc179d47a2c994464e
-
-        - Loop continues until the exploit contract executes final attack
-
-    - Main Attack: 
     
-        - Keeper executes decrease order 5
-        executeDecreaseOrder 5 (MAIN EXPLOIT TX)
-        https://arbiscan.io/tx/0x03182d3f0956a91c4e4c8f225bbc7975f9434fab042228c7acdc5ec9a32626ef
 
-    - Fund Withdrawal:
-
-        - Exploiter withdraws funds from the exploit contract
-        https://arbiscan.io/tx/0x86486dceddcf581d43ab74e2ca381d4a8ee30a405ae17a81f4615986c0c75419
-
+    - Main Attack:
 
 - **Attacker Addresses:**
 
-    - Exploiter's EOA: [0xDF3340A436c27655bA62F8281565C9925C3a5221](https://arbiscan.io/address/0xdf3340a436c27655ba62f8281565c9925c3a5221)
+    - Exploiter's EOA: [0x0fa54e967a9cc5df2af38babc376c91a29878615](https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615)
 
-    - Attacker's Smart Contract: [0x7d3bd50336f64b7a473c51f54e7f0bd6771cc355](https://arbiscan.io/address/0x7D3BD50336f64b7A473C51f54e7f0Bd6771cc355)
+    - Attacker's Smart Contract 1: [0x6250dfd35ca9eee5ea21b5837f6f21425bee4553](https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553)
 
-- **Attack Block:**: 355880237
-- **Date:** July 9, 2025
-- **Reproduce:** `forge test --match-contract Exploit_GMX -vvv --via-ir`
+    - Attacker's Smart Contract 2: [0x1DBC011983288B334397B4F64c29F941bE4DF265](https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265)
+
+- **Attack Block:**: 32881499 (First attack transaction to drain funds)
+- **Date:** July 14, 2025
+- **Reproduce:** `forge test --match-contract Exploit_ArcadiaFinance -vvv --via-ir`
 
 ## Step-by-step Overview
 
+1. Bait Phase:
+    - The attacker deployed two contracts that triggered ArcadiaFi's automated circuit breakers, pausing the protocol.
+    - The team investigated and found no immediate threat, leading them to unpause the protocol.
+    - After unpausing, the protocol entered a cooldown period where it cannot be paused again for a specified time window, leaving it vulnerable during this period.
+
+2. Setup:
+    - Attacker deployed multiple exploit contracts designed to interact with the Arcadia Protocol.
+    - Created multiple Arcadia accounts that would be used for the attack execution.
+
+3. Attack Execution:
+    - The attacker took three Morpho flashloans totaling approximately $1.5 billion to obtain sufficient capital.
+    - Linked the Asset Manager to his own account, designating himself as the initiator to gain control over rebalancing operations.
+    - Created a small LP position.
+    - Repaid the debt of the target account to manipulate its health status.
+    - Triggered a rebalance operation for his own LP position, injecting malicious custom calldata instead of standard swap parameters.
+    - Exploited missing validation in the rebalancing mechanism to execute an arbitrary call to the victim's Arcadia Account. This allowed the attacker to hijack the `msg.sender` of the Rebalancer contract (Asset Manager) and execute `flashAction` in the target account, enabling him to withdraw remaining funds.
+    - Since the target account had no debt left, the account remained healthy, allowing the attacker to withdraw all funds without triggering any health checks.
+    - Repayed the flashloan debt.
+    - Kept remaining funds.
+
 ## Detailed Description
-
-```solidity
-function _swapViaRouter(
-    address positionManager,
-    Rebalancer.PositionState memory position,
-    bool zeroToOne,
-    bytes memory swapData
-) internal returns (uint256 balance0, uint256 balance1) {
-    // Decode the swap data.
-    (address router, uint256 amountIn, bytes memory data) = abi.decode(swapData, (address, uint256, bytes));
-
-    // Approve token to swap.
-    address tokenToSwap = zeroToOne ? position.token0 : position.token1;
-    ERC20(tokenToSwap).safeApproveWithRetry(router, amountIn);
-
-    // Execute arbitrary swap.
-    (bool success, bytes memory result) = router.call(data);
-    require(success, string(result));
-
-    // Pool should still be balanced (within tolerance boundaries) after the swap.
-    // Since the swap went potentially through the pool itself (but does not have to),
-    // the sqrtPriceX96 might have moved and brought the pool out of balance.
-    // By fetching the sqrtPriceX96, the transaction will revert in that case on the balance check.
-    if (positionManager == address(UniswapV3Logic.POSITION_MANAGER)) {
-        (position.sqrtPriceX96,,,,,,) = IUniswapV3Pool(position.pool).slot0();
-    } else {
-        // Logic holds for both Slipstream and staked Slipstream positions.
-        (position.sqrtPriceX96,,,,,) = ICLPool(position.pool).slot0();
-    }
-
-    // Update the balances.
-    balance0 = ERC20(position.token0).balanceOf(address(this));
-    balance1 = ERC20(position.token1).balanceOf(address(this));
-}
-```
 
 ### Root Cause
 
@@ -105,13 +58,8 @@ function _swapViaRouter(
 
 ## Possible mitigations
 
-
 ## Sources and references
 
-- [Rekt]()
-- [Tweet]()
-
----
-
-REBALANCER.rebalance
-ACCOUNT_1.flashAction
+- [Rekt](https://rekt.news/arcadiafi-rekt)
+- [Arcadia PostMortem](https://arcadiafinance.notion.site/Arcadia-Post-Mortem-14-07-2025-23104482afa780fdb291cd3f41b7fc99)
+- [PashovAuditGroup Tweet](https://x.com/PashovAuditGrp/status/1945467861654290433)
