@@ -264,6 +264,10 @@ This process was repeated multiple times using different victim addresses and ac
 
 ## Possible mitigations
 
+- Strict Input Validation: a check should be performed to ensure the router address is not an Arcadia Account, or ideally, it should be restricted to a pre-approved whitelist of legitimate DEX routers.
+
+- Use Intermediary Contracts: use an intermediate, isolated smart contract with no special permissions on Arcadia's core contracts to handle external interactions like swaps. This would prevent the msg.sender context of privileged contracts from being hijacked.
+
 ## Sources and references
 
 - [Rekt](https://rekt.news/arcadiafi-rekt)
