@@ -6,15 +6,36 @@
 - **Category:** Data validation
 - **Vulnerable contracts:**
     - [Rebalancer Spot](https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code)
-    - [Target Account](https://basescan.org/address/0x9529e5988ced568898566782e88012cf11c3ec99#code)
 
 - **Attack transactions:**
 
     - Bait Phase:
+        - Contract creation 
+        https://basescan.org/tx/0x0b2b055a4900a8b6c1f21e7c188811e0d67ead3eaa6f7c2c5242f0d4817b32e0
 
-    
+        - Protocol pause
+        https://basescan.org/tx/0x23c3796c42dbca0148975729a5f2dddf539c4c7a8284289e12190fbd5a6c091b
+
+        - Unpause
+        https://basescan.org/tx/0x38b744e967e6d6ed8870619ac2f35b6d5612a396eaf3ba981ed754c7395c310d#eventlog
 
     - Main Attack:
+        - Deploy exploit hook contract
+        https://basescan.org/tx/0xd384589bae3deeb147df65d26ce1e9e8d2386ebbd7b4a2a5018161e766e4c625
+
+        - Deploy exploit contract
+        https://basescan.org/tx/0x28b20fb13d0f0df428da076a25e5ae9c889a17cfa7a5b463ae477c47d855e5d1
+
+        - Create 15 Arcadia accounts
+        https://basescan.org/tx/0xeb1cbbe6cf195d7e23f2c967542b70031a220feacca010f5a35c0046d1a1820a
+
+        - Attack Transaction 1
+        https://basescan.org/tx/0x06ce76eae6c12073df4aaf0b4231f951e4153a67f3abc1c1a547eb57d1218150
+
+        - Attack Transaction 2
+        https://basescan.org/tx/0x0b9bed09d241cef8078e6708909f98574c33ee06abcc2f80bc41731cd462d60b
+
+        - Exploit continues with multiple transactions, draining funds from various accounts.
 
 - **Attacker Addresses:**
 
