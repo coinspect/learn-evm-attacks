@@ -1,67 +1,42 @@
-# Arcadia Finance
-
-- **Type:** Exploit
-- **Network:** Base
-- **Total lost:** ~ 3.6 million USD
-- **Category:** Data validation
-- **Vulnerable contracts:**
-    - [Rebalancer Spot](https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code)
-
-- **Attack transactions:**
-
-    - Bait Phase:
-        - Contract creation 
-        https://basescan.org/tx/0x0b2b055a4900a8b6c1f21e7c188811e0d67ead3eaa6f7c2c5242f0d4817b32e0
-
-        - Protocol pause
-        https://basescan.org/tx/0x23c3796c42dbca0148975729a5f2dddf539c4c7a8284289e12190fbd5a6c091b
-
-        - Unpause
-        https://basescan.org/tx/0x38b744e967e6d6ed8870619ac2f35b6d5612a396eaf3ba981ed754c7395c310d#eventlog
-
-    - Main Attack:
-        - Deploy exploit hook contract
-        https://basescan.org/tx/0xd384589bae3deeb147df65d26ce1e9e8d2386ebbd7b4a2a5018161e766e4c625
-
-        - Deploy exploit contract
-        https://basescan.org/tx/0x28b20fb13d0f0df428da076a25e5ae9c889a17cfa7a5b463ae477c47d855e5d1
-
-        - Create 15 Arcadia accounts
-        https://basescan.org/tx/0xeb1cbbe6cf195d7e23f2c967542b70031a220feacca010f5a35c0046d1a1820a
-
-        - Attack Transaction 1
-        https://basescan.org/tx/0x06ce76eae6c12073df4aaf0b4231f951e4153a67f3abc1c1a547eb57d1218150
-
-        - Attack Transaction 2
-        https://basescan.org/tx/0x0b9bed09d241cef8078e6708909f98574c33ee06abcc2f80bc41731cd462d60b
-
-        - Exploit continues with multiple transactions, draining funds from various accounts.
-
-- **Attacker Addresses:**
-
-    - Exploiter's EOA: [0x0fa54e967a9cc5df2af38babc376c91a29878615](https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615)
-
-    - Attacker's Smart Contract 1: [0x6250dfd35ca9eee5ea21b5837f6f21425bee4553](https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553)
-
-    - Attacker's Smart Contract 2: [0x1DBC011983288B334397B4F64c29F941bE4DF265](https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265)
-
-- **Attack Block:**: 32881499 (First attack transaction to drain funds)
-- **Date:** July 14, 2025
-- **Reproduce:** `forge test --match-contract Exploit_ArcadiaFinance -vvv --via-ir`
+---
+title: Arcadia Finance
+type: Exploit
+network: Base
+date: 2025-07-14
+loss_usd: 3600000
+category: Data validation
+vulnerable_contracts:
+  - https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code
+attacker_addresses:
+  - https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615
+  - https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553
+  - https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265
+attack_block: 32881499
+reproduction_command: forge test --match-contract Exploit_ArcadiaFinance -vvv --via-ir
+attack_txs:
+  - https://basescan.org/tx/0x0b2b055a4900a8b6c1f21e7c188811e0d67ead3eaa6f7c2c5242f0d4817b32e0
+  - https://basescan.org/tx/0x23c3796c42dbca0148975729a5f2dddf539c4c7a8284289e12190fbd5a6c091b
+  - https://basescan.org/tx/0x38b744e967e6d6ed8870619ac2f35b6d5612a396eaf3ba981ed754c7395c310d
+  - https://basescan.org/tx/0xd384589bae3deeb147df65d26ce1e9e8d2386ebbd7b4a2a5018161e766e4c625
+  - https://basescan.org/tx/0x28b20fb13d0f0df428da076a25e5ae9c889a17cfa7a5b463ae477c47d855e5d1
+  - https://basescan.org/tx/0xeb1cbbe6cf195d7e23f2c967542b70031a220feacca010f5a35c0046d1a1820a
+  - https://basescan.org/tx/0x06ce76eae6c12073df4aaf0b4231f951e4153a67f3abc1c1a547eb57d1218150
+  - https://basescan.org/tx/0x0b9bed09d241cef8078e6708909f98574c33ee06abcc2f80bc41731cd462d60b
+---
 
 ## Step-by-step Overview
 
 1. Bait Phase:
-    - The attacker deployed two contracts that triggered ArcadiaFi's automated circuit breakers, pausing the protocol.
-    - The team investigated and found no immediate threat, leading them to unpause the protocol.
+    - The attacker deployed two contracts that triggered ArcadiaFi's automated circuit breakers, pausing the protocol (https://basescan.org/tx/0x0b2b055a4900a8b6c1f21e7c188811e0d67ead3eaa6f7c2c5242f0d4817b32e0 , https://basescan.org/tx/0x23c3796c42dbca0148975729a5f2dddf539c4c7a8284289e12190fbd5a6c091b).
+    - The team investigated and found no immediate threat, leading them to unpause the protocol (https://basescan.org/tx/0x38b744e967e6d6ed8870619ac2f35b6d5612a396eaf3ba981ed754c7395c310d).
     - After unpausing, the protocol entered a cooldown period where it cannot be paused again for a specified time window, leaving it vulnerable during this period.
 
 2. Setup:
-    - Attacker deployed multiple exploit contracts designed to interact with the Arcadia Protocol.
-    - Created multiple Arcadia accounts that would be used for the attack execution.
+    - Attacker deployed multiple exploit contracts designed to interact with the Arcadia Protocol (https://basescan.org/tx/0xd384589bae3deeb147df65d26ce1e9e8d2386ebbd7b4a2a5018161e766e4c625, https://basescan.org/tx/0x28b20fb13d0f0df428da076a25e5ae9c889a17cfa7a5b463ae477c47d855e5d1).
+    - Created multiple Arcadia accounts that would be used for the attack execution (https://basescan.org/tx/0xeb1cbbe6cf195d7e23f2c967542b70031a220feacca010f5a35c0046d1a1820a).
 
 3. Attack Execution:
-    - The attacker took three Morpho flashloans totaling approximately $1.5 billion to obtain sufficient capital.
+    - The attacker took three Morpho flashloans totaling approximately $1.5 billion to obtain sufficient capital (https://basescan.org/tx/0x06ce76eae6c12073df4aaf0b4231f951e4153a67f3abc1c1a547eb57d1218150).
     - Linked the Asset Manager to his own account, designating himself as the initiator to gain control over rebalancing operations.
     - Created a small LP position.
     - Repaid the debt of the target account to manipulate its health status.
