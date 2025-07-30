@@ -1,71 +1,37 @@
-# GMX Protocol
-
-- **Type:** Exploit
-- **Network:** Arbitrum
-- **Total lost:** ~ 42 million USD
-- **Category:** Reentrancy / Business Logic
-- **Vulnerable contracts:**
-    - [Vault](https://arbiscan.io/address/0x489ee077994b6658eafa855c308275ead8097c4a#code)
-    - [GLP Manager](https://arbiscan.io/address/0x321f653eed006ad1c29d174e17d96351bde22649#code)
-
-- **Tokens Lost**
-    - ~ 9749629 USDC
-    - ~ 88 WBTC
-    - ~ 3205 WETH
-    - ~ 187343 USDC.E
-    - ~ 23800 LINK
-    - ~ 65479 UNI
-    - ~ 1343601 USDT
-    - ~ 10548626 FRAX
-    - ~ 1338385 DAI
-
-- **Attack transactions:**
-
-    - Setup:
-
-        - Exploit contract calls createIncreaseOrder
-        createIncreaseOrder 0
-        https://arbiscan.io/tx/0x0b8cd648fb585bc3d421fc02150013eab79e211ef8d1c68100f2820ce90a4712
-
-        - Keeper executes increase order
-        executeIncreaseOrder 0
-        https://arbiscan.io/tx/0x28a000501ef8e3364b0e7f573256b04b87d9a8e8173410c869004b987bf0beef
-
-        - Exploit contract calls createDecreaseOrder
-        createDecreaseOrder 0
-        https://arbiscan.io/tx/0x20abfeff0206030986b05422080dc9e81dbb53a662fbc82461a47418decc49af
-
-        - Keeper executes decrease order and initiates the loop
-        executeDecreaseOrder 0
-        https://arbiscan.io/tx/0x1f00da742318ad1807b6ea8283bfe22b4a8ab0bc98fe428fbfe443746a4a7353
-
-        - Updater sets prices, executes order and creates a new decrease order
-        setPricesWithBitsAndExecute / createDecreaseOrder 1
-        https://arbiscan.io/tx/0x222cdae82a8d28e53a2bddfb34ae5d1d823c94c53f8a7abc179d47a2c994464e
-
-        - Loop continues until the exploit contract executes final attack
-
-    - Main Attack: 
-    
-        - Keeper executes decrease order 5
-        executeDecreaseOrder 5 (MAIN EXPLOIT TX)
-        https://arbiscan.io/tx/0x03182d3f0956a91c4e4c8f225bbc7975f9434fab042228c7acdc5ec9a32626ef
-
-    - Fund Withdrawal:
-
-        - Exploiter withdraws funds from the exploit contract
-        https://arbiscan.io/tx/0x86486dceddcf581d43ab74e2ca381d4a8ee30a405ae17a81f4615986c0c75419
-
-
-- **Attacker Addresses:**
-
-    - Exploiter's EOA: [0xDF3340A436c27655bA62F8281565C9925C3a5221](https://arbiscan.io/address/0xdf3340a436c27655ba62f8281565c9925c3a5221)
-
-    - Attacker's Smart Contract: [0x7d3bd50336f64b7a473c51f54e7f0bd6771cc355](https://arbiscan.io/address/0x7D3BD50336f64b7A473C51f54e7f0Bd6771cc355)
-
-- **Attack Block:**: 355880237
-- **Date:** July 9, 2025
-- **Reproduce:** `forge test --match-contract Exploit_GMX -vvv --via-ir`
+---
+title: GMX Protocol
+type: Exploit
+network: Arbitrum
+date: 2025-07-09
+loss_usd: 42000000
+category: Reentrancy / Business Logic
+vulnerable_contracts:
+  - https://arbiscan.io/address/0x489ee077994b6658eafa855c308275ead8097c4a#code
+  - https://arbiscan.io/address/0x321f653eed006ad1c29d174e17d96351bde22649#code
+tokens_lost:
+  - USDC
+  - WBTC
+  - WETH
+  - USDC.E
+  - LINK
+  - UNI
+  - USDT
+  - FRAX
+  - DAI
+attacker_addresses:
+  - https://arbiscan.io/address/0xdf3340a436c27655ba62f8281565c9925c3a5221
+  - https://arbiscan.io/address/0x7D3BD50336f64b7A473C51f54e7f0Bd6771cc355
+attack_block: 355880237
+reproduction_command: "forge test --match-contract Exploit_GMX -vvv --via-ir"
+attack_txs:
+  - https://arbiscan.io/tx/0x0b8cd648fb585bc3d421fc02150013eab79e211ef8d1c68100f2820ce90a4712
+  - https://arbiscan.io/tx/0x28a000501ef8e3364b0e7f573256b04b87d9a8e8173410c869004b987bf0beef
+  - https://arbiscan.io/tx/0x20abfeff0206030986b05422080dc9e81dbb53a662fbc82461a47418decc49af
+  - https://arbiscan.io/tx/0x1f00da742318ad1807b6ea8283bfe22b4a8ab0bc98fe428fbfe443746a4a7353
+  - https://arbiscan.io/tx/0x222cdae82a8d28e53a2bddfb34ae5d1d823c94c53f8a7abc179d47a2c994464e
+  - https://arbiscan.io/tx/0x03182d3f0956a91c4e4c8f225bbc7975f9434fab042228c7acdc5ec9a32626ef
+  - https://arbiscan.io/tx/0x86486dceddcf581d43ab74e2ca381d4a8ee30a405ae17a81f4615986c0c75419
+---
 
 ## Step-by-step Overview
 
@@ -74,24 +40,27 @@ The GMX exploit consisted in multiple phases:
 1. Setup phase:
     - Attacker deploys a contract with functionality to interact with the GMX protocol and a custom `receive()` function containing the exploit logic.
     - The attacker funds the contract.
-    - The attacker creates an order for a long position using the `createIncreaseOrder` function in the `OrderBook` contract.
-    - A keeper executes this order.
-    - The attacker then creates a decrease order for the long position using the `createDecreaseOrder` function in the `OrderBook` contract.
-    - The keeper executes this decrease order, returning eth to the malicious contract and triggering the exploit logic in the `receive()` function.
+    - The attacker creates an order for a long position using the `createIncreaseOrder` function in the `OrderBook` contract (https://arbiscan.io/tx/0x0b8cd648fb585bc3d421fc02150013eab79e211ef8d1c68100f2820ce90a4712).
+    - A keeper executes this order (https://arbiscan.io/tx/0x28a000501ef8e3364b0e7f573256b04b87d9a8e8173410c869004b987bf0beef).
+    - The attacker then creates a decrease order for the long position using the `createDecreaseOrder` function in the `OrderBook` contract (https://arbiscan.io/tx/0x20abfeff0206030986b05422080dc9e81dbb53a662fbc82461a47418decc49af).
+    - The keeper executes this decrease order, returning eth to the malicious contract and triggering the exploit logic in the `receive()` function (https://arbiscan.io/tx/0x1f00da742318ad1807b6ea8283bfe22b4a8ab0bc98fe428fbfe443746a4a7353).
 
 2. Primary Exploit Phase:
     - The `receive()` function in the malicious contract checks the ratio between `wbtcMaxPrice` and `wbtcGlobalShortAveragePrice`.
     - If the ratio is not greater than 50, calls `increasePosition` directly in the `Vault` contract while leverage is still enabled.
     - This call bypasses the intermediary contracts that would normally update the average short price, creating a state inconsistency.
     - Then, creates a new decrease position using the `createDecreasePosition` function in the `PositionRouter` contract, passing itself as the callback target.
-    - The exploit creates a recursive loop where the `UPDATER` periodically executes pending decrease positions, which in turn calls the malicious contract's `gmxPositionCallback` function, creating new decrease orders and perpetuating the cycle.
+    - The exploit creates a recursive loop where the `UPDATER` periodically executes pending decrease positions, which in turn calls the malicious contract's `gmxPositionCallback` function, creating new decrease orders and perpetuating the cycle (https://arbiscan.io/tx/0x222cdae82a8d28e53a2bddfb34ae5d1d823c94c53f8a7abc179d47a2c994464e).
     - This loop continues until the ratio condition is met, allowing the attacker to execute a final withdrawal of funds from the `Vault`.
 
 3. Final Exploit Phase:
-    - When the ratio condition is met, the `receive()` function executes a flash loan from the `Uniswap V3 Pool`.
+    - When the ratio condition is met, the `receive()` function executes a flash loan from the `Uniswap V3 Pool` (https://arbiscan.io/tx/0x03182d3f0956a91c4e4c8f225bbc7975f9434fab042228c7acdc5ec9a32626ef).
     - The attacker mints `GLP` at its market price and opens a massive short position
     - Due to the manipulated average short price, the system calculates an inflated "short loss," which artificially inflates the `AUM` for `GLP`.
     - The attacker redeems the minted `GLP` at this inflated price, draining the assets from the pool.
+
+4. Fund Withdrawal:
+    - The attacker withdraws the drained funds from the exploit contract, completing the attack (https://arbiscan.io/tx/0x86486dceddcf581d43ab74e2ca381d4a8ee30a405ae17a81f4615986c0c75419).
 
 ## Detailed Description
 
