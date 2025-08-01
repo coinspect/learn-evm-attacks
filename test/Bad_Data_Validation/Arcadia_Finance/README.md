@@ -8,9 +8,12 @@ category: Data validation
 vulnerable_contracts:
   - https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code
 attacker_addresses:
-  - https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615
-  - https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553
-  - https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265
+  - title: Exploiter's EOA
+    url: https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615
+  - title: Attacker's Smart Contract 1
+    url: https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553
+  - title: Attacker's Smart Contract 2
+    url: https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265
 attack_block: 32881499
 reproduction_command: forge test --match-contract Exploit_ArcadiaFinance -vvv --via-ir
 attack_txs:
