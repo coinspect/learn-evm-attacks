@@ -8,12 +8,9 @@ category: Data validation
 vulnerable_contracts:
   - https://basescan.org/address/0xC729213B9b72694F202FeB9cf40FE8ba5F5A4509#code
 attacker_addresses:
-  - title: Exploiter's EOA
-    url: https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615
-  - title: Attacker's Smart Contract 1
-    url: https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553
-  - title: Attacker's Smart Contract 2
-    url: https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265
+  - https://basescan.org/address/0x0fa54e967a9cc5df2af38babc376c91a29878615
+  - https://basescan.org/address/0x6250dfd35ca9eee5ea21b5837f6f21425bee4553
+  - https://basescan.org/address/0x1DBC011983288B334397B4F64c29F941bE4DF265
 attack_block: 32881499
 reproduction_command: forge test --match-contract Exploit_ArcadiaFinance -vvv --via-ir
 attack_txs:
@@ -25,6 +22,13 @@ attack_txs:
   - https://basescan.org/tx/0xeb1cbbe6cf195d7e23f2c967542b70031a220feacca010f5a35c0046d1a1820a
   - https://basescan.org/tx/0x06ce76eae6c12073df4aaf0b4231f951e4153a67f3abc1c1a547eb57d1218150
   - https://basescan.org/tx/0x0b9bed09d241cef8078e6708909f98574c33ee06abcc2f80bc41731cd462d60b
+sources:
+  - title: Rekt
+    url: https://rekt.news/arcadiafi-rekt
+  - title: Arcadia PostMortem
+    url: https://arcadiafinance.notion.site/Arcadia-Post-Mortem-14-07-2025-23104482afa780fdb291cd3f41b7fc99
+  - title: PashovAuditGroup Tweet
+    url: https://x.com/PashovAuditGrp/status/1945467861654290433
 ---
 
 ## Step-by-step Overview
@@ -244,9 +248,3 @@ This process was repeated multiple times using different victim addresses and ac
 - Strict Input Validation: a check should be performed to ensure the router address is not an Arcadia Account, or ideally, it should be restricted to a pre-approved whitelist of legitimate DEX routers.
 
 - Use Intermediary Contracts: use an intermediate, isolated smart contract with no special permissions on Arcadia's core contracts to handle external interactions like swaps. This would prevent the msg.sender context of privileged contracts from being hijacked.
-
-## Sources and references
-
-- [Rekt](https://rekt.news/arcadiafi-rekt)
-- [Arcadia PostMortem](https://arcadiafinance.notion.site/Arcadia-Post-Mortem-14-07-2025-23104482afa780fdb291cd3f41b7fc99)
-- [PashovAuditGroup Tweet](https://x.com/PashovAuditGrp/status/1945467861654290433)
