@@ -31,6 +31,11 @@ attack_txs:
   - https://arbiscan.io/tx/0x222cdae82a8d28e53a2bddfb34ae5d1d823c94c53f8a7abc179d47a2c994464e
   - https://arbiscan.io/tx/0x03182d3f0956a91c4e4c8f225bbc7975f9434fab042228c7acdc5ec9a32626ef
   - https://arbiscan.io/tx/0x86486dceddcf581d43ab74e2ca381d4a8ee30a405ae17a81f4615986c0c75419
+sources:
+  - title: Rekt
+    url: https://rekt.news/gmx-rekt
+  - title: GMX Tweet
+    url: https://x.com/gmx_io/status/1943336664102756471
 ---
 
 ## Step-by-step Overview
@@ -448,8 +453,3 @@ function uniswapV3FlashCallback(
 3. Gas-Limited ETH Transfers:
     
     Implement gas limits on ETH transfers (e.g., 2300 gas) to prevent recipient contracts from executing arbitrary code during the transfer. This gas limit could be configurable through governance to allow adjustments if needed, but should default to a value that only allows basic receive functions without complex logic.
-
-## Sources and references
-
-- [Rekt](https://rekt.news/gmx-rekt)
-- [GMX Tweet](https://x.com/gmx_io/status/1943336664102756471?s=46)
