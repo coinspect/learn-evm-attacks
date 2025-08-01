@@ -1,28 +1,37 @@
-# Exploited Polter Finance
-- **Type:** Exploit
-- **Network:** Fantom
-- **Total lost:** ~ 8.7 M 
-- **Category:** Oracle Manipulation
-- **Vulnerable contracts:**
-- - [0x867fAa51b3A437B4E2e699945590Ef4f2be2a6d5](https://ftmscan.com/address/0x867fAa51b3A437B4E2e699945590Ef4f2be2a6d5#code)
-- **Tokens Lost**
-- - 9,129,844 WFT
-- - 26.69     BOO
-- - 475.24    WSOL
-- - 0.23      WBTC
-- - 10.96     WETH
-- - 8763      MIM
-- - 56,881    USDC
-- - 1,997,342 sFTMX
-- - 26,002    axlUSDC
-- **Attack transactions:**
-- - [0x5118df23e81603a64c7676dd6b6e4f76a57e4267e67507d34b0b26dd9ee10eac](https://ftmscan.com/tx/0x5118df23e81603a64c7676dd6b6e4f76a57e4267e67507d34b0b26dd9ee10eac)
-
-- - Deployer EOA: [0x511f427Cdf0c4e463655856db382E05D79Ac44a6](https://ftmscan.com/address/0x511f427Cdf0c4e463655856db382E05D79Ac44a6)
-
-- **Attack Block:**: 97508838 
-- **Date:** Nov 16, 2024
-- **Reproduce:** `forge test --match-contract Exploit_Polter_Finance -vvv`
+---
+title: Polter Finance
+type: Exploit
+network: [Fantom]
+date: 2024-11-16
+loss_usd: 8700000
+returned_usd: 0
+tags: [business logic, price manipulation]
+subcategory: N/A
+vulnerable_contracts:
+  - "0x867fAa51b3A437B4E2e699945590Ef4f2be2a6d5"
+tokens_lost:
+  - WFT
+  - BOO
+  - WSOL
+  - WBTC
+  - WETH
+  - MIM
+  - USDC
+  - sFTMX
+  - axlUSDC
+attacker_addresses:
+  - "0x511f427Cdf0c4e463655856db382E05D79Ac44a6"
+malicious_token: N/A
+attack_block: 97508838
+reproduction_command: forge test --match-contract Exploit_Polter_Finance -vvv
+attack_txs:
+  - "0x5118df23e81603a64c7676dd6b6e4f76a57e4267e67507d34b0b26dd9ee10eac"
+sources:
+  - title: 0xNickLFranklin tweet
+    url: https://x.com/0xNickLFranklin/status/1858402633935126969
+  - title: Bcpaintball26 tweet
+    url: https://x.com/Bcpaintball26/status/1857865758551805976
+---
 
 ## Step-by-step Overview
 
@@ -31,25 +40,29 @@ The Polter Finance protocol's critical vulnerability stemmed from trusting Spook
 Here's how the attacker leveraged this vulnerability:
 
 1. Setup (Get Initial Flash Loan)
-    - Flash loan BOO tokens from SpookySwap V3 pool
-    - Prepare for subsequent operations with obtained liquidity
+
+   - Flash loan BOO tokens from SpookySwap V3 pool
+   - Prepare for subsequent operations with obtained liquidity
 
 2. Additional Liquidity (V2 Flash Swap)
-    - Perform V2 flash swap to get additional BOO tokens
-    - This provides more tokens for the attack setup
+
+   - Perform V2 flash swap to get additional BOO tokens
+   - This provides more tokens for the attack setup
 
 3. Collateral Setup
-    - Deposit minimal collateral (1e18 BOO) into Polter Finance
+
+   - Deposit minimal collateral (1e18 BOO) into Polter Finance
 
 4. Exploit Execution
-    - Systematically drain multiple token reserves through uncollateralized borrowing
-    - Target high-value tokens in sequence
-    - Transfer stolen assets to attacker address
+
+   - Systematically drain multiple token reserves through uncollateralized borrowing
+   - Target high-value tokens in sequence
+   - Transfer stolen assets to attacker address
 
 5. Flash Loan Repayment
-    - Swap 5000 WFTM back to BOO tokens
-    - Repay flash loan obligations
-    - Keep remaining stolen assets as profit
+   - Swap 5000 WFTM back to BOO tokens
+   - Repay flash loan obligations
+   - Keep remaining stolen assets as profit
 
 ## Detailed Description
 
@@ -120,13 +133,7 @@ function swapWftmToBoo(uint256 _amountOut) internal {
 
 ```
 
-
 ## Possible mitigations
 
 1. Implement decentralized oracles with multi-source price feeds to prevent price manipulation.
 2. Use TWAP oracles to protect against flash loan attacks and price volatility.
-
-## Sources and references
-
-- [@0xNickLFranklin tweet](https://x.com/0xNickLFranklin/status/1858402633935126969)
-- [@Bcpaintball26 tweet](https://x.com/Bcpaintball26/status/1857865758551805976)

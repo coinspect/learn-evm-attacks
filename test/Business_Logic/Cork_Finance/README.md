@@ -1,33 +1,33 @@
-# Cork Finance
-
-- **Type:** Exploit
-- **Network:** Ethereum
-- **Total lost:** 3,761 wstETH (approximately $7.2 million USD at the time of the incident)
-- **Category:** Business Logic / Oracle Manipulation / Access Control Bypass
-
-- **Vulnerable contracts:**
-- - Cork Hook (specifically, `beforeSwap` logic and its interoperation with `FlashSwapRouter`)
-- - FlashSwapRouter (`corkCall` and its dependence on external data)
-- - ModuleCore (role in the issuance of new assets with external rate providers)
-- - ExchangeRateProvider (susceptible to manipulation by privileged roles, and vulnerable to impersonation for newly created markets)
-
-- **Attack transactions:**
-
-- - Phase 1: [0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0](https://etherscan.io/tx/0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0) (Exploitation of rollover pricing for Cover Tokens)
-
-- - Phase 2: [0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d](https://etherscan.io/tx/0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d) (Extraction of Depeg Swaps via Cork Hook access control bypass)
-
-- **Attacker Addresses:**
-
-- - Exploiter's EOA: [0xEA6f30e360192bae715599E15e2F765B49E4da98](https://etherscan.io/address/0xea6f30e360192bae715599e15e2f765b49e4da98)
-
-- - Attacker's Smart Contract 1: [0x6e54115de254805365c2d9c8a2eeb9b52e54668f](https://etherscan.io/address/0x6e54115de254805365c2d9c8a2eeb9b52e54668f)
-
-Attacker's Smart Contract 2 (Malicious Hook): [0x9af3dce0813fd7428c47f57a39da2f6dd7c9bb09](https://etherscan.io/address/0x9af3dce0813fd7428c47f57a39da2f6dd7c9bb09)
-
-- **Date:** Attack Date: May 28, 2025
-
-- **Reproduce:** `RPC_URL=<rpc_url> forge test --match-contract Exploit_CorkFinance -vvv`
+---
+title: Cork Finance
+type: Exploit
+network: [ethereum]
+date: 2025-05-28
+loss_usd: 7200000
+returned_usd: 0
+tags: [business logic, price manipulation, access control]
+subcategory: N/A
+vulnerable_contracts: "0xccd90f6435dd78c4ecced1fa4db0d7242548a2a9"
+tokens_lost:
+  - wstETH
+attacker_addresses:
+  - "0xEA6f30e360192bae715599E15e2F765B49E4da98"
+  - "0x6e54115de254805365c2d9c8a2eeb9b52e54668f"
+  - "0x9af3dce0813fd7428c47f57a39da2f6dd7c9bb09"
+malicious_token: N/A
+attack_block: 22580952
+reproduction_command: RPC_URL=<rpc_url> forge test --match-contract Exploit_CorkFinance -vvv
+attack_txs:
+  - "0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0"
+  - "0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d"
+sources:
+  - title: Cork Protocol Post-Mortem
+    url: https://www.cork.tech/blog/post-mortem
+  - title: Rekt
+    url: https://rekt.news/cork-protocol-rekt
+  - title: Uniswap V4 Reference Docs
+    url: https://docs.uniswap.org/contracts/v4/overview
+---
 
 ## Step-by-step Overview
 
@@ -202,9 +202,3 @@ Based on the identified vulnerabilities and the post-mortem's action plan, sever
 - **HIYA Formula Review:** Re-evaluate and potentially re-engineer the HIYA formula, particularly its sensitivity to low-volume trades and close-to-expiry conditions. Consider introducing minimum volume thresholds or time-weighted average price (TWAP) mechanisms for historical data inclusion to mitigate sudden spikes in risk premium calculations.
 
 - **Circuit Breakers:** Implement circuit breakers for large or anomalous trades/movements of assets based on a deviation from a predefined threshold. This could temporarily pause problematic functions or markets.
-
-## Sources and References
-
-- Cork Protocol Post-Mortem: [https://www.cork.tech/blog/post-mortem](https://www.cork.tech/blog/post-mortem)
-- Rekt News Article: [https://rekt.news/cork-protocol-rekt](https://rekt.news/cork-protocol-rekt)
-- Uniswap V4 Reference Docs: [https://docs.uniswap.org/contracts/v4/overview](https://docs.uniswap.org/contracts/v4/overview)

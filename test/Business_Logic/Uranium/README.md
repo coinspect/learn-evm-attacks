@@ -1,20 +1,37 @@
-# Uranium
-- **Type:** Exploit
-- **Network:** Binance Chain 
-- **Total lost:** ~$50MM USD in different tokens
-- **Category:** Miscalculation
-- **Vulnerable contracts:**
-- - [0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a](https://bscscan.com/address/0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a)
-- **Attack transactions:**
-- - [0x5a504fe72ef7fc76dfeb4d979e533af4e23fe37e90b5516186d5787893c37991](https://bscscan.com/tx/0x5a504fe72ef7fc76dfeb4d979e533af4e23fe37e90b5516186d5787893c37991)
-- **Attacker Addresses**: 
-- - EOA: [0xc47bdd0a852a88a019385ea3ff57cf8de79f019d](https://bscscan.com/address/0xc47bdd0a852a88a019385ea3ff57cf8de79f019d)
-- - Contract: [0x2b528a28451e9853F51616f3B0f6D82Af8bEA6Ae](https://bscscan.com/address/0x2b528a28451e9853F51616f3B0f6D82Af8bEA6Ae)
-- **Attack Block:**: 6947154
-- **Date:** Apr 28, 2021
-- **Reproduce:** `forge test --match-contract Exploit_Uranium -vvv`
+---
+title: Uranium
+type: Exploit
+network: [binance smart chain]
+date: 2021-04-28
+loss_usd: 50000000
+returned_usd: 0
+tags: [business logic, arithmetic]
+subcategory: N/A
+vulnerable_contracts:
+  - "0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a"
+tokens_lost:
+  - BUSD
+  - BNB
+  - BTCB
+attacker_addresses:
+  - "0xc47bdd0a852a88a019385ea3ff57cf8de79f019d"
+  - "0x2b528a28451e9853F51616f3B0f6D82Af8bEA6Ae"
+malicious_token: N/A
+attack_block: 6947154
+reproduction_command: forge test --match-contract Exploit_Uranium -vvv
+attack_txs:
+  - "0x5a504fe72ef7fc76dfeb4d979e533af4e23fe37e90b5516186d5787893c37991"
+sources:
+  - title: FrankResearcher Twitter Thread
+    url: https://twitter.com/FrankResearcher/status/1387347001172398086?s=20&t=Ki5iBMAXIitQS80Cl6BhSA
+  - title: Rekt
+    url: https://rekt.news/uranium-rekt/
+  - title: Source Code
+    url: https://bscscan.com/address/0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a#code
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Request a swap but without having payed for it
 
 ## Detailed Description
@@ -27,7 +44,7 @@ A particularity of Uniswap and its forks (like Uranium) is that its `swap()` met
 
 Now, the `swap` method of Uranium is supposed to hold `k`, no matter the swap. But when upgrading the contracts, the developers modified the constant which was set to `1000` to `10000` (notices the extra zero). Nevertheless, the constant in the `require()` clause was still set to `1000**2`, the old value.
 
-``` solidity
+```solidity
     function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external lock {
         ...
 
@@ -47,15 +64,5 @@ This require, although might not look like it, is what's preserving `K`: it is c
 Anyway, this update made the left hand side of the equation (which does `newX * newY`) by 10 fold bigger, while mantaining the right hand side (`oldX * oldY`). This means an attacker can perform swaps and not pay to the pool the corresponding amount of tokens necesary.
 
 ## Possible mitigations
-1. Make sure invariants in the code are mantained correctly
 
-## Diagrams and graphs
-
-### Class
-
-![class](uranium.png)
-
-## Sources and references
-- [FrankResearcher Twitter Thread](https://twitter.com/FrankResearcher/status/1387347001172398086?s=20&t=Ki5iBMAXIitQS80Cl6BhSA)
-- [Rekt Article](https://rekt.news/uranium-rekt/)
-- [Source Code](https://bscscan.com/address/0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a#code)
+Make sure invariants in the code are mantained correctly.

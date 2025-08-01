@@ -1,31 +1,45 @@
-# Earning Farm
-- **Type:** Exploit
-- **Network:** Ethereum 
-- **Total lost**: 200 ETH (750 ETH originally targetted, 550 returned by MEV frontrunning bot)
-- **Category:** Flashloan attack
-- **Vulnerable contracts:**
-- - [0xe39fd820b58f83205db1d9225f28105971c3d309](https://etherscan.io/address/0xe39fd820b58f83205db1d9225f28105971c3d309)
-- **Attack transactions:**
-- - [0x160c5950a01b88953648ba90ec0a29b0c5383e055d35a7835d905c53a3dda01e](https://etherscan.io/tx/0x160c5950a01b88953648ba90ec0a29b0c5383e055d35a7835d905c53a3dda01e)
-- **Attacker Addresses**: 
-- - EOA: [0xdf31f4c8dc9548eb4c416af26dc396a25fde4d5f](https://etherscan.io/address/0xdf31f4c8dc9548eb4c416af26dc396a25fde4d5f)
-- - Contract: [0x983dfBa1c0724786598Af0E63a9a6f94aAbd24A1](https://etherscan.io/address/0x983dfBa1c0724786598Af0E63a9a6f94aAbd24A1)
-- **Attack Block:**: 15746342 
-- **Date:** Oct 14, 2022 
-- **Reproduce:** `forge test --match-contract Exploit_EarningFarm -vvv`
+---
+title: Earning Farm
+type: Exploit
+network: [ethereum]
+date: 2022-10-14
+loss_usd: 967000
+returned_usd: 709000
+tags: [business logic, flashloan]
+subcategory: N/A
+vulnerable_contracts:
+  - "0xe39fd820b58f83205db1d9225f28105971c3d309"
+tokens_lost:
+  - WETH
+  - stETH
+attacker_addresses:
+  - "0xdf31f4c8dc9548eb4c416af26dc396a25fde4d5f"
+  - "0x983dfBa1c0724786598Af0E63a9a6f94aAbd24A1"
+malicious_token: N/A
+attack_block: 15746342
+reproduction_command: forge test --match-contract Exploit_EarningFarm -vvv
+attack_txs:
+  - "0x160c5950a01b88953648ba90ec0a29b0c5383e055d35a7835d905c53a3dda01e"
+sources:
+  - title: Supremacy CA Twitter Thread
+    url: https://twitter.com/Supremacy_CA/status/1581012823701786624
+  - title: Source Code
+    url: https://etherscan.io/address/0xe39fd820b58f83205db1d9225f28105971c3d309#code
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Deposit a small amount into the vulnerable contract
 2. Request a Flash Loan from Balance for the contract
 3. Withdraw your small amount and get **a lot** more
 
 ## Detailed Description
 
-The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol. 
+The Earning Farm contract has a `withdraw` method that uses flash loans to pay debt accrued in the AAVE protocol.
 
-We can start the flow by looking at the public `withdraw` method and noting where it makes the call to `flashLoan`. 
+We can start the flow by looking at the public `withdraw` method and noting where it makes the call to `flashLoan`.
 
-``` solidity
+```solidity
  function withdraw(uint256 _amount) public nonReentrant{
     require(IERC20(ef_token).balanceOf(msg.sender) >= _amount, "not enough balance");
     if (is_paused){
@@ -39,7 +53,7 @@ We can start the flow by looking at the public `withdraw` method and noting wher
     _earnReward();
 
     uint256 loan_amount = getDebt().safeMul(_amount).safeDiv(IERC20(ef_token).totalSupply());
-    
+
     address[] memory tokens = new address[](1);
     uint256[] memory amounts = new uint256[](1);
     bytes memory userData = "0x2";
@@ -66,7 +80,7 @@ See that `0x02` is sent as `userData`, which makes the callback `receiveFlashLoa
         uint256[] memory feeAmounts,
         bytes memory userData
     ) public payable {
-        require(msg.sender == balancer, "only flashloan vault"); 
+        require(msg.sender == balancer, "only flashloan vault");
         uint256 loan_amount = amounts[0];
         uint256 fee_amount = feeAmounts[0];
 
@@ -79,12 +93,12 @@ See that `0x02` is sent as `userData`, which makes the callback `receiveFlashLoa
     }
 ```
 
-In the `_withdraw` method, it repays some of the debt to AAVE and repays the flashloaner (see: `weth.call.value...`). 
+In the `_withdraw` method, it repays some of the debt to AAVE and repays the flashloaner (see: `weth.call.value...`).
 
-``` solidity
+```solidity
   //1. rapay aave with flashloaned amount,    mx
   //2. withdraw steth with current ltv,  x
-  //3. change all steths to eths,    x         
+  //3. change all steths to eths,    x
   //4. repay flashloan.   pay amx, left x-amx eth
   function _withdraw(uint256 amount, uint256 fee_amount) internal{
     uint256 steth_amount = amount.safeMul(IERC20(asteth).balanceOf(address(this))).safeDiv(getDebt());
@@ -104,10 +118,10 @@ In the `_withdraw` method, it repays some of the debt to AAVE and repays the fla
   }
 ```
 
-
-When it finishes this call, it goes back to the `withdraw()` method, which transfer all the balance in the contract to the sender. 
+When it finishes this call, it goes back to the `withdraw()` method, which transfer all the balance in the contract to the sender.
 
 So, conceptually:
+
 1. User requests a withdrawal backed by EF Token
 2. Contract takes a flash loan of `debt*(withdrawal_amount / total_supply)`
 3. Contract uses flashloan from Balancer to pay AAVE in `weth`
@@ -118,8 +132,7 @@ So, conceptually:
 
 This scheme works as long as the initial withdrawal is checked against the `EF Token`, which is the first check in the `withdraw()` method.
 
-
-``` solidity
+```solidity
     require(IERC20(ef_token).balanceOf(msg.sender) >= _amount, "not enough balance");
 ```
 
@@ -129,35 +142,26 @@ But what if an attacker totally bypasses this check and is able to arbitrarily a
 
 To do this, an attacker requests a flash loan from Balancer specifying the contract as the receiver? In that case, our call starts from the `receiveFlashLoan` method, which will call withdrawal if passed `0x02` as the user data. Note that `amount` is now unchecked, and the contract will performs the swap with this arbitrary amount, receiving finally an arbitrary amount of `ETH`. This `amount` is only limited by the contract's actual reserves, denominated in `stETH`.
 
-
 So an attacker:
+
 1. Deposits some amount into the contract to pass this require:
 
-``` solidity
+```solidity
     require(IERC20(ef_token).balanceOf(msg.sender) >= _amount, "not enough balance");
 ```
 
 2. Triggers a Flashloan from Balance directly into the contract, which will repay the debt, recover the collateral and exchange it for ETH into the contract
 3. Call `withdraw` with the amount they deposited (or less), which will transfer **all** of the balance from the contract into the attackers address.
 
-## Diagrams and graphs
-
-### Class
-
-![class](earningfarm.png)
-
-
 ## Possible mitigations
+
 There are several things that could be improved here.
+
 1. Balance's Flashloan do not include the `msg.sender` in their callbacks, so it was impossible for Earning Farm to check that they had initiated the call. This is a problem with Balance itself as it does not conform to [EIP-3156](https://eips.ethereum.org/EIPS/eip-3156)
 2. To migitate this risk, Earning Farm could the balances before and after the flashloan in `withdraw` so they correlate with the amount of tokens the user has. Curiously, there's a commented line in the `withdraw()` method which hints that something like this was being implemented or at least thought of, although this is speculation.
 
-``` solidity
+```solidity
     //uint256 user_eth_before = msg.sender.balance;
 ```
 
-3. (2) does not completely solve the problem, but at least makes it non-profitable to an attacker. It still is possible for an attacker to force the contract to recover collateral. 
-
-## Sources and references
-- [Supremacy CA Twitter Thread](https://twitter.com/Supremacy_CA/status/1581012823701786624)
-- [Source Code](https://etherscan.io/address/0xe39fd820b58f83205db1d9225f28105971c3d309#code)
+3. (2) does not completely solve the problem, but at least makes it non-profitable to an attacker. It still is possible for an attacker to force the contract to recover collateral.

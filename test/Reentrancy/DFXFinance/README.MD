@@ -1,25 +1,42 @@
-# DFX Finance
-- **Type:** Exploit
-- **Network:** Mainnet
-- **Total lost**: ~$6MM in various tokens
-- **Category:** Reentrancy
-- **Exploited contracts:**
-- - DFX: https://etherscan.io/address/0x46161158b1947D9149E066d6d31AF1283b2d377C
-- **Attack transactions:**
-- - First Attack Tx: https://etherscan.io/tx/0x390def749b71f516d8bf4329a4cb07bb3568a3627c25e607556621182a17f1f9
-- - Subsequent Attack Tx: https://etherscan.io/tx/0x6bfd9e286e37061ed279e4f139fbc03c8bd707a2cdd15f7260549052cbba79b7
-- **Attack Block:**: 15941674 
-- **Date:** Nov 10, 2022
-- **Reproduce:** `forge test --match-contract Exploit_DFXFinance -vvv`
+---
+title: DFX Finance
+type: Exploit
+network: [ethereum]
+date: 2022-11-10
+loss_usd: 6000000
+returned_usd: 0
+tags: [reentrancy]
+subcategory: N/A
+vulnerable_contracts:
+  - "0x46161158b1947D9149E066d6d31AF1283b2d377C"
+tokens_lost:
+  - USDC
+  - XIDR
+attacker_addresses:
+  - "0x14c19962E4A899F29B3dD9FF52eBFb5e4cb9A067"
+malicious_token: N/A
+attack_block: 15941674
+reproduction_command: forge test --match-contract Exploit_DFXFinance -vvv
+attack_txs:
+  - "0x390def749b71f516d8bf4329a4cb07bb3568a3627c25e607556621182a17f1f9"
+  - "0x6bfd9e286e37061ed279e4f139fbc03c8bd707a2cdd15f7260549052cbba79b7"
+sources:
+  - title: Peckshield Twitter Thread
+    url: https://twitter.com/peckshield/status/1590831589004816384
+  - title: DFX Finance Tweet
+    url: https://twitter.com/DFXFinance/status/1590858722728972289
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Request a Flashloan
 2. Deposit the received amount in the loan callback
 
 ## Detailed Description
-As there is no reentrancy protection in the flashloan function and token balances are checked to determine if the loan was paid back, the attacker simply asked for a loan and deposited the amount requested to mint shares inside the loan callback. 
 
-``` solidity
+As there is no reentrancy protection in the flashloan function and token balances are checked to determine if the loan was paid back, the attacker simply asked for a loan and deposited the amount requested to mint shares inside the loan callback.
+
+```solidity
     function flash(
         address recipient,
         uint256 amount0,
@@ -38,21 +55,7 @@ As there is no reentrancy protection in the flashloan function and token balance
 
 Because the balance checked after executing the flashloan callback was satisfied, the loan succeded. Then, the attacker simply called withdraw and stole the loan amount.
 
-
 ## Possible mitigations
+
 - Use reentrancy protection for flashloans
 - Check if the flashloan key checks could be manipuladed by side-entering the contract and if so, evaluate its impact. Whenever a risk arises, add a reentrancy mutex to the vulnerable functions and to the flashLoan itself.
-
-## Diagrams and graphs
-
-### Overview
-
-![overview](dfxfinance.d2.png)
-
-### Class
-
-![class](dfxfinance.png)
-
-## Sources and references
-- [Peckshield Twitter Thread](https://twitter.com/peckshield/status/1590831589004816384)
-- [DFX Finance Tweet](https://twitter.com/DFXFinance/status/1590858722728972289)

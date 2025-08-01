@@ -1,21 +1,39 @@
+---
+title: Four Meme
+type: Exploit
+network: [binance smart chain]
+date: 2025-02-11
+loss_usd: 183000
+returned_usd: 0
+tags: [business logic, price manipulation]
+subcategory: N/A
+vulnerable_contracts:
+  - "0x5c952063c7fc8610ffdb798152d69f0b9550762b"
+tokens_lost:
+  - WBNB
+attacker_addresses:
+  - "0x935d6CF073eAb37CA2B5878aF21329D5dBF4F4a5"
+malicious_token:
+  - "0x4AbfD9a204344bd81A276C075ef89412C9FD2f64"
+  - "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+attack_block:
+  - 46555725
+  - 46555731
+  - 46555732
+reproduction_command: forge test --match-contract Exploit_FourMeme -vvv
+attack_txs:
+  - "0x4235b006b94a79219181623a173a8a6aadacabd01d6619146ffd6fbcbb206dff"
+  - "0xe0daa3bf68c1a714f255294bd829ae800a381624417ed4b474b415b9d2efeeb5"
+  - "0x2902f93a0e0e32893b6d5c907ee7bb5dabc459093efa6dbc6e6ba49f85c27f61"
+sources:
+  - title: Incident Analysis
+    url: https://www.chaincatcher.com/en/article/2167296
+  - title: TenArmor Security Alert
+    url: https://x.com/TenArmorAlert/status/1889515007404286019
+---
 
-# Four Meme Pool Price Manipulation
-- **Type:** Exploit
-- **Network:** Binance Smart Chain
-- **Total lost**: 14k USD with SNOWBOARD, total estimated 183k
-- **Category:** Price Manipulation
-- **Exploited contracts:**
-- - FourMeme Liquidity Provider: https://bscscan.com/address/0x5c952063c7fc8610ffdb798152d69f0b9550762b
-- **Attack blocks and transactions:** 
+## Step-by-step
 
-* * [46555725](https://bscscan.com/tx/0x4235b006b94a79219181623a173a8a6aadacabd01d6619146ffd6fbcbb206dff) (Malicious pool initialized)
-* * [46555731](https://bscscan.com/tx/0xe0daa3bf68c1a714f255294bd829ae800a381624417ed4b474b415b9d2efeeb5) (Liquidity added)
-* * [46555732](https://bscscan.com/tx/0x2902f93a0e0e32893b6d5c907ee7bb5dabc459093efa6dbc6e6ba49f85c27f61) (Tokens sold)
-
-- **Date:** Feb 11, 2025
-- **Reproduce:** `forge test --match-contract Exploit_FourMeme -vvv`
-
-## Step-by-step 
 1. Call the PancakeSwap V3 position manager to initialize the SNOWBOARD/WBNB liquidity pool with an unfavourable price.
 2. Wait for the victim to deploy liquidity without checking minimum desired amounts.
 3. Sell the SNOWBOARD meme coins to drain as most WBNB as possible.
@@ -38,16 +56,6 @@ The core issue originates from four.meme's contract [0x5c95](https://bscscan.com
 2. When the vulnerable contract attempted to create a Pancake V3 pool for the token, it **failed to verify the pool’s state or price if an existing pool was already deployed**. As a result, the platform unknowingly added liquidity to the attacker’s malicious pool at a manipulated price.
 3. Finally, the attacker **sold the tokens acquired from the platform’s internal pool at a lower price, making a profit**. Notably, no MEV bot detected this exploitation, as the initial distribution of SNOWBOARD tokens was limited to a few wallets.
 
-
 ## Possible mitigations
 
 To mitigate this attack, [four.meme]() should have set appropriate `amount0Min` and `amount1Min` values when adding liquidity to the pool.
-
-## Diagrams and graphs
-
-### Entity and class diagram
-![PlantUML](./FourMemeExploitDiagram.png)
-
-## Sources and references
-- [FourMeme Incident Analysis by Zero Time Technology](https://www.chaincatcher.com/en/article/2167296)
-- [TenArmor Security Alert on X](https://x.com/TenArmorAlert/status/1889515007404286019)
