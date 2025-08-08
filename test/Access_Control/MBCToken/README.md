@@ -6,7 +6,7 @@ date: 2022-11-29
 loss_usd: 5000
 returned_usd: 0
 tags: [access control]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x4E87880A72f6896E7e0a635A5838fFc89b13bd17"
   - "0xeE04a3f9795897fd74b7F04Bb299Ba25521606e6"
@@ -15,8 +15,8 @@ tokens_lost:
 attacker_addresses:
   - "0x0b13D2B0d8571C3e8689158F6DB1eedf6E9602d3"
 
-malicious_token: N/A
-attack_block: 23474461
+malicious_token: []
+attack_block: [23474461]
 reproduction_command: forge test --match-contract Exploit_MBCToken -vvv
 attack_txs:
   - "0xdc53a6b5bf8e2962cf0e0eada6451f10956f4c0845a3ce134ddb050365f15c86"

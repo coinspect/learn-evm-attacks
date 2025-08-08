@@ -6,15 +6,15 @@ date: 2022-03-23
 loss_usd: 624000000
 returned_usd: 0
 tags: [bridges, leaked keys]
-subcategory: N/A
-vulnerable_contracts: "0x1A2a1c938CE3eC39b6D47113c7955bAa9DD454F2"
+subcategory: []
+vulnerable_contracts: ["0x1A2a1c938CE3eC39b6D47113c7955bAa9DD454F2"]
 tokens_lost:
   - ETH
   - USDC
 attacker_addresses:
   - "0x098B716B8Aaf21512996dC57EB0615e2383E2f96"
-malicious_token: N/A
-attack_block: 14442835, 14442840"
+malicious_token: []
+attack_block: [14442835, 14442840]
 reproduction_command: forge test --match-contract Exploit_RoninBridge -vvv
 attack_txs:
   - "0xc28fad5e8d5e0ce6a2eaf67b6687be5d58113e16be590824d6cfa1a94467d0b7"

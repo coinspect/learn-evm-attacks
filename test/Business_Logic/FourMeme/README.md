@@ -6,7 +6,7 @@ date: 2025-02-11
 loss_usd: 183000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x5c952063c7fc8610ffdb798152d69f0b9550762b"
 tokens_lost:

@@ -5,15 +5,15 @@ network: [ethereum]
 date: 2022-03-21
 returned_usd: 0
 tags: [business logic, data validation]
-subcategory: Faulty Token Integration
+subcategory: [Faulty Token Integration]
 vulnerable_contracts:
   - "0x12392F67bdf24faE0AF363c24aC620a2f67DAd86"
-tokens_lost: N/A
-attacker_addresses: N/A
-malicious_token: N/A
-attack_block: N/A
+tokens_lost: []
+attacker_addresses: []
+malicious_token: []
+attack_block: []
 reproduction_command: forge test --match-contract Report_Compound -vvv
-attack_txs: N/A
+attack_txs: []
 sources:
   - title: OpenZeppelin's Writeup
     url: https://blog.openzeppelin.com/compound-tusd-integration-issue-retrospective/

@@ -5,15 +5,15 @@ network: [ethereum]
 date: 2022-09-02
 returned_usd: 0
 tags: [data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xb84cbaf116eb90fd445dd5aeadfab3e807d2cbac"
 tokens_lost:
   - 400 NFT
 attacker_addresses:
   - "0xBD8A137E79C90063cd5C0DB3Dbabd5CA2eC7e83e"
-malicious_token: N/A
-attack_block: 15460094
+malicious_token: []
+attack_block: [15460094]
 reproduction_command: forge test --match-contract Exploit_Bad_Guys_NFT -vvv
 attack_txs:
   - "0xb613c68b00c532fe9b28a50a91c021d61a98d907d0217ab9b44cd8d6ae441d9f"

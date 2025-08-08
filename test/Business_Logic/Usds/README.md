@@ -16,8 +16,8 @@ tokens_lost:
 attacker_addresses:
   - "0x4afcd19bb978eaf4f993814298504ed285df1181"
   - "0x5c978df5f8af72298fe1c2c8c2c05476a10f2539"
-malicious_token: N/A
-attack_block: 57803397
+malicious_token: []
+attack_block: [57803397]
 reproduction_command: forge test --match-contract Exploit_Usds -vvv
 attack_txs:
   - "0xfaf84cabc3e1b0cf1ff1738dace1b2810f42d98baeea17b146ae032f0bdf82d5"

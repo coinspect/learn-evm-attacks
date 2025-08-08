@@ -6,15 +6,15 @@ date: 2025-05-11
 loss_usd: 2150000
 returned_usd: 0
 tags: [business logic, arithmetic]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x95e92b09b89cf31fa9f1eca4109a85f88eb08531"
 tokens_lost:
   - MBU
 attacker_addresses:
   - "0xB32A53Af96F7735D47F4b76C525BD5Eb02B42600"
-malicious_token: N/A
-attack_block: 49470430
+malicious_token: []
+attack_block: [49470430]
 reproduction_command: forge test --match-contract Exploit_MobiusDAO -vvv
 attack_txs:
   - "0x2a65254b41b42f39331a0bcc9f893518d6b106e80d9a476b8ca3816325f4a150"

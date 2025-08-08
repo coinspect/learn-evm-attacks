@@ -6,7 +6,7 @@ date: 2022-10-14
 loss_usd: 967000
 returned_usd: 709000
 tags: [business logic, flashloan]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xe39fd820b58f83205db1d9225f28105971c3d309"
 tokens_lost:
@@ -15,8 +15,8 @@ tokens_lost:
 attacker_addresses:
   - "0xdf31f4c8dc9548eb4c416af26dc396a25fde4d5f"
   - "0x983dfBa1c0724786598Af0E63a9a6f94aAbd24A1"
-malicious_token: N/A
-attack_block: 15746342
+malicious_token: []
+attack_block: [15746342]
 reproduction_command: forge test --match-contract Exploit_EarningFarm -vvv
 attack_txs:
   - "0x160c5950a01b88953648ba90ec0a29b0c5383e055d35a7835d905c53a3dda01e"

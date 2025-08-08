@@ -6,7 +6,7 @@ date: 2022-10-11
 loss_usd: 2300000
 returned_usd: 0
 tags: [access control]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xd2869042E12a3506100af1D192b5b04D65137941"
 tokens_lost:
@@ -14,8 +14,8 @@ tokens_lost:
   - FRAX
 attacker_addresses:
   - "0x9c9Fb3100A2a521985F0c47DE3B4598dafD25B01"
-malicious_token: N/A
-attack_block: 15725067
+malicious_token: []
+attack_block: [15725067]
 reproduction_command: forge test --match-contract Exploit_TempleDAO -vvv
 attack_txs:
   - "0x8c3f442fc6d640a6ff3ea0b12be64f1d4609ea94edd2966f42c01cd9bdcf04b5"

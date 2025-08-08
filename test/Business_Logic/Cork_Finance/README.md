@@ -6,16 +6,16 @@ date: 2025-05-28
 loss_usd: 7200000
 returned_usd: 0
 tags: [business logic, price manipulation, access control]
-subcategory: N/A
-vulnerable_contracts: "0xccd90f6435dd78c4ecced1fa4db0d7242548a2a9"
+subcategory: []
+vulnerable_contracts: ["0xccd90f6435dd78c4ecced1fa4db0d7242548a2a9"]
 tokens_lost:
   - wstETH
 attacker_addresses:
   - "0xEA6f30e360192bae715599E15e2F765B49E4da98"
   - "0x6e54115de254805365c2d9c8a2eeb9b52e54668f"
   - "0x9af3dce0813fd7428c47f57a39da2f6dd7c9bb09"
-malicious_token: N/A
-attack_block: 22580952
+malicious_token: []
+attack_block: [22580952]
 reproduction_command: RPC_URL=<rpc_url> forge test --match-contract Exploit_CorkFinance -vvv
 attack_txs:
   - "0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0"

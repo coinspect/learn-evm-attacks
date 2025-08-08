@@ -6,7 +6,7 @@ date: 2023-05-21
 loss_usd: 2700000
 returned_usd: 0
 tags: [business logic, context hijacking]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x5efda50f22d34f262c29268506c5fa42cb56a1ce"
 tokens_lost:
@@ -14,7 +14,7 @@ tokens_lost:
 attacker_addresses:
   - "0x592340957ebc9e4afb0e9af221d06fdddf789de9"
   - "0x092123663804f8801b9b086b03b98d706f77bd59"
-malicious_token: N/A
+malicious_token: []
 attack_block:
   - 17248593
   - 17304425
@@ -28,7 +28,7 @@ attack_txs:
   - "0xa7d20ccdbc2365578a106093e82cc9f6ec5d03043bb6a00114c0ad5d03620122"
   - "0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d"
   - "0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94"
-sources: N/A
+sources: []
 ---
 
 > **NOTE**

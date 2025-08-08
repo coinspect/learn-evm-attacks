@@ -6,7 +6,7 @@ date: 2021-09-03
 loss_usd: 4000000
 returned_usd: 0
 tags: [access control]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x2FD602Ed1F8cb6DEaBA9BEDd560ffE772eb85940"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
   - SHO
 attacker_addresses:
   - "0x2708cace7b42302af26f1ab896111d87faeff92f"
-malicious_token: N/A
-attack_block: 13155350
+malicious_token: []
+attack_block: [13155350]
 reproduction_command: forge test --match-contract Exploit_DAOMaker -vvv
 attack_txs:
   - "0x96bf6bd14a81cf19939c0b966389daed778c3a9528a6c5dd7a4d980dec966388"

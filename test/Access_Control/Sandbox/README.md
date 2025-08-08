@@ -5,14 +5,14 @@ network: [ethereum]
 date: 2022-02-08
 returned_usd: 0
 tags: [access control]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x50f5474724e0Ee42D9a4e711ccFB275809Fd6d4a"
 tokens_lost:
   - LAND
-attacker_addresses: "0x6FB0B915D0e10c3B2ae42a5DD879c3D995377A2C"
-malicious_token: N/A
-attack_block: 14163042
+attacker_addresses: ["0x6FB0B915D0e10c3B2ae42a5DD879c3D995377A2C"]
+malicious_token: []
+attack_block: [14163042]
 reproduction_command: forge test --match-contract Exploit_SandBox -vvv
 attack_txs:
   - "0x34516ee081c221d8576939f68aee71e002dd5557180d45194209d6692241f7b1"

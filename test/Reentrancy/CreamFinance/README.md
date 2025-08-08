@@ -6,7 +6,7 @@ date: 2021-08-30
 loss_usd: 18000000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xD06527D5e56A3495252A528C4987003b712860eE"
   - "0x2Db6c82CE72C8d7D770ba1b5F5Ed0b6E075066d6"
@@ -16,8 +16,8 @@ tokens_lost:
   - crETH
 attacker_addresses:
   - "0xcE1F4B4F17224ec6df16Eeb1e3e5321c54Ff6EDe"
-malicious_token: N/A
-attack_block: 13125071
+malicious_token: []
+attack_block: [13125071]
 reproduction_command: forge test --match-contract Exploit_CreamFinance -vvv
 attack_txs:
   - "0xa9a1b8ea288eb9ad315088f17f7c7386b9989c95b4d13c81b69d5ddad7ffe61e"

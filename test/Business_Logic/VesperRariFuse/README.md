@@ -6,7 +6,7 @@ date: 2021-11-02
 loss_usd: 3000000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x8dDE0A1481b4A14bC1015A5a8b260ef059E9FD89"
 tokens_lost:
@@ -17,7 +17,7 @@ tokens_lost:
 attacker_addresses:
   - "0xa3f447feb0b2bddc50a44ccd6f412a5f98619264"
   - "0x7993e1d66ffb1ab3fb1cb3db87219f532c25bdc8"
-malicious_token: N/A
+malicious_token: []
 attack_block:
   - 13537922
   - 13537933

@@ -6,15 +6,15 @@ date: 2022-01-19
 loss_usd: 960000
 returned_usd: 0
 tags: [data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x6b7a87899490EcE95443e979cA9485CBE7E71522"
 tokens_lost:
   - WETH
 attacker_addresses:
   - "0xfa2731d0bede684993ab1109db7ecf5bf33e8051"
-malicious_token: N/A
-attack_block: 14037237
+malicious_token: []
+attack_block: [14037237]
 reproduction_command: forge test --match-contract Exploit_Multichain -vvv
 attack_txs:
   - "0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7"

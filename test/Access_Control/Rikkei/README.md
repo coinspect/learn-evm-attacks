@@ -6,7 +6,7 @@ date: 2021-04-15
 loss_usd: 1000000
 returned_usd: 0
 tags: [access control]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xd55f01b4b51b7f48912cd8ca3cdd8070a1a9dba5"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
 attacker_addresses:
   - "0xA36F6F78B2170a29359C74cEFcB8751E452116f9"
   - "0xe6DF12a9f33605F2271D2a2DdC92E509E54E6b5F"
-malicious_token: N/A
-attack_block: 16956475
+malicious_token: []
+attack_block: [16956475]
 reproduction_command: forge test --match-contract Exploit_Rikkei -vvv
 attack_txs:
   - "0x93a9b022df260f1953420cd3e18789e7d1e095459e36fe2eb534918ed1687492"

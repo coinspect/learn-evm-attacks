@@ -6,7 +6,7 @@ date: 2022-04-30
 loss_usd: 80000000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x6162759edad730152f0df8115c698a42e666157f"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
 attacker_addresses:
   - "0x6162759eDAd730152F0dF8115c698a42E666157F"
   - "0x32075bAd9050d4767018084F0Cb87b3182D36C45"
-malicious_token: N/A
-attack_block: 14684814
+malicious_token: []
+attack_block: [14684814]
 reproduction_command: forge test --match-contract Exploit_Fei -vvv
 attack_txs:
   - "0xab486012f21be741c9e674ffda227e30518e8a1e37a5f1d58d0b0d41f6e76530"

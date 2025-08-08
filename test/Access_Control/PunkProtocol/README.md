@@ -6,7 +6,7 @@ date: 2021-08-10
 loss_usd: 8950000
 returned_usd: 4950000
 tags: [access control, reinitialization]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x3BC6aA2D25313ad794b2D67f83f21D341cc3f5fb"
   - "0x1F3b04c8c96A31C7920372FFa95371C80A4bfb0D"
@@ -17,8 +17,8 @@ tokens_lost:
   - Punk DAI
 attacker_addresses:
   - "0x1D5a56402425C1099497C1AD715A6b56aACcB72B"
-malicious_token: N/A
-attack_block: 12995895
+malicious_token: []
+attack_block: [12995895]
 reproduction_command: forge test --match-contract Exploit_Punk -vvv
 attack_txs:
   - "0x7604c7dd6e9bcdba8bac277f1f8e7c1e4c6bb57afd4ddf6a16f629e8495a0281"

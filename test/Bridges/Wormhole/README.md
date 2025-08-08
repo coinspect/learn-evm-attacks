@@ -5,17 +5,18 @@ network: [ethereum]
 date: 2022-02-24
 loss_usd: 10000000
 returned_usd: 0
+tags: [bridges, access control, reinitialization]
 category: [bridges, access control, reinitialization]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x736d2a394f7810c17b3c6fed017d5bc7d60c077d"
   - "0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B"
-tokens_lost: N/A
-attacker_addresses: N/A
-malicious_token: N/A
-attack_block: 13818843
+tokens_lost: []
+attacker_addresses: []
+malicious_token: []
+attack_block: [13818843]
 reproduction_command: forge test --match-contract Report_Wormhole -vvv
-attack_txs: N/A
+attack_txs: []
 sources:
   - title: Immunefi Writeup
     url: https://medium.com/immunefi/wormhole-uninitialized-proxy-bugfix-review-90250c41a43a
