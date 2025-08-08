@@ -6,7 +6,7 @@ date: 2022-08-01
 loss_usd: 190000000
 returned_usd: 0
 tags: [bridges, data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xb92336759618f55bd0f8313bd843604592e27bd8"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
   - DAI
 attacker_addresses:
   - "0xa8c83b1b30291a3a1a118058b5445cc83041cd9d"
-malicious_token: N/A
-attack_block: 15259101
+malicious_token: []
+attack_block: [15259101]
 reproduction_command: forge test --match-contract Exploit_Nomad -vvv
 attack_txs:
   - "0xa5fe9d044e4f3e5aa5bc4c0709333cd2190cba0f4e7f16bcf73f49f83e4a5460"

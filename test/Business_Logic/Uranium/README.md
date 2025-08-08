@@ -6,7 +6,7 @@ date: 2021-04-28
 loss_usd: 50000000
 returned_usd: 0
 tags: [business logic, arithmetic]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
 attacker_addresses:
   - "0xc47bdd0a852a88a019385ea3ff57cf8de79f019d"
   - "0x2b528a28451e9853F51616f3B0f6D82Af8bEA6Ae"
-malicious_token: N/A
-attack_block: 6947154
+malicious_token: []
+attack_block: [6947154]
 reproduction_command: forge test --match-contract Exploit_Uranium -vvv
 attack_txs:
   - "0x5a504fe72ef7fc76dfeb4d979e533af4e23fe37e90b5516186d5787893c37991"

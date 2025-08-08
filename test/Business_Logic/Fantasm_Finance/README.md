@@ -6,7 +6,7 @@ date: 2022-03-09
 loss_usd: 2620000
 returned_usd: 0
 tags: [business logic, data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x880672ab1d46d987e5d663fc7476cd8df3c9f937"
 tokens_lost:
@@ -14,8 +14,8 @@ tokens_lost:
 attacker_addresses:
   - "0x47091e015b294b935babda2d28ad44e3ab07ae8d"
   - "0x944b58c9b3b49487005cead0ac5d71c857749e3e"
-malicious_token: N/A
-attack_block: 32968740
+malicious_token: []
+attack_block: [32968740]
 reproduction_command: forge test --match-contract Exploit_FantasmFinance -vvv
 attack_txs:
   - "0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f620d862b13f0a44eadb82"

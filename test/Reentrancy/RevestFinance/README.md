@@ -6,15 +6,15 @@ date: 2022-03-27
 loss_usd: 2000000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x2320A28f52334d62622cc2EaFa15DE55F9987eD9"
 tokens_lost:
   - RENA
 attacker_addresses:
   - "0xef967ECE5322c0D7d26Dab41778ACb55CE5Bd58B"
-malicious_token: N/A
-attack_block: 14465357
+malicious_token: []
+attack_block: [14465357]
 reproduction_command: forge test --match-contract Exploit_RevestFinance -vvv
 attack_txs:
   - "0xe0b0c2672b760bef4e2851e91c69c8c0ad135c6987bbf1f43f5846d89e691428"

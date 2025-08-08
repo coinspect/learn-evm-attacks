@@ -6,7 +6,7 @@ date: 2024-11-16
 loss_usd: 8700000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x867fAa51b3A437B4E2e699945590Ef4f2be2a6d5"
 tokens_lost:
@@ -21,8 +21,8 @@ tokens_lost:
   - axlUSDC
 attacker_addresses:
   - "0x511f427Cdf0c4e463655856db382E05D79Ac44a6"
-malicious_token: N/A
-attack_block: 97508838
+malicious_token: []
+attack_block: [97508838]
 reproduction_command: forge test --match-contract Exploit_Polter_Finance -vvv
 attack_txs:
   - "0x5118df23e81603a64c7676dd6b6e4f76a57e4267e67507d34b0b26dd9ee10eac"

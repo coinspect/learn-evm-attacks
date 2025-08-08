@@ -6,7 +6,7 @@ date: 2021-08-10
 loss_usd: 611000000
 returned_usd: 578000000
 tags: [bridges, bruteforce]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x250e76987d838a75310c34bf422ea9f1ac4cc906"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
   - USDC
 attacker_addresses:
   - "0xC8a65Fadf0e0dDAf421F28FEAb69Bf6E2E589963"
-malicious_token: N/A
-attack_block: "12996659, 12996671"
+malicious_token: []
+attack_block: [12996659, 12996671]
 reproduction_command: forge test --match-contract Exploit_PolyNetwork -vvv
 attack_txs:
   - "0xb1f70464bd95b774c6ce60fc706eb5f9e35cb5f06e6cfe7c17dcda46ffd59581"

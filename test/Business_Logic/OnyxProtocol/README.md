@@ -6,7 +6,7 @@ date: 2023-11-01
 loss_usd: 2100000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xf7c21600452939a81b599017ee24ee0dfd92aaaccd0a55d02819a7658a6ef635"
 tokens_lost:
@@ -19,8 +19,8 @@ tokens_lost:
   - ETH
 attacker_addresses:
   - "0x085bdff2c522e8637d4154039db8746bb8642bff"
-malicious_token: N/A
-attack_block: 18476513
+malicious_token: []
+attack_block: [18476513]
 reproduction_command: forge test --match-contract Exploit_Onyx_Protocol -vvv
 attack_txs:
   - "0xf7c21600452939a81b599017ee24ee0dfd92aaaccd0a55d02819a7658a6ef635"

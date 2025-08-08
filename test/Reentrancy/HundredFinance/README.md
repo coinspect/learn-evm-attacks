@@ -6,7 +6,7 @@ date: 2022-03-15
 loss_usd: 6000000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x090a00A2De0EA83DEf700B5e216f87a5D4F394FE"
 tokens_lost:
@@ -17,8 +17,8 @@ tokens_lost:
   - WETH
 attacker_addresses:
   - "0xD041Ad9aaE5Cf96b21c3ffcB303a0Cb80779E358"
-malicious_token: N/A
-attack_block: 21120320
+malicious_token: []
+attack_block: [21120320]
 reproduction_command: forge test --match-contract Exploit_HundredFinance -vvv
 attack_txs:
   - "0x534b84f657883ddc1b66a314e8b392feb35024afdec61dfe8e7c510cfac1a098"

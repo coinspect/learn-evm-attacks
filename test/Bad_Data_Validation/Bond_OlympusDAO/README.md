@@ -6,7 +6,7 @@ date: 2022-10-21
 loss_usd: 300000
 returned_usd: 300000
 tags: [data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156"
 tokens_lost:
@@ -14,8 +14,8 @@ tokens_lost:
 attacker_addresses:
   - "0x443cf223e209E5A2c08114A2501D8F0f9Ec7d9Be"
   - "0xa29e4fe451ccfa5e7def35188919ad7077a4de8f"
-malicious_token: N/A
-attack_block: 15794364
+malicious_token: []
+attack_block: [15794364]
 reproduction_command: forge test --match-contract Exploit_OlympusDAO -vvv
 attack_txs:
   - "0x3ed75df83d907412af874b7998d911fdf990704da87c2b1a8cf95ca5d21504cf"

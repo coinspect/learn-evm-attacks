@@ -6,7 +6,7 @@ date: 2022-03-15
 loss_usd: 1700000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x4770b5cb9d51EcB7AD5B14f0d4F2cEe8e5563645"
 tokens_lost:
@@ -17,7 +17,7 @@ attacker_addresses:
 malicious_token:
   - "0xca2ca459ec6e4f58ad88aeb7285d2e41747b9134"
   - "0xbc5db89ce5ab8035a71c6cd1cd0f0721ad28b508"
-attack_block: 16044498
+attack_block: [16044498]
 reproduction_command: forge test --match-contract Exploit_Paraluni -vvv
 attack_txs:
   - "0x70f367b9420ac2654a5223cc311c7f9c361736a39fd4e7dff9ed1b85bab7ad54"

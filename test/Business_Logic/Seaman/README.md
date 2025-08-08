@@ -6,7 +6,7 @@ date: 2022-11-29
 loss_usd: 7000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x6bc9b4976ba6f8c9574326375204ee469993d038"
 tokens_lost:
@@ -14,8 +14,8 @@ tokens_lost:
 attacker_addresses:
   - "0x4b1f47be1f678076f447585beba025e3a046a9fa"
   - "0x0E647d34c4caF61D9E377a059A01b5C85AB1d82a"
-malicious_token: N/A
-attack_block: 23467516
+malicious_token: []
+attack_block: [23467516]
 reproduction_command: forge test --match-contract Exploit_Seaman -vvv
 attack_txs:
   - "0x6f1af27d08b10caa7e96ec3d580bf39e29fd5ece00abda7d8955715403bf34a8"

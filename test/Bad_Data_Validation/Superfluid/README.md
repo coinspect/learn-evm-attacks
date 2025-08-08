@@ -5,7 +5,7 @@ network: [polygon]
 date: 2022-02-08
 returned_usd: 0
 tags: [data validation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x3E14dC1b13c488a8d5D310918780c983bD5982E7"
 tokens_lost:
@@ -16,8 +16,8 @@ tokens_lost:
 attacker_addresses:
   - "0x32D47ba0aFfC9569298d4598f7Bf8348Ce8DA6D4"
   - "0x1574f7f4c9d3aca2ebce918e5d19d18ae853c090"
-malicious_token: N/A
-attack_block: 24685148
+malicious_token: []
+attack_block: [24685148]
 reproduction_command: forge test --match-contract Exploit_Superfluid -vvv
 attack_txs:
   - "0x396b6ee91216cf6e7c89f0c6044dfc97e84647f5007a658ca899040471ab4d67"

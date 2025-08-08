@@ -6,15 +6,15 @@ date: 2022-10-30
 loss_usd: 35000
 returned_usd: 0
 tags: [business logic, price manipulation]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xB2B1DC3204ee8899d6575F419e72B53E370F6B20"
 tokens_lost:
   - WBNB
 attacker_addresses:
   - "0x5bfaa396c6fb7278024c6d7230b17d97ce8ab62d"
-malicious_token: N/A
-attack_block: 22629432
+malicious_token: []
+attack_block: [22629432]
 reproduction_command: forge test --match-contract Exploit_BVaults -vvv
 attack_txs:
   - "0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94"

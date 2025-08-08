@@ -1,16 +1,17 @@
 ---
 title: Read Only Reentrancy
+date: '01-01-1111' # Date? We need a date to avoid errors
 type: Education
 network: [N/A]
 tags: [reentrancy, read-only]
-subcategory: Read-only reentrancy
-vulnerable_contracts: N/A
-tokens_lost: N/A
-attacker_addresses: N/A
-malicious_token: N/A
-attack_block: N/A
+subcategory: [Read-only reentrancy]
+vulnerable_contracts: []
+tokens_lost: []
+attacker_addresses: []
+malicious_token: []
+attack_block: []
 reproduction_command: forge test --match-contract Exploit_ReadOnly -vvv
-attack_txs: N/A
+attack_txs: []
 sources:
   - title: Curve LP Oracle Manipulation Post Mortem
     url: https://chainsecurity.com/curve-lp-oracle-manipulation-post-mortem/

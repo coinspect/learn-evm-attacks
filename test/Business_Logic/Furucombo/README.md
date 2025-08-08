@@ -6,7 +6,7 @@ date: 2021-02-27
 loss_usd: 15000000
 returned_usd: 0
 tags: [business logic, context hijacking]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x17e8Ca1b4798B97602895f63206afCd1Fc90Ca5f"
 tokens_lost:
@@ -19,8 +19,8 @@ tokens_lost:
 attacker_addresses:
   - "0xb624e2b10b84a41687caec94bdd484e48d76b212"
   - "0x86765dde9304bEa32f65330d266155c4fA0C4F04"
-malicious_token: N/A
-attack_block: 11940500
+malicious_token: []
+attack_block: [11940500]
 reproduction_command: forge test --match-contract Exploit_Furucombo -vvv
 attack_txs:
   - "0x8bf64bd802d039d03c63bf3614afc042f345e158ea0814c74be4b5b14436afb9"

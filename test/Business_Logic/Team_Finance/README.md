@@ -6,7 +6,7 @@ date: 2022-10-27
 loss_usd: 15000000
 returned_usd: 7000000
 tags: [business logic, migration process]
-subcategory: Faulty Migration Process
+subcategory: [Faulty Migration Process]
 vulnerable_contracts:
   - "0x48d118c9185e4dbafe7f3813f8f29ec8a6248359"
   - "0xE2fE530C047f2d85298b07D9333C05737f1435fB"
@@ -18,8 +18,8 @@ tokens_lost:
 attacker_addresses:
   - "0x161cebB807Ac181d5303A4cCec2FC580CC5899Fd"
   - "0xCFF07C4e6aa9E2fEc04DAaF5f41d1b10f3adAdF4"
-malicious_token: "0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF"
-attack_block: 15837165
+malicious_token: ["0x2d4ABfDcD1385951DF4317f9F3463fB11b9A31DF"]
+attack_block: [15837165]
 reproduction_command: forge test --match-contract Exploit_TeamFinance -vvv
 attack_txs:
   - "0xb2e3ea72d353da43a2ac9a8f1670fd16463ab370e563b9b5b26119b2601277ce"

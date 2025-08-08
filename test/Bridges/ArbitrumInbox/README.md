@@ -6,17 +6,17 @@ date: 2022-09-19
 loss_usd: 400000
 returned_usd: 0
 tags: [access control, bridge, reinitialization]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x3e2198a77fc6b266082b92859092170763548730"
   - "0x4Dbd4fc535Ac27206064B68FfCf827b0A60BAB3f"
 tokens_lost:
   - ETH
-attacker_addresses: N/A
-malicious_token: N/A
-attack_block: N/A
+attacker_addresses: []
+malicious_token: []
+attack_block: []
 reproduction_command: forge test --match-contract Report_ArbitrumInbox -vvv
-attack_txs: N/A
+attack_txs: []
 sources:
   - title: Riptide Writeup
     url: https://medium.com/@0xriptide/hackers-in-arbitrums-inbox-ca23272641a2

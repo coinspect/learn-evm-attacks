@@ -6,7 +6,7 @@ date: 2022-11-10
 loss_usd: 6000000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x46161158b1947D9149E066d6d31AF1283b2d377C"
 tokens_lost:
@@ -14,7 +14,7 @@ tokens_lost:
   - XIDR
 attacker_addresses:
   - "0x14c19962E4A899F29B3dD9FF52eBFb5e4cb9A067"
-malicious_token: N/A
+malicious_token: []
 attack_block: 15941674
 reproduction_command: forge test --match-contract Exploit_DFXFinance -vvv
 attack_txs:

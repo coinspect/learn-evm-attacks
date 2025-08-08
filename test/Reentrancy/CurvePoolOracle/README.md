@@ -6,7 +6,7 @@ date: 2022-11-23
 loss_usd: 180000
 returned_usd: 0
 tags: [reentrancy]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0x3dC7E6FF0fB79770FA6FB05d1ea4deACCe823943"
 tokens_lost:
@@ -15,8 +15,8 @@ tokens_lost:
 attacker_addresses:
   - "0x8ca72f46056d85db271dd305f6944f32a9870ff0"
   - "0xEb4c67E5BE040068FA477a539341d6aeF081E4Eb"
-malicious_token: N/A
-attack_block: 34716801
+malicious_token: []
+attack_block: [34716801]
 reproduction_command: forge test --match-contract Exploit_Qi_ReadOnlyReentrancy -vvv
 attack_txs:
   - "0xb8efe839da0c89daa763f39f30577dc21937ae351c6f99336a0017e63d387558"

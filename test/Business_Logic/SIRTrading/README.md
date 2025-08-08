@@ -6,7 +6,7 @@ date: 2025-03-30
 loss_usd: 355000
 returned_usd: 0
 tags: [business logic, data validation, transient storage]
-subcategory: N/A
+subcategory: []
 vulnerable_contracts:
   - "0xb91ae2c8365fd45030aba84a4666c4db074e53e7"
 tokens_lost:
@@ -15,8 +15,8 @@ tokens_lost:
   - WETH
 attacker_addresses:
   - "0x27defcfa6498f957918f407ed8a58eba2884768c"
-malicious_token: N/A
-attack_block: 22157900
+malicious_token: []
+attack_block: [22157900]
 reproduction_command: forge test --match-contract Exploit_SIRTrading -vvv --evm-version cancun
 attack_txs:
   - "0xa05f047ddfdad9126624c4496b5d4a59f961ee7c091e7b4e38cee86f1335736f"
