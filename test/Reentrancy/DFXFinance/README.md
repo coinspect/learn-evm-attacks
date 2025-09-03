@@ -16,7 +16,7 @@ tokens_lost:
 attacker_addresses:
   - "0x14c19962E4A899F29B3dD9FF52eBFb5e4cb9A067"
 malicious_token: []
-attack_block: 15941674
+attack_block: [15941674]
 reproduction_command: forge test --match-contract Exploit_DFXFinance -vvv
 attack_txs:
   - "0x390def749b71f516d8bf4329a4cb07bb3568a3627c25e607556621182a17f1f9"
