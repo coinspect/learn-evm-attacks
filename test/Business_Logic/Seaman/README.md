@@ -1,5 +1,6 @@
 ---
 title: Seaman
+description: Forcing contracts to trade at manipulated token prices
 type: Exploit
 network: [binance smart chain]
 date: 2022-11-29

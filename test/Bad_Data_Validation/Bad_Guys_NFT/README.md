@@ -1,5 +1,6 @@
 ---
 title: Bad Guys NFT
+description: Claiming unlimited NFTs through unvalidated mint amounts
 type: Exploit
 network: [ethereum]
 date: 2022-09-02

@@ -1,5 +1,6 @@
 ---
 title: SIR Trading
+description: Attacking through misused transient storage security checks
 type: Exploit
 network: [ethereum]
 date: 2025-03-30

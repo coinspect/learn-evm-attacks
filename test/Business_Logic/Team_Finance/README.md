@@ -1,5 +1,6 @@
 ---
 title: Team Finance
+description: Exploiting migration processes through malicious token manipulation
 type: Exploit
 network: [ethereum]
 date: 2022-10-27

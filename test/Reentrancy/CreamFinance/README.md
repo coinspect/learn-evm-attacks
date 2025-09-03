@@ -1,5 +1,6 @@
 ---
 title: Cream Finance
+description: Bypassing reentrancy guards through cross-contract token hooks
 type: Exploit
 network: [ethereum]
 date: 2021-08-30

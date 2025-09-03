@@ -1,5 +1,6 @@
 ---
 title: TornadoCash Governance Takeover
+description: Hijacking governance by replacing approved proposal implementations
 type: Exploit
 network: [ethereum]
 date: 2023-05-21

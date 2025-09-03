@@ -1,5 +1,6 @@
 ---
 title: DAO maker
+description: Exploiting unprotected initialization to become contract owner
 type: Exploit
 network: [ethereum]
 date: 2021-09-03

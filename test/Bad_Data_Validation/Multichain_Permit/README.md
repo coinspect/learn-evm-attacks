@@ -1,5 +1,6 @@
 ---
 title: AnySwap Permit Attack
+description: Draining user funds via malicious token contracts
 type: Exploit
 network: [ethereum]
 date: 2022-01-19

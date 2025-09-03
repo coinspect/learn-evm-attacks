@@ -1,5 +1,6 @@
 ---
 title: One Ring Finance
+description: Exploiting share price manipulation via reserve balance changes
 type: Exploit
 network: [Fantom]
 date: 2022-03-21

@@ -1,5 +1,6 @@
 ---
 title: TempleDAO Spoof Old Staking Contract
+description: Spoofing migration contracts to steal staked tokens
 type: Exploit
 network: [ethereum]
 date: 2022-10-11

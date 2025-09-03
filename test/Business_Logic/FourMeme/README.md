@@ -1,5 +1,6 @@
 ---
 title: Four Meme
+description: Preemptively manipulating pool prices during liquidity migration
 type: Exploit
 network: [binance smart chain]
 date: 2025-02-11

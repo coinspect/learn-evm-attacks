@@ -1,5 +1,6 @@
 ---
 title: Wormhole Bridge
+description: Bypassing signature verification through uninitialized implementation contracts
 type: Report
 network: [ethereum]
 date: 2022-02-24

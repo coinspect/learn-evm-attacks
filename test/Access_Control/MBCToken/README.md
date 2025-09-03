@@ -1,5 +1,6 @@
 ---
 title: MBC Token
+description: Manipulating token prices through public liquidity functions
 type: Exploit
 network: [binance smart chain]
 date: 2022-11-29

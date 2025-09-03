@@ -1,5 +1,6 @@
 ---
 title: Revest Finance
+description: Reentering token vault systems through ERC-1155 callbacks
 type: Exploit
 network: [ethereum]
 date: 2022-03-27

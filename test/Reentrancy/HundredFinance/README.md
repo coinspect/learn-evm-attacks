@@ -1,5 +1,6 @@
 ---
 title: Hundred Finance
+description: Draining lending pools via ERC667 token hook reentrancy
 type: Exploit
 network: [gnosis chain]
 date: 2022-03-15

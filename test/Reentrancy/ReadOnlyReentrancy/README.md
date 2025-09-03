@@ -1,6 +1,7 @@
 ---
 title: Read Only Reentrancy
-date: '01-01-1111' # Date? We need a date to avoid errors
+date: '01-01-1111'
+description: Exploiting stale state reads during reentrancy execution
 type: Education
 network: [N/A]
 tags: [reentrancy, read-only]

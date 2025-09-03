@@ -1,5 +1,6 @@
 ---
 title: Fei Protocol
+description: Cross-function reentrancy through lending protocol token transfers
 type: Exploit
 network: [ethereum]
 date: 2022-04-30

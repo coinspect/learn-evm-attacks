@@ -1,5 +1,6 @@
 ---
 title: Ronin Bridge
+description: Compromising validator keys to authorize malicious withdrawals
 type: Exploit
 network: [ethereum]
 date: 2022-03-23

@@ -1,5 +1,6 @@
 ---
 title: Fantasm Finance
+description: Minting tokens without required backing collateral
 type: Exploit
 network: [fantom]
 date: 2022-03-09

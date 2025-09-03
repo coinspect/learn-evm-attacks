@@ -1,5 +1,6 @@
 ---
 title: MobiusDAO
+description: Exploiting decimal precision errors to inflate token amounts
 type: Exploit
 network: [binance smart chain]
 date: 2025-05-11

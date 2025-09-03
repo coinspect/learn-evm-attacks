@@ -1,5 +1,6 @@
 ---
 title: Cork Finance
+description: Manipulating rollover pricing to extract underpriced tokens
 type: Exploit
 network: [ethereum]
 date: 2025-05-28

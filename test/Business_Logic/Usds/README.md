@@ -1,5 +1,6 @@
 ---
 title: Sperax USD (USDS)
+description: Abusing contract deployment timing to bypass balance checks
 type: Exploit
 network: [arbitrum]
 date: 2023-02-03

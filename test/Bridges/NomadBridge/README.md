@@ -1,5 +1,6 @@
 ---
 title: Nomad Bridge
+description: Processing arbitrary messages through faulty validation logic
 type: Exploit
 network: [ethereum, moonbean]
 date: 2022-08-01

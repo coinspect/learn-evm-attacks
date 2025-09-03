@@ -1,5 +1,6 @@
 ---
 title: Sandbox Public Burn
+description: Destroying anyone's NFTs through flawed burn logic
 type: Exploit
 network: [ethereum]
 date: 2022-02-08

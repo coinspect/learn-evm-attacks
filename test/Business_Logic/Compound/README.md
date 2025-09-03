@@ -1,5 +1,6 @@
 ---
 title: Compound TUSD Integration
+description: Exploiting dual-contract tokens in sweep functions
 type: Report
 network: [ethereum]
 date: 2022-03-21

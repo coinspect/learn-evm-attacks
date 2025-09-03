@@ -1,5 +1,6 @@
 ---
 title: Punk Protocol Re-initialize
+description: Taking control by re-initializing proxy contracts
 type: Exploit
 network: [ethereum]
 date: 2021-08-10

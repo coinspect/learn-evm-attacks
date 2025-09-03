@@ -1,5 +1,6 @@
 ---
 title: Onyx Protocol
+description: Creating empty market conditions to manipulate collateral values
 type: Exploit
 network: [ethereum]
 date: 2023-11-01

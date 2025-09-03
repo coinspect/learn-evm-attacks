@@ -1,5 +1,6 @@
 ---
 title: Rikkei Oracle Replace
+description: Setting malicious price oracles through unprotected functions
 type: Exploit
 network: [binance smart chain]
 date: 2021-04-15

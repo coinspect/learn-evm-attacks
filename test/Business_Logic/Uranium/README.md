@@ -1,5 +1,6 @@
 ---
 title: Uranium
+description: Breaking AMM invariants through incorrect constant calculations
 type: Exploit
 network: [binance smart chain]
 date: 2021-04-28

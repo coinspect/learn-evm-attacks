@@ -1,5 +1,6 @@
 ---
 title: Arbitrum Inbox
+description: Exploiting reinitialization vulnerability in bridge upgrade process
 type: Report
 network: [ethereum]
 date: 2022-09-19

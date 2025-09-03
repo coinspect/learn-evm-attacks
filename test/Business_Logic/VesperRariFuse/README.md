@@ -1,5 +1,6 @@
 ---
 title: Rari Fuse
+description: Manipulating low-liquidity pools to inflate collateral pricing
 type: Exploit
 network: [ethereum]
 date: 2021-11-02

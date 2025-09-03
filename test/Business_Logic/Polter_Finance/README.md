@@ -1,5 +1,6 @@
 ---
 title: Polter Finance
+description: Breaking lending protocols through manipulated oracle price feeds
 type: Exploit
 network: [Fantom]
 date: 2024-11-16

@@ -1,5 +1,6 @@
 ---
 title: Paraluni
+description: Attacking liquidity pools through malicious token reentrancy
 type: Exploit
 network: [binance smart chain]
 date: 2022-03-15

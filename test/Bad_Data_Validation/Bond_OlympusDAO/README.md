@@ -1,5 +1,6 @@
 ---
 title: Bond Olympus DAO
+description: Exploiting arbitrary token parameters in redemption functions
 type: Exploit
 network: [ethereum]
 date: 2022-10-21

@@ -1,5 +1,6 @@
 ---
 title: Superfluid
+description: Forging transaction contexts to impersonate any user
 type: Exploit
 network: [polygon]
 date: 2022-02-08

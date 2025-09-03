@@ -1,5 +1,6 @@
 ---
 title: Curve Pool Oracle
+description: Exploiting AMM oracle prices during liquidity withdrawal callbacks
 type: Exploit
 network: [polygon]
 date: 2022-11-23

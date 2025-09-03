@@ -1,5 +1,6 @@
 ---
 title: BVaults
+description: Manipulating token prices to drain protocol funds
 type: Exploit
 network: [binance smart chain]
 date: 2022-10-30

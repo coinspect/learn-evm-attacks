@@ -1,5 +1,6 @@
 ---
 title: Polynetwork Bridge
+description: Hijacking validator roles through sighash collision attacks
 type: Exploit
 network: [ethereum, moonbean]
 date: 2021-08-10

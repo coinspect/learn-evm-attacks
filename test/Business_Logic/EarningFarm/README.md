@@ -1,5 +1,6 @@
 ---
 title: Earning Farm
+description: Bypassing withdrawal limits through unauthorized flash loan callbacks
 type: Exploit
 network: [ethereum]
 date: 2022-10-14

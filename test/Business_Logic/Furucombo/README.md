@@ -1,5 +1,6 @@
 ---
 title: Furucombo
+description: Hijacking proxy contexts through malicious delegatecalls
 type: Exploit
 network: [ethereum]
 date: 2021-02-27

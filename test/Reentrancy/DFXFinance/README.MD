@@ -1,5 +1,6 @@
 ---
 title: DFX Finance
+description: Exploiting flash loan callbacks to manipulate balance checks
 type: Exploit
 network: [ethereum]
 date: 2022-11-10
