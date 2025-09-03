@@ -1,24 +1,34 @@
-# SIR Trading
-
-- **Type:** Exploit
-- **Network:** Ethereum
-- **Total lost:** ~355k
-- **Category:** Bad usage of transient storage
-- **Vulnerable contracts:**
-- - [Exploited Contract](https://etherscan.io/address/0xb91ae2c8365fd45030aba84a4666c4db074e53e7#code)
-- **Tokens Lost**
-- - ~ 17814 USDC
-- - ~ 1.4 WBTC
-- - ~ 120 WETH
-
-- **Attack transactions:**
-- - [Attack Tx](https://etherscan.io/tx/0xa05f047ddfdad9126624c4496b5d4a59f961ee7c091e7b4e38cee86f1335736f)
-
-- - Deployer EOA: [0x27defcfa6498f957918f407ed8a58eba2884768c](https://etherscan.io/address/0x27defcfa6498f957918f407ed8a58eba2884768c)
-
-- **Attack Block:**: 22157900
-- **Date:** March 30, 2025
-- **Reproduce:** `forge test --match-contract Exploit_SIRTrading -vvv --evm-version cancun`
+---
+title: SIR Trading
+description: Attacking through misused transient storage security checks
+type: Exploit
+network: [ethereum]
+date: 2025-03-30
+loss_usd: 355000
+returned_usd: 0
+tags: [business logic, data validation, transient storage]
+subcategory: []
+vulnerable_contracts:
+  - "0xb91ae2c8365fd45030aba84a4666c4db074e53e7"
+tokens_lost:
+  - USDC
+  - WBTC
+  - WETH
+attacker_addresses:
+  - "0x27defcfa6498f957918f407ed8a58eba2884768c"
+malicious_token: []
+attack_block: [22157900]
+reproduction_command: forge test --match-contract Exploit_SIRTrading -vvv --evm-version cancun
+attack_txs:
+  - "0xa05f047ddfdad9126624c4496b5d4a59f961ee7c091e7b4e38cee86f1335736f"
+sources:
+  - title: TenArmorAlert Twitter Thread
+    url: https://x.com/TenArmorAlert/status/1906268185046745262
+  - title: DecurityHQ Twitter Thread
+    url: https://x.com/DecurityHQ/status/1906270316935942350
+  - title: Slowmist Medium Post
+    url: https://slowmist.medium.com/fatal-residue-an-on-chain-heist-triggered-by-transient-storage-10909e4a255a
+---
 
 ## Step-by-step Overview
 
@@ -73,6 +83,7 @@ _mint(address(this), 200000000000000000000000000000000000000000000000000);
 ```
 
 Then, the attacker deployed a second token (TokenB), which is used as the debt token in the SIR Trading protocol:
+
 ```solidity
 IToken tokenB = IToken(address(new Token()));
 tokenB.mint(address(this), 200000000000000000000000000000000000000000000000000);
@@ -207,9 +218,3 @@ victim.uniswapV3SwapCallback(
 
 1. Use separate transient storage slots for different values. Don’t store both the pool address and the minted amount in the same slot.
 2. Clear transient storage manually after performing critical checks, to avoid unintended reuse later in the transaction.
-
-## Sources and references
-
-- [TenArmorAlert Twitter Thread](https://x.com/TenArmorAlert/status/1906268185046745262)
-- [DecurityHQ Twitter Thread](https://x.com/DecurityHQ/status/1906270316935942350)
-- [Slowmist Medium Post](https://slowmist.medium.com/fatal-residue-an-on-chain-heist-triggered-by-transient-storage-10909e4a255a)

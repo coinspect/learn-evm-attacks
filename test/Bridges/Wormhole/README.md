@@ -1,20 +1,30 @@
-# Wormhole Bridge
-- **Type:** Report
-- **Network:** Ethereum 
-- **Total lost**: 10MM USD (bounty price)
-- **Category:** Reinitialization
-- **Vulnerable contracts:**
-- - Vulnerable implementation: [0x736d2a394f7810c17b3c6fed017d5bc7d60c077d](https://etherscan.io/address/0x736d2a394f7810c17b3c6fed017d5bc7d60c077d)
-- - Proxy: [0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B](https://etherscan.io/address/0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B)
-- **Attack transactions:**
-- - None
-- **Attacker Addresses**: 
-- - None
-- **Vulnerable Block:**: 13818843
-- **Date:** Feb 24, 2022 (report and fix)
-- **Reproduce:** `forge test --match-contract Report_Wormhole -vvv`
+---
+title: Wormhole Bridge
+description: Bypassing signature verification through uninitialized implementation contracts
+type: Report
+network: [ethereum]
+date: 2022-02-24
+loss_usd: 10000000
+returned_usd: 0
+tags: [bridges, access control, reinitialization]
+category: [bridges, access control, reinitialization]
+subcategory: []
+vulnerable_contracts:
+  - "0x736d2a394f7810c17b3c6fed017d5bc7d60c077d"
+  - "0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B"
+tokens_lost: []
+attacker_addresses: []
+malicious_token: []
+attack_block: [13818843]
+reproduction_command: forge test --match-contract Report_Wormhole -vvv
+attack_txs: []
+sources:
+  - title: Immunefi Writeup
+    url: https://medium.com/immunefi/wormhole-uninitialized-proxy-bugfix-review-90250c41a43a
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Craft an evil `_bridge` contract
 2. Call `initialize` on the implementation contract to set the attacker controlled `guardian`
 3. Call `submitContractUpgrade` on the implementation contract, providing attacker controlled signature and payloads, setting the `_bridge` to be your malicious contract
@@ -35,7 +45,7 @@ The Wormhole proxy [implementation contract](https://etherscan.io/address/0x736d
 
 When a proxy is not properly initialized, there are serious security implications. The Wormhole implementation upgrade procedure (`submitContractUpgrade`) has an additional security mechanism, being protected by a multi-sig held by its Guardians. These signatures are set by the `initialize` method. This method is protected by a lock, ensuring that it can only be called once.
 
-``` solidity
+```solidity
     function initialize(address[] memory initialGuardians, uint16 chainId, uint16 governanceChainId, bytes32 governanceContract) initializer public {
         require(initialGuardians.length > 0, "no guardians specified");
 
@@ -66,10 +76,11 @@ When a proxy is not properly initialized, there are serious security implication
         _;
     }
 ```
+
 Not being initialized, anyone can trigger the `initialize` method, providing their own set of authorized guardians.
 Next, the new owner can call `submitContractUpgrade` providing signatures and a contract of choice to replace the logic implementation.
 
-``` solidity
+```solidity
     function submitContractUpgrade(bytes memory _vm) public {
         Structs.VM memory vm = parseVM(_vm);
 
@@ -86,7 +97,8 @@ Next, the new owner can call `submitContractUpgrade` providing signatures and a 
         upgradeImplementation(upgrade.newContract);
     }
 ```
-``` solidity
+
+```solidity
     function upgradeImplementation(address newImplementation) internal {
         address currentImplementation = _getImplementation();
 
@@ -108,17 +120,7 @@ Now notice that it is the **implementation contract** that was not initialized, 
 Upgrading the implementation with a contract issuing `SELFDESTRUCT` would brick the proxy's logic, locking the Wormhole bridge funds forever.
 
 ## Possible mitigations
+
 - Be careful when implementing proxy upgradability
 - Make sure to implement secure authentication and authorization schemes
 - Test deploy conditions, like `contract should be initialized` and `should not be able to reinitialize contract`
-
-## Diagrams and graphs
-
-### Class
-
-![class](wormhole.png)
-
-## Sources and references
-- [Writeup](https://medium.com/immunefi/wormhole-uninitialized-proxy-bugfix-review-90250c41a43a)
-
-

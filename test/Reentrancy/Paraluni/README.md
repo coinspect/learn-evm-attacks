@@ -1,17 +1,36 @@
-# Paraluni
-- **Type:** Exploit
-- **Network:** Binance Smart Chain
-- **Total lost**: ~$1.7MM in various stablecoins
-- **Category:** Reentrancy
-- **Exploited contracts:**
-- - Hundred: https://gnosisscan.io/address/0x090a00A2De0EA83DEf700B5e216f87a5D4F394FE
-- **Attack transactions:**
-- - Attack Tx: https://bscscan.com/tx/0x70f367b9420ac2654a5223cc311c7f9c361736a39fd4e7dff9ed1b85bab7ad54
-- **Attack Block:**: 21120320 
-- **Date:** Mar 15, 2022
-- **Reproduce:** `forge test --match-contract Exploit_Paraluni -vvv`
+---
+title: Paraluni
+description: Attacking liquidity pools through malicious token reentrancy
+type: Exploit
+network: [binance smart chain]
+date: 2022-03-15
+loss_usd: 1700000
+returned_usd: 0
+tags: [reentrancy]
+subcategory: []
+vulnerable_contracts:
+  - "0x4770b5cb9d51EcB7AD5B14f0d4F2cEe8e5563645"
+tokens_lost:
+  - BUSD
+  - Paraluna LPs
+attacker_addresses:
+  - "0x94bC1d555E63eEA23fE7FDbf937ef3f9aC5fcF8F"
+malicious_token:
+  - "0xca2ca459ec6e4f58ad88aeb7285d2e41747b9134"
+  - "0xbc5db89ce5ab8035a71c6cd1cd0f0721ad28b508"
+attack_block: [16044498]
+reproduction_command: forge test --match-contract Exploit_Paraluni -vvv
+attack_txs:
+  - "0x70f367b9420ac2654a5223cc311c7f9c361736a39fd4e7dff9ed1b85bab7ad54"
+sources:
+  - title: Paraluni Tweet
+    url: https://twitter.com/paraluni/status/1502951606202994694
+  - title: Slowmist Article
+    url: https://slowmist.medium.com/paraluni-incident-analysis-58be442a4f99
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Create a malicious token that spoofs allowances, balances and implements a reentrant call while calling transferFrom.
 2. Send stablecoins to drain to the malicious token contract. In here, USDT and BUSD.
 3. Deposit into Paraluni to the malicious token as if it was a regular admitted token.
@@ -50,22 +69,14 @@
         return vars.liquidity;
     }
 ```
-1. The deposit flow does not ensure that the token addresses provided match the addresses of the pools that are called (_pid)
+
+1. The deposit flow does not ensure that the token addresses provided match the addresses of the pools that are called (\_pid)
 2. The liquidity and internal balances (vars) are updated after adding liquidity inside addLiquidityInternal().
 3. Because of 1. and 2., the deposit flow could be attacked by reentrancy as tokens flow before updating key variables and the pools allow malicious tokens.
-The deposit flow will update twice the balance of the attacker contract (malicious token) transferring the double of stablecoins.
+   The deposit flow will update twice the balance of the attacker contract (malicious token) transferring the double of stablecoins.
 
 ## Possible mitigations
+
 - Ensure that the tokens addresses provided match the addresses from the targeted pool or check if they are whitelisted.
 - Use a reentrancy mutex if arbitrary tokens are meant to be handled.
 - Review the checks-effects-interactions pattern and evaluate the steps at which tokens flow in and out the contract.
-
-## Diagrams and graphs
-
-### Class
-
-![class](paraluni.png)
-
-## Sources and references
-- [Paraluni Tweet](https://twitter.com/paraluni/status/1502951606202994694)
-- [Slowmist Article](https://slowmist.medium.com/paraluni-incident-analysis-58be442a4f99)

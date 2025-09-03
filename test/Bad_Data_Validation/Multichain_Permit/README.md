@@ -1,22 +1,36 @@
-# Multichain Permit Attack
-- **Type:** Exploit
-- **Network:** Ethereum
-- **Total lost**: 308 WETH (~ U$960K)
-- **Category:** Data validation
-- **Exploited contracts:**
-- - [0x6b7a87899490EcE95443e979cA9485CBE7E71522](https://etherscan.io/address/0x6b7a87899490EcE95443e979cA9485CBE7E71522)
-- **Attack transactions:**
-- - [https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7](https://etherscan.io/tx/0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7)
-- **Attacker Addresses**: 
-- - [0xfa2731d0bede684993ab1109db7ecf5bf33e8051](https://etherscan.io/address/0xfa2731d0bede684993ab1109db7ecf5bf33e8051)
-- **Attack Block:**: 14037237
-- **Date:** Jan 19, 2022
-- **Reproduce:** `forge test --match-contract Exploit_Multichain -vvv`
+---
+title: AnySwap Permit Attack
+description: Draining user funds via malicious token contracts
+type: Exploit
+network: [ethereum]
+date: 2022-01-19
+loss_usd: 960000
+returned_usd: 0
+tags: [data validation]
+subcategory: []
+vulnerable_contracts:
+  - "0x6b7a87899490EcE95443e979cA9485CBE7E71522"
+tokens_lost:
+  - WETH
+attacker_addresses:
+  - "0xfa2731d0bede684993ab1109db7ecf5bf33e8051"
+malicious_token: []
+attack_block: [14037237]
+reproduction_command: forge test --match-contract Exploit_Multichain -vvv
+attack_txs:
+  - "0xe50ed602bd916fc304d53c4fed236698b71691a95774ff0aeeb74b699c6227f7"
+sources:
+  - title: BlockSec Post
+    url: https://blocksecteam.medium.com/the-race-against-time-and-strategy-about-the-anyswap-rescue-and-things-we-have-learnt-4fe086b186ac
+  - title: Zengo Writeup
+    url: https://medium.com/zengo/without-permit-multichains-exploit-explained-8417e8c1639b
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Craft and deploy a contract so that it passes the requirements.
 2. Find a victim that had `permit` the contract to use `WETH`.
-2. Call `anySwapOutUnderlyingWithPermit` with your malicious contract and the victim's address.
+3. Call `anySwapOutUnderlyingWithPermit` with your malicious contract and the victim's address.
 
 ## Detailed Description
 
@@ -28,7 +42,7 @@ The contract fails to take into account that `WETH` is special: `WETH`'s fallbac
 
 To make matters worst, most of the users of Multichain had given an unlimited token `allowance` to the Protocol, so when the contract uses `transferFrom` it can use an arbitrary amount.
 
-``` solidity
+```solidity
     function anySwapOutUnderlyingWithPermit(
         address from,
         address token,
@@ -61,15 +75,6 @@ Here, the attacker deployed a contract that returned `WETH` as the underlying.
 Then it is just a matter of findings victims.
 
 ## Possible mitigations
+
 - Implement a whitelist of allowed tokens.
 - Avoid asking users to sign unlimited `allowances`.
-
-## Diagrams and graphs
-  
-### Class
-
-![class](multichain.png)
-
-## Sources and references
-- [BlockSec Post](https://blocksecteam.medium.com/the-race-against-time-and-strategy-about-the-anyswap-rescue-and-things-we-have-learnt-4fe086b186ac)
-- [Zengo Writeup](https://medium.com/zengo/without-permit-multichains-exploit-explained-8417e8c1639b)

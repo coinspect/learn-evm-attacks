@@ -1,19 +1,33 @@
-# BVaults
-- **Type:** Exploit
-- **Network:** Binance Smart Chain 
-- **Total lost**: 35K
-- **Category:** Price manipulation
-- **Vulnerable contracts:**
-- - [0xB2B1DC3204ee8899d6575F419e72B53E370F6B20](https://bscscan.com/address/0xB2B1DC3204ee8899d6575F419e72B53E370F6B20)
-- **Attack transactions:**
-- - [0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94](https://bscscan.com/tx/0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94)
-- **Attacker Addresses**: 
-- - EOA: [0x5bfaa396c6fb7278024c6d7230b17d97ce8ab62d](https://bscscan.com/address/0x5bfaa396c6fb7278024c6d7230b17d97ce8ab62d)
-- **Attack Block:**: 22629432
-- **Date:** Oct 30, 2022 
-- **Reproduce:** `forge test --match-contract Exploit_BVaults -vvv`
+---
+title: BVaults
+description: Manipulating token prices to drain protocol funds
+type: Exploit
+network: [binance smart chain]
+date: 2022-10-30
+loss_usd: 35000
+returned_usd: 0
+tags: [business logic, price manipulation]
+subcategory: []
+vulnerable_contracts:
+  - "0xB2B1DC3204ee8899d6575F419e72B53E370F6B20"
+tokens_lost:
+  - WBNB
+attacker_addresses:
+  - "0x5bfaa396c6fb7278024c6d7230b17d97ce8ab62d"
+malicious_token: []
+attack_block: [22629432]
+reproduction_command: forge test --match-contract Exploit_BVaults -vvv
+attack_txs:
+  - "0xe7b7c974e51d8bca3617f927f86bf907a25991fe654f457991cbf656b190fe94"
+sources:
+  - title: Beosin Alert's Twitter
+    url: https://twitter.com/BeosinAlert/status/1588579143830343683
+  - title: Source Code
+    url: https://bscscan.com/address/0xb2b1dc3204ee8899d6575f419e72b53e370f6b20#code
+---
 
-## Step-by-step 
+## Step-by-step
+
 1. Create a malicious token and pair
 2. Inflate its price
 3. Call convertDustToEarned
@@ -26,7 +40,7 @@ This attack relies on the fack that BVault provided a `convertDustToEarned` meth
 
 Unfortunately, it did not do any kind of price check or use any kind of smoothing of the price curve. This makes it vulnerable to price inflation: the attacker created a malicious token and pair, inflated the price of the token in the pool and then used it to gain `earnedTokens`.
 
-``` solidity
+```solidity
     function convertDustToEarned() public whenNotPaused {
         require(isAutoComp, "!isAutoComp");
 
@@ -52,18 +66,5 @@ Unfortunately, it did not do any kind of price check or use any kind of smoothin
 ```
 
 ## Possible mitigations
+
 - Either introduce an oracle to get a second-source of truth for prices or use time-weighted-average to smooth the curve.
-
-## Diagrams and graphs
-
-### Class
-
-![class](bvaults.png)
-
-### Call graph
-
-![call](bvaults-call.png)
-
-## Sources and references
-- [Beosin Alert's Twitter](https://twitter.com/BeosinAlert/status/1588579143830343683)
-- [Source Code](https://bscscan.com/address/0xb2b1dc3204ee8899d6575f419e72b53e370f6b20#code)
