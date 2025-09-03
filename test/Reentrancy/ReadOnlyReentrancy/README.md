@@ -1,6 +1,6 @@
 ---
 title: Read Only Reentrancy
-date: '01-01-1111'
+date: "01-01-1111"
 description: Exploiting stale state reads during reentrancy execution
 type: Education
 network: [N/A]
