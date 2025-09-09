@@ -1,0 +1,13 @@
+{
+  "name": "Multichain_Permit",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Exploit_Multichain",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Bad_Data_Validation/Multichain_Permit/Multichain_Permit.attack.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": "bash scripts/attach-run.sh",
+}

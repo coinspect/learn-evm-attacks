@@ -1,0 +1,13 @@
+{
+  "name": "Sandbox",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Exploit_SandBox",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Access_Control/Sandbox/Sandbox.attack.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": "bash scripts/attach-run.sh",
+}

@@ -1,0 +1,13 @@
+{
+  "name": "TornadoCash_Governance",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Exploit_TornadoCashGovernance",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Business_Logic/TornadoCash_Governance/TornadoCash_Governance.attack.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": "bash scripts/attach-run.sh",
+}
