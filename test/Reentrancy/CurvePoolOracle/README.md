@@ -43,10 +43,6 @@ Understanding this attacks needs some familiarity with AMMs and how crypto syste
 
 We will start by reviewing [Curve's Stable Swaps](https://curve.fi/files/stableswap-paper.pdf). There's no need to go deep into the math, we can just understand that is is an AMM that is optimized for trades between assets that are really close in price (different from constant product AMMs).
 
-The graph below should give us a fairly good intuition of how the curve in an stableswap look like:
-
-![stableswap curve](stableswap.png)
-
 Stableswaps keep a value `D` as the swap-invariant (like constant product keeps `k`). Just like in constant product, this is a semi-invariant in in practice as it will increase due to fees.
 
 Now, we must understand some particularities of Curve before moving forward. We probably can't do it better than the folks at [ChainSecurity](https://chainsecurity.com/heartbreaks-curve-lp-oracles/) have already done, so we really recommend you go and read the blog post. Let's do a **very** condensed summary just in case you don't have time to read the full story today:
@@ -94,8 +90,6 @@ If an attacker finds a protocol that uses `get_virtual_price` as a price oracle 
 Unfortunately, this is exactly what QiDao and Market XYZ did. For the purposes of this reproduction, we are gonna concentrate on QiDAO but the concept for Market XYZ is the same.
 
 At this point, you only need to know that QiDAO is a lending platform which used [MasterPriceOracle](https://polygonscan.com/address/0x71585E806402473Ff25eda3e2C3C17168767858a) to get the prices for their collateralized borrows. Unfortunately, this oracle used `get_virtual_price`, which we now know how to exploit.
-
-![trace](call_trace.png)
 
 ## Possible mitigations
 
