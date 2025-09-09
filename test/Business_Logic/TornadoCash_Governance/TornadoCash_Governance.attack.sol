@@ -29,7 +29,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
     Proposal_20 proposal_20;
 
     function setUp() external {
-        forkIdBefore = cheat.createSelectFork("mainnet", 17_248_593);
+        forkIdBefore = cheat.createSelectFork(vm.envString("RPC_URL"), 17_248_593);
 
         // The attacker used two accounts
         cheat.deal(ATTACKER1, 0.5 ether);
