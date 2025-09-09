@@ -1,0 +1,17 @@
+{
+  "name": "Wormhole",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Report_Wormhole",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Bridges/Wormhole/WormholeUninitialized.report.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": [
+    "bash",
+    "-lc",
+    "bash scripts/attach-run.sh"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Rikkei",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Exploit_Rikkei",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Access_Control/Rikkei/Rikkei.attack.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": [
+    "bash",
+    "-lc",
+    "bash scripts/attach-run.sh"
+  ]
+}

@@ -10,4 +10,4 @@ export PATH="$HOME/.foundry/bin:$PATH"
 foundryup
 
 # Install forge
-forge install 
+forge install
