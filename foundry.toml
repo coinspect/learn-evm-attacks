@@ -9,14 +9,3 @@ libs = ['lib']
 line_length = 110
 number_underscore = "thousands"
 wrap_comments = true
-
-[rpc_endpoints]
-mainnet = "https://rpc.ankr.com/eth"
-optimism = "https://rpc.ankr.com/optimism"
-fantom = "https://rpc.ankr.com/fantom"
-arbitrum = "https://rpc.ankr.com/arbitrum"
-bsc = "https://bsc-dataseed.binance.org/"
-moonriver = "https://moonriver.public.blastapi.io"
-gnosis = "https://rpc.ankr.com/gnosis"
-avax = "https://rpc.ankr.com/avalanche"
-polygon = "https://rpc.ankr.com/polygon"

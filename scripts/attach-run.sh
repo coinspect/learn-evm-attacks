@@ -18,22 +18,19 @@ if [[ -z "${RPC_URL:-}" ]]; then
   echo
 
   while true; do
-    read -rs -p "Enter RPC_URL (hidden): " RPC_URL_INPUT; echo
+    read -r -p "Enter RPC_URL: " RPC_URL_INPUT
     if [[ -z "$RPC_URL_INPUT" ]]; then
       echo "Empty. Try again."; continue
     fi
     if [[ ! "$RPC_URL_INPUT" =~ ^https?:// ]]; then
       echo "Warning: value does not look like an http(s) URL"
     fi
-    LEN=${#RPC_URL_INPUT}; TAIL=${RPC_URL_INPUT: -6}
-    echo "Captured $LEN characters. Ends with …$TAIL"
-    read -rp "Use this value? [Y/n]: " CONFIRM; CONFIRM=${CONFIRM:-Y}
-    [[ "$CONFIRM" =~ ^[Yy]$ ]] || { echo "Re-enter."; continue; }
-
+    
     # Export for this session and persist for future shells
     export RPC_URL="$RPC_URL_INPUT"
     sed -i '/^export RPC_URL=/d' "$HOME/.bashrc"
     printf 'export RPC_URL="%s"\n' "$RPC_URL_INPUT" >> "$HOME/.bashrc"
+    echo "RPC_URL saved."
     break
   done
 else
