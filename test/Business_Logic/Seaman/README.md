@@ -9,22 +9,22 @@ returned_usd: 0
 tags: [business logic, price manipulation]
 subcategory: []
 vulnerable_contracts:
-  - "0x6bc9b4976ba6f8c9574326375204ee469993d038"
+    - "0x6bc9b4976ba6f8c9574326375204ee469993d038"
 tokens_lost:
-  - GVC
+    - GVC
 attacker_addresses:
-  - "0x4b1f47be1f678076f447585beba025e3a046a9fa"
-  - "0x0E647d34c4caF61D9E377a059A01b5C85AB1d82a"
+    - "0x4b1f47be1f678076f447585beba025e3a046a9fa"
+    - "0x0E647d34c4caF61D9E377a059A01b5C85AB1d82a"
 malicious_token: []
 attack_block: [23467516]
 reproduction_command: forge test --match-contract Exploit_Seaman -vvv
 attack_txs:
-  - "0x6f1af27d08b10caa7e96ec3d580bf39e29fd5ece00abda7d8955715403bf34a8"
+    - "0x6f1af27d08b10caa7e96ec3d580bf39e29fd5ece00abda7d8955715403bf34a8"
 sources:
-  - title: Beosin Alert
-    url: https://twitter.com/BeosinAlert/status/1597535796621631489
-  - title: Source Code
-    url: https://bscscan.com/address/0x6bc9b4976ba6f8c9574326375204ee469993d038#code
+    - title: Beosin Alert
+      url: https://twitter.com/BeosinAlert/status/1597535796621631489
+    - title: Source Code
+      url: https://bscscan.com/address/0x6bc9b4976ba6f8c9574326375204ee469993d038#code
 ---
 
 ## Step-by-step
@@ -37,7 +37,7 @@ sources:
 
 ## Detailed Description
 
-This is very similar to the attack on [MBC](test/Access_Control/MBCToken). It actually involves the same method, `swapAndLiquifyV1`.
+This is very similar to the attack on [MBC](https://www.coinspect.com/learn-evm-attacks/cases/mbc-token/). It actually involves the same method, `swapAndLiquifyV1`.
 
 Every time someone called `_transfer` on Seaman, the `swapAndLiquify` calls where made. These methods would exchange the accumulated fee on the contract for `GVC`, passing through the `BUSD` pool.
 
