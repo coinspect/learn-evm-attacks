@@ -5,21 +5,25 @@
 
 set -e
 
-QUARANTINE_DIR="/home/j/quarantine"
-DEVCONTAINER_BASE_DIR="${QUARANTINE_DIR}/.devcontainer"
+# Script is in ./scripts/, project root is one level up
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+echo "Using project directory: $PROJECT_DIR"
+DEVCONTAINER_BASE_DIR="${PROJECT_DIR}/.devcontainer"
 
 # Ensure .devcontainer directory exists
 mkdir -p "${DEVCONTAINER_BASE_DIR}"
 
 # Get list of attack directories from test/{category}/{attack_name} structure
 # Skip utils, modules, and interfaces subdirectories
-attack_dirs=$(find "${QUARANTINE_DIR}/test" -maxdepth 2 -type d | grep -v "/test$" | grep -v "/utils" | grep -v "/modules" | grep -v "/interfaces" | sed 's|.*/test/[^/]*/||' | grep -v "^$" | sort -u)
+attack_dirs=$(find "${PROJECT_DIR}/test" -maxdepth 2 -type d | grep -v "/test$" | grep -v "/utils" | grep -v "/modules" | grep -v "/interfaces" | sed 's|.*/test/[^/]*/||' | grep -v "^$" | sort -u)
 
 echo "Creating devcontainer subdirectories for attack directories..."
 
 for attack_dir in ${attack_dirs}; do
     # Find the full path for this attack directory
-    attack_full_path=$(find "${QUARANTINE_DIR}/test" -name "${attack_dir}" -type d | head -1)
+    attack_full_path=$(find "${PROJECT_DIR}/test" -name "${attack_dir}" -type d | head -1)
     if [ -z "${attack_full_path}" ]; then
         echo "  Warning: Could not find directory for ${attack_dir}"
         continue
@@ -61,12 +65,12 @@ for attack_dir in ${attack_dirs}; do
     fi
     
     if [ -n "${attack_code_file}" ]; then
-        # Get relative path from quarantine root
-        relative_code_file="${attack_code_file#${QUARANTINE_DIR}/}"
+        # Get relative path from project root
+        relative_code_file="${attack_code_file#${PROJECT_DIR}/}"
         echo "    Found attack code file: ${relative_code_file}"
     else
         echo "    Warning: No .attack.sol or .report.sol file found in ${attack_full_path}"
-        relative_code_file="${attack_full_path#${QUARANTINE_DIR}/}/README.md"
+        relative_code_file="${attack_full_path#${PROJECT_DIR}/}/README.md"
     fi
     
     # Create the devcontainer subdirectory
@@ -85,11 +89,7 @@ for attack_dir in ${attack_dirs}; do
     "codespaces": { "openFiles": ["${relative_code_file}"] }
   },
   "postCreateCommand": "bash scripts/postCreateCommand.sh",
-  "postAttachCommand": [
-    "bash",
-    "-lc",
-    "bash scripts/attach-run.sh"
-  ]
+  "postAttachCommand": "bash scripts/attach-run.sh",
 }
 EOF
 done

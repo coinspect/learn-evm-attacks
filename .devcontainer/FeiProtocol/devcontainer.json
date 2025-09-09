@@ -9,9 +9,5 @@
     "codespaces": { "openFiles": ["test/Reentrancy/FeiProtocol/FeiProtocol.attack.sol"] }
   },
   "postCreateCommand": "bash scripts/postCreateCommand.sh",
-  "postAttachCommand": [
-    "bash",
-    "-lc",
-    "bash scripts/attach-run.sh"
-  ]
+  "postAttachCommand": "bash scripts/attach-run.sh",
 }
