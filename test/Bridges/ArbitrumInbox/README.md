@@ -6,7 +6,7 @@ network: [ethereum]
 date: 2022-09-19
 loss_usd: 400000
 returned_usd: 0
-tags: [access control, bridge, reinitialization]
+tags: [access control, bridges, reinitialization]
 subcategory: []
 vulnerable_contracts:
   - "0x3e2198a77fc6b266082b92859092170763548730"
