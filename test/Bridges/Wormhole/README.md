@@ -16,7 +16,7 @@ tokens_lost: []
 attacker_addresses: []
 malicious_token: []
 attack_block: [13818843]
-reproduction_command: forge test --match-contract Report_Wormhole -vvv
+reproduction_command: forge test --match-contract Report_Wormhole -vvv --evm-version london # needed since selfDestruct impl changed after london and it does not remove the bytecode anymore
 attack_txs: []
 sources:
   - title: Immunefi Writeup
