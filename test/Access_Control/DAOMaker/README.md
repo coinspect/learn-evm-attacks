@@ -45,7 +45,7 @@ The exploited contract is simply a universal-proxy-like, which delegates call to
 
 The `init` method sets as `owner` anyone who calls it. You can check [the decompilation](https://etherscan.io/bytecode-decompiler?a=0xf17ca0e0f24a5fa27944275fa0cedec24fbf8ee2) and look for the `unknown84304ad7` method, as the decompiler calls it. Look at the bottom, you will see `owner = caller`.
 
-```
+```solidity
 def unknown84304ad7() payable:
   require calldata.size - 4 >= 128
   require cd <= 4294967296

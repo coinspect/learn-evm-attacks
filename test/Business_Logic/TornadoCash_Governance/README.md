@@ -37,13 +37,13 @@ sources: []
 
 Make sure to update your foundry version with:
 
-```
+```bash
 $ foundryup
 ```
 
 Ensure that the installed version is the following or newer:
 
-```
+```bash
 foundryup: installed - forge 0.2.0 (33f3fee 2023-05-26T00:09:41.611811000Z)
 ```
 
@@ -156,7 +156,7 @@ $ cast sig 'lockedBalance(address)'
 
 Using a [Solidity decompiler](https://ethervm.io/decompile), we find the dispatch entry for that method in the bytecode:
 
-```
+```solidity
     } else if (var0 == 0x9ae697bf) {
         // Dispatch table entry for lockedBalance(address)
         var1 = msg.value;
@@ -174,7 +174,7 @@ Using a [Solidity decompiler](https://ethervm.io/decompile), we find the dispatc
 
 After some digging, we realize `func_063B` must be our candidate, and `var2` must be the `address` used as input.
 
-```
+```solidity
    function func_063B(var arg0) returns (var arg0) {
         memory[0x20:0x40] = 0x3b;
         memory[0x00:0x20] = arg0;
