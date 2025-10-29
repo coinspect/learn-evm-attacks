@@ -49,7 +49,6 @@ if [ -n "$ATTACK_FILE_PATH" ]; then
     TEST_DIR=$(dirname "$ATTACK_FILE_PATH")
     README_PATH="${TEST_DIR}/README.md"
     if [ -f "$README_PATH" ]; then
-        # Parse the first number after 'attack_block:'
         if grep 'network:' "$README_PATH" | grep -qv 'ethereum'; then
             EVM_VERSION="london"
         else
