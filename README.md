@@ -63,6 +63,7 @@ The full list is below:
 - [SIR Trading - Mar 2025 - (~$355k) - Bad Usage of Transient Storage](/test/Business_Logic/SIRTrading/)
 - [MobiusDAO - Mar 2025 - (~$2.15MM) - Bad Arithmetic](/test/Business_Logic/MobiusDAO/)
 - [Cork Finance - May 2025 - (~$7.2MM) - Price Manipulation + Poor Access Control](/test/Business_Logic/FourMeme/)
+- [Bunni V2 - Sept 2025 - (~$8.4MM) - Rounding Error + Price Manipulation](/test/Business_Logic/Bunni/)
 
 
 ### Reentrancy
