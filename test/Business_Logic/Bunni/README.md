@@ -34,11 +34,13 @@ sources:
 
 ## Step-by-step Overview
 
+ Bunni V2 a liquidity management protocol built as a hook on Uniswap V4 with a custom Liquidity Distribution Function (LDF)—suffered an $8.4M exploit across two pools: `USDC/USDT` on Ethereum ($2.4M) and `weETH/ETH` on Unichain ($5.9M). The root cause was a rounding-direction bug in `BunniHubLogic::withdraw()` that, when exploited through repeated withdrawals, allowed the attacker to reduce the pool's total liquidity calculation. The attack combined flashloan, swaps to manipulate balance ratios, 44 withdrawals to compound rounding errors, and a exploiting the liquidity to extract value.
+
 The Bunni V2 exploit unfolded in three phases, exploiting subtle rounding errors in liquidity management:
 
 1. **Initial Pool Manipulation:**
    - The attacker flashloaned 3M USDT from Uniswap V3 to fund the attack
-   - Executed a sequence of three crafted swaps (`USDT→USDC`,` USDC→USDT`, `USDT→USDC`)
+   - Executed a sequence of three swaps (`USDT→USDC`,` USDC→USDT`, `USDT→USDC`)
    - These swaps pushed the spot price to extreme values
    - The pool's active `USDC` balance was reduced to just 28 wei while maintaining a large idle balance
    - The price movement was enabled by Bunni's carpeted double geometric liquidity distribution
@@ -57,9 +59,10 @@ The Bunni V2 exploit unfolded in three phases, exploiting subtle rounding errors
    - The artificially low liquidity from step 2 caused price impact
    - This extreme price caused the liquidity estimation to flip from `totalLiquidityEstimate0` to `totalLiquidityEstimate1`
    - The new estimate `1.065e16` was higher than the manipulated value `9.114e15` but still below the original `5.83e16`
-   - This created an atomic liquidity increase that could be sandwiched
+   - Executed The attacker exploited this self-created liquidity rebound by trading at the manipulated prices
    - Executed a second swap for USDT at the inflated price
-   - Extracted `~1.33M` USDC and `~1M` USDT profit after repaying the flashloan
+   - Repaid the 3M USDT flashloan plus fees to Uniswap V3
+   - Net profit: `~1.33M` USDC and `~1M` USDT
 
 
 ## Detailed Description
@@ -126,7 +129,7 @@ The vulnerability resided in this seemingly innocuous line from `BunniHubLogic::
 }
 ```
 
-The `mulDiv` operation rounds down, which was intended to round up the remaining idle balance. However, when the active balance is extremely small relative to the idle balance, this creates a compounding error:
+The `mulDiv` operation rounds down, which was intended to round up the remaining idle balance. However, when the active balance is extremely small relative to the idle balance, this creates a compounding error.
 
 
 ### Phase 3: Profit Extraction 
@@ -184,4 +187,16 @@ Bunni's custom Liquidity Distribution Function introduced novel concepts in AMM 
 
 ## Possible Mitigations
 
-Preventing similar exploits requires stress-testing focused on edge cases and repeated-operation consistency, particularly when state changes accumulate across multiple calls. Protocols integrating with flash loans or batch transactions must carefully validate invariants after each operation, not just at transaction boundaries. Custom liquidity models demand rigorous audit coverage of precision handling, accounting logic, and swap mechanics before production deployment.
+Based on the identified vulnerabilities and Bunni's post-mortem analysis, several mitigations can be proposed:
+
+### 1. Rounding Direction
+
+- **Correct Withdrawal Rounding:** The immediate fix identified by Bunni involves changing the rounding direction in `BunniHubLogic::withdraw()` from rounding down to rounding up when calculating idle balance decreases. This prevents the accumulation of artificially inflated idle balances across multiple withdrawals.
+
+### 2. Withdrawal Controls
+
+- **Minimum Withdrawal Sizes:** Prevent micro-withdrawals by enforcing minimum withdrawal amounts unless the user is withdrawing their entire balance. The attacker's 44 tiny withdrawals were specifically sized to compound rounding errors—such operations should trigger safeguards.
+
+### 3. Comprehensive Testing Framework
+
+- **Fuzz Testing:** As Bunni acknowledged, existing Foundry and Medusa fuzz tests failed to cover multi-step manipulation scenarios. Protocols with custom accounting logic must implement extensive fuzz testing and simulations that cover the edge conditions.

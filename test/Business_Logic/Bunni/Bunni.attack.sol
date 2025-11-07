@@ -61,6 +61,7 @@ contract Exploit_Bunni is IUniswapV3FlashCallback, Test, TokenBalanceTracker {
     }
 
     function setUp() public {
+        // Fork at exploit transaction to replicate exact chain state when the attack occurred
         vm.createSelectFork(vm.envString("RPC_URL"), EXPLOIT_TX);
 
         // Configure the Uniswap v4 pool key for the USDC/USDT pair
@@ -130,7 +131,9 @@ contract Exploit_Bunni is IUniswapV3FlashCallback, Test, TokenBalanceTracker {
         IPoolManager.SwapParams[]
             memory swapParams = new IPoolManager.SwapParams[](3);
         int256[][] memory expectedDeltas = new int256[][](3);
-
+        
+        // Parameters extracted from exploit transaction logs (>1000 events emitted by attacker's contract)
+        // https://etherscan.io/tx/0x1c27c4d625429acfc0f97e466eda725fd09ebdc77550e529ba4cbdbc33beb97b#eventlog#545
         // Swap 1: Small USDT->USDC swap to test pool state
         swapParams[0] = IPoolManager.SwapParams({
             zeroForOne: false,
