@@ -6,7 +6,7 @@ network: ["ethereum"]
 date: 2025-09-16
 loss_usd: 1000000 
 returned_usd: 0 
-tags: [data validation]
+tags: [data validation, bridges]
 subcategory: []
 vulnerable_contracts:
     - "0x18a0f3F937DD0FA150d152375aE5A4E941d1527b"
