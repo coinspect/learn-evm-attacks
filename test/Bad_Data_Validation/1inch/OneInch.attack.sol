@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
+
+import "forge-std/Test.sol";
+import {TestHarness} from "../../TestHarness.sol";
+import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
+import {IERC20} from "../../interfaces/IERC20.sol";
+import {IWETH9} from "../../interfaces/IWETH9.sol";
+
+contract Exploit_OneInch is TestHarness{
+    
+    function setUp() public {}
+
+    function test_attack() public {
+        console.log("------- INITIAL BALANCES -------");
+
+    }
+}
