@@ -2,7 +2,7 @@
 title: Nomad Bridge
 description: Processing arbitrary messages through faulty validation logic
 type: Exploit
-network: [ethereum, moonbean]
+network: [ethereum, moonbeam]
 date: 2022-08-01
 loss_usd: 190000000
 returned_usd: 0
