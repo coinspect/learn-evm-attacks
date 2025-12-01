@@ -56,13 +56,13 @@ The full list is below:
 - [Vesper Rari Pool - Nov 2021 - (~$3MM) - Price Feed Manipulation](/test/Business_Logic/VesperRariFuse)
 - [Uranium - Apr 2021 - (~$50MM) - Wrong Constant Product AMM checks](/test/Business_Logic/Uranium)
 - [Furucombo - Feb 2021 - ($15MM) - DELEGATECALL to proxy](/test/Business_Logic/Furucombo)
-- [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Furucombo)
+- [Seaman - Nov 2022 - ($7K) - Sandwich attack](/test/Business_Logic/Seaman/)
 - [Tornado Cash Governance - May 2023 - (~$2.7MM) - Malicious Proposal](/test/Business_Logic/TornadoCash_Governance)
 - [Onyx Protocol - Nov 2023 - (~$2.1MM) - Empty Market Manipulation / Rounding Error](/test/Business_Logic/OnyxProtocol)
 - [Polter Finance - Nov 2024 - (~$8.7MM) - Oracle Manipulation](/test/Business_Logic/Polter_Finance/)
 - [SIR Trading - Mar 2025 - (~$355k) - Bad Usage of Transient Storage](/test/Business_Logic/SIRTrading/)
 - [MobiusDAO - Mar 2025 - (~$2.15MM) - Bad Arithmetic](/test/Business_Logic/MobiusDAO/)
-- [Cork Finance - May 2025 - (~$7.2MM) - Price Manipulation + Poor Access Control](/test/Business_Logic/FourMeme/)
+- [Cork Finance - May 2025 - (~$7.2MM) - Price Manipulation + Poor Access Control](/test/Business_Logic/Cork_Finance/)
 
 
 ### Reentrancy
