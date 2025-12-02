@@ -108,7 +108,7 @@ contract Exploit_OneRingFinance is TestHarness, TokenBalanceTracker {
     uint256 borrowAmount;
 
     function setUp() external {
-        cheat.createSelectFork('fantom', 34041499); // We pin one block before the exploit happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 34041499); // We pin one block before the exploit happened.
 
         cheat.deal(address(this), 0);
 

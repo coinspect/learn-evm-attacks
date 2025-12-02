@@ -17,7 +17,7 @@ attacker_addresses:
     - "0xa29e4fe451ccfa5e7def35188919ad7077a4de8f"
 malicious_token: []
 attack_block: [15794364]
-reproduction_command: forge test --match-contract Exploit_OlympusDAO -vvv
+reproduction_command: forge test --match-contract Exploit_OlympusDao -vvv
 attack_txs:
     - "0x3ed75df83d907412af874b7998d911fdf990704da87c2b1a8cf95ca5d21504cf"
 sources:

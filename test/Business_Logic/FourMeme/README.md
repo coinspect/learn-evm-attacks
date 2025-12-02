@@ -41,7 +41,7 @@ sources:
 
 ## Detailed Description
 
-[four.meme]() is a memecoin launchpad on the BNB Smart Chain, similar to [pump.fun](). This platform operates in three main steps:
+[four.meme](https://four.meme/) is a memecoin launchpad on the BNB Smart Chain, similar to [pump.fun](https://pump.fun/). This platform operates in three main steps:
 
 1. **Creation**: Users customize the name, logo, description, and optional social accounts to generate a new memecoin.
 2. **Trading**: Other users can trade the memecoin directly on the platform.
@@ -59,4 +59,4 @@ The core issue originates from four.meme's contract [0x5c95](https://bscscan.com
 
 ## Possible mitigations
 
-To mitigate this attack, [four.meme]() should have set appropriate `amount0Min` and `amount1Min` values when adding liquidity to the pool.
+To mitigate this attack, [four.meme](https://four.meme/) should have set appropriate `amount0Min` and `amount1Min` values when adding liquidity to the pool.
