@@ -87,7 +87,6 @@ The final step was a simple `transferFrom` call to drain the $1 million that the
 
 ## Possible mitigations
 
-- **Whitelist Addresses:** The `socketVault` parameter should not have been an arbitrary address. The contract should maintain a whitelist of trusted vault addresses.
+- **Validating Inputs:** Implement strict checks to validate the `socketVault` and token addresses are trusted, and require `amount > 0`. This prevents both arbitrary approval targets and the zero-amount bypass.
 
-- **Input Validation:** The fix is to validate inputs properly. The function should have required the deposit amount to be greater than zero.
-
+- **Use Scoped Approvals**: Replace infinite approvals with approvals for only the specific amount being deposited or reset to zero at the end of the call.
