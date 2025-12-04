@@ -2,7 +2,7 @@
 title: Polynetwork Bridge
 description: Hijacking validator roles through sighash collision attacks
 type: Exploit
-network: [ethereum, moonbean]
+network: [ethereum, moonbeam]
 date: 2021-08-10
 loss_usd: 611000000
 returned_usd: 578000000

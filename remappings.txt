@@ -3,3 +3,4 @@ solmate/=lib/solmate/src/
 ds-test/=lib/forge-std/lib/ds-test/src/
 @openzeppelin/=lib/openzeppelin-contracts/
 @prb-math/=lib/prb-math/src/
+@uniswap/v4-core/=lib/v4-core/

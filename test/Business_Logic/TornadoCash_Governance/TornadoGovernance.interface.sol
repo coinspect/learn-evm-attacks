@@ -74,4 +74,14 @@ interface ITornadoGovernance {
     function lockedBalance(address from) external returns (uint256);
     function state(uint256 proposalId) external view returns (ProposalState);
     function castVote(uint256 proposalId, bool support) external;
+    function proposals(uint256 proposalId) external view returns (
+        address proposer,
+        address target,
+        uint256 startTime,
+        uint256 endTime,
+        uint256 forVotes,
+        uint256 againstVotes,
+        bool executed,
+        bool extended
+);
 }

