@@ -44,6 +44,7 @@ The full list is below:
 - [Bad Guys NFT, Sept 2022 - (400 NFTs) - Unchecked Mint Amount](/test/Bad_Data_Validation/Bad_Guys_NFT/)
 - [Multichain a.k.a AnySwap, Jan 2022 - (~$960,000) - Arbitrary Tokens / Unchecked Permit](/test/Bad_Data_Validation/Multichain_Permit/)
 - [Superfluid, Jan 2022 - (~$8.7MM) - Calldata crafting / CTX not verified](/test/Bad_Data_Validation/Superfluid)
+- [1inch, Mar 2025 - (~$5MM / ~$4.5MM returned) - Calldata Crafting / Unchecked Interaction Length](/test/Bad_Data_Validation/1inch/)
 
 ### Business Logic
 - [Sperax USDS, Feb 2023 - (9.7B tokens / ~$309K) - Faulty Migration Process & Balance Accounting](/test/Business_Logic/Usds)
