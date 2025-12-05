@@ -12,4 +12,4 @@
 	url = https://github.com/PaulRBerg/prb-math
 [submodule "lib/v4-core"]
 	path = lib/v4-core
-	url = https://github.com/uniswap/v4-core
+	url = https://github.com/Uniswap/v4-core
