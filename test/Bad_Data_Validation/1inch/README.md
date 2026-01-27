@@ -190,11 +190,9 @@ The 1inch Settlement exploit represents a rare class of smart contract vulnerabi
 
 1. **Deprecated but live code**: Fusion V1 was deprecated in mid-2023 but remained deployed for backward compatibility, receiving no security updates.
 
-2. **Extensive audits missed the bug**: Nine audit firms reviewed the code, but the vulnerability was introduced during a Solidity to Yul refactoring between audit phases.
+2. **Complex interaction patterns**: The nested order mechanism, created attack surface that single-order analysis couldn't reveal.
 
-3. **Complex interaction patterns**: The nested order mechanism, created attack surface that single-order analysis couldn't reveal.
-
-4. **Trusted caller assumption**: The victim resolver trusted Settlement as the caller without validating the resolver parameter in the suffix.
+3. **Trusted caller assumption**: The victim resolver trusted Settlement as the caller without validating the resolver parameter in the suffix.
 
 The attack was executed across 10 transactions, draining approximately $5M total from the `TrustedVolumes` resolver. Our PoC reproduces one representative transaction stealing 1M USDC. After on-chain negotiation, most funds were returned, with the attacker keeping a fractional bounty.
 
