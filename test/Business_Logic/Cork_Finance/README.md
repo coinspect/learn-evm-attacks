@@ -17,7 +17,7 @@ attacker_addresses:
   - "0x9af3dce0813fd7428c47f57a39da2f6dd7c9bb09"
 malicious_token: []
 attack_block: [22580952]
-reproduction_command: RPC_URL=<rpc_url> forge test --match-contract Exploit_CorkFinance -vvv
+reproduction_command: forge test --match-contract Exploit_CorkFinance -vvv
 attack_txs:
   - "0x14cdf1a643fc94a03140b7581239d1b7603122fbb74a80dd4704dfb336c1dec0"
   - "0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d"

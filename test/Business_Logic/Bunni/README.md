@@ -19,7 +19,7 @@ attacker_addresses:
   - "0x6F559f75ba08d7f45a344E12ECBe8BC15A700DdA"
 malicious_token: []
 attack_block: [23273098]
-reproduction_command: RPC_URL=<rpc_url> forge test --match-contract Exploit_Bunni -vvv
+reproduction_command: forge test --match-contract Exploit_Bunni -vvv
 attack_txs:
   - "0x1c27c4d625429acfc0f97e466eda725fd09ebdc77550e529ba4cbdbc33beb97b"
   - "0x4776f31156501dd456664cd3c91662ac8acc78358b9d4fd79337211eb6a1d451"
