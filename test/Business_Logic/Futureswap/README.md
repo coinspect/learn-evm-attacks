@@ -26,14 +26,14 @@ sources:
 
 ## Step-by-step Overview
 
-Futureswap—a perpetual futures protocol on Arbitrum utilizing Uniswap V3 for liquidity—suffered a ~$394K exploit due to a unit mismatch bug in fee calculation. The root cause was that `feeAmount` (expressed in token units) was passed directly to `addFee` function as if it were basis points, allowing attackers to register inflated fee shares and drain protocol funds during position settlement.
+Futureswap, a perpetual futures protocol on Arbitrum utilizing Uniswap V3 for liquidity suffered a ~$394K exploit due to a unit mismatch bug in fee calculation. The root cause was that `feeAmount` (expressed in token units) was passed directly to `addFee` function as if it were basis points, allowing attackers to register inflated fee shares and drain protocol funds during position settlement.
 
 The Futureswap exploit unfolded in three phases, exploiting a fundamental unit conversion error:
 
 1. **Flashloan Funding:**
    - The attacker flashloaned 500,000 USDC.e from Aave V3 to fund and scale the attack
    - Deployed three auxiliary contracts to open multiple leveraged positions
-   - Each auxiliary contract was configured with specific position parameters that was calculate off-chain
+   - Each auxiliary contract was configured with specific position parameters that was calculated off-chain
 
 2. **Position Manipulation (Fee Poisoning):**
    - Opened multiple LONG positions via auxiliary contracts (0.1 ETH, ~0.3246 ETH, 0.001 ETH)
