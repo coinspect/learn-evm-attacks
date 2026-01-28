@@ -132,19 +132,7 @@ The Futureswap exploit is an example of a unit mismatch bug, yet it drained ~$39
 
 ## Possible Mitigations
 
-Based on the identified vulnerability, several mitigations could have prevented this exploit:
-
-### 1. Explicit Unit Conversion
-
-- **Normalize Fees:** Convert token-unit fees to basis points using the actual trade size as denominator. This ensures fees are always expressed as a percentage of the trade, capped at reasonable values.
-
-
-### 2. Input Validation and Sanity Checks
-
-- **Cap Fee Values:** Enforce maximum bounds on fee percentages. Futureswap's documented fee is 0.05% (~5 bps) plus Uniswap's 0.05% (~5 bps). Any fee value exceeding ~100 bps (1%) should trigger a revert as it would indicate an error or manipulation.
-
-- **Validate Fee Pool:** Before distribution, verify that total claimed fees don't exceed actual collected fees. 
-
+A test suite should be able to detect this type of unit mismatch vulnerability. Specifically, tests asserting that fee distributions never exceed collected fees, or that fee percentages remain within expected bounds.
 
 ## Sources and References
 
