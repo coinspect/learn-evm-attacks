@@ -28,7 +28,7 @@ sources:
 
 Futureswap, a perpetual futures protocol on Arbitrum utilizing Uniswap V3 for liquidity suffered a ~$394K exploit due to a unit mismatch bug in fee calculation. The root cause was that `feeAmount` (expressed in token units) was passed directly to `addFee` function as if it were basis points, allowing attackers to register inflated fee shares and drain protocol funds during position settlement.
 
-The Futureswap exploit unfolded in three phases, exploiting a fundamental unit conversion error:
+The Futureswap exploit unfolded in three phases, exploiting a unit conversion error:
 
 1. **Flashloan Funding:**
    - The attacker flashloaned 500,000 USDC.e from Aave V3 to fund and scale the attack
@@ -122,7 +122,56 @@ aux_01.closePosition(0, -894_992_852_305, 0);  // Withdraws ~894,992 USDC
 The attacker used multiple auxiliary contracts for several reasons:
 1. **Fee Accumulation:** Each position change accumulated more fee entries
 2. **Position Isolation:** Separate contracts allowed selective closing without affecting other positions
-3. **Direction Mixing:** LONG and SHORT positions created complex settlement calculations that amplified the fee distribution bug
+3. **Direction Mixing:** Long and short positions created complex settlement calculations that amplified the fee distribution bug
+4. **Pool State Manipulation:** The long positions shift pool reserves, enabling the large 68 ETH short to pass PBL validation
+
+
+### Attack Parameters Analysis
+
+The hardcoded values in the PoC appear to be optimized for maximum extraction within protocol constraints.
+
+#### Protocol State at Block 419829770 (One Block Before Attack)
+
+| Metric | Value |
+|--------|-------|
+| ETH Price (Chainlink) | $3,085.34 |
+| Futureswap WETH | 99.85 ETH |
+| Futureswap USDC | 197,436.75 USDC |
+| Aave Available USDC | ~546,596 USDC |
+
+#### Flashloan Availability
+
+Aave V3 on Arbitrum had ~546K USDC available at this block. The 500K flashloan provides a ~46K buffer below the maximum available liquidity. However, increasing the flashloan amount would not increase profit since the constraint is on position size rather than available collateral.
+
+#### Maximum Short Position (68 ETH)
+
+Testing on a fork reveals a boundary at 68 ETH:
+
+| Short Size | Collateral | Result |
+|------------|------------|--------|
+| 68 ETH | 496,500 USDC | Passes |
+| 69 ETH | 496,500 USDC | PBL (Position Below Liquidation) |
+| 69 ETH | 499,000 USDC | PBL |
+| 70 ETH | 541,500 USDC | PBL |
+
+Even with more collateral, positions exceeding 68 ETH fail PBL validation. This suggests the protocol enforces a maximum position size relative to pool liquidity, independent of margin ratio.
+
+#### Close Amount Calculation
+
+The withdrawal amount `-894,992,852,305` represents the USDC balance remaining in the Futureswap contract after all positions are opened. This value drains the pool's USDC reserves to zero.
+
+#### Profit Source: Initial Reserves + Swap Proceeds
+
+While Futureswap initially held only ~197K USDC, the total extractable amount reached ~895K USDC because opening a 68 ETH short requires the protocol to sell ETH on Uniswap V3:
+
+| Source | Amount |
+|--------|--------|
+| Initial Futureswap USDC | ~197,437 USDC |
+| Deposited collateral (all positions) | 500,000 USDC |
+| USDC received from selling 68 ETH | ~197,556 USDC |
+| **Total pool USDC after positions** | **~894,993 USDC** |
+
+The ~395K profit equals the extracted amount minus the flashloan repayment (~500K + premium). The 68 ETH represents the maximum extractable position: 67 ETH would leave approximately 42K USDC unextracted, while 69 ETH fails protocol validation.
 
 
 ## Conclusions
