@@ -176,12 +176,11 @@ The ~395K profit equals the extracted amount minus the flashloan repayment (~500
 
 ## Conclusions
 
-The Futureswap exploit is an example of a unit mismatch bug, yet it drained ~$395K from LP reserves. The unverified contract status on Arbiscan prevented external security review, and the absence of invariant testing allowed token-unit values to be interpreted as basis points unchecked. This vulnerability would have been caught by fuzz tests asserting that fee distributions never exceed collected fees, or by `require(feeBps <= 100)` guard reflecting the protocol's documented 0.1% fee ceiling.
-
+The Futureswap exploit demonstrates how a unit mismatch bug can lead to the draining of protocol funds, ~$395K from LP reserves. This issue would have been caught by unit testing, since executing the fee flow with a non-zero fee amount reveals a fee percentage orders of magnitude higher than expected.
 
 ## Possible Mitigations
 
-A test suite should be able to detect this type of unit mismatch vulnerability. Specifically, tests asserting that fee distributions never exceed collected fees, or that fee percentages remain within expected bounds. Beyond testing, the following mitigations would have prevented this exploit:
+A basic unit test exercising the `changePosition()` flow with non-zero fee values would have surfaced the issue. In addition to unit testing, adopting fuzz testing would reduce the likelihood of similar bugs. Separately, the following mitigations would have prevented this exploit:
 
 ### 1. Explicit Unit Conversion
 
