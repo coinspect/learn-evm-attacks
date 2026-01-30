@@ -66,6 +66,7 @@ The full list is below:
 - [MobiusDAO - Mar 2025 - (~$2.15MM) - Bad Arithmetic](/test/Business_Logic/MobiusDAO/)
 - [Cork Finance - May 2025 - (~$7.2MM) - Price Manipulation + Poor Access Control](/test/Business_Logic/Cork_Finance/)
 - [Bunni V2 - Sept 2025 - (~$8.4MM) - Rounding Error + Price Manipulation](/test/Business_Logic/Bunni/)
+- [Futureswap - Jan 2026 - (~$395k) - Unit mismatch in fee calculation](/test/Business_Logic/Futureswap/)
 
 
 
