@@ -43,33 +43,49 @@ else
   echo "Using saved RPC_URL (…${RPC_URL: -6})"
 fi
 
-ATTACK_FILE_PATH=$(grep -rl "contract ${LEARN_ATTACK_CONTRACT}\b" ./test | head -n 1)
+# Initialize empty - will only be set for Ethereum
+EVM_VERSION_FLAG=""
 
+ATTACK_FILE_PATH=$(grep -rl "contract ${LEARN_ATTACK_CONTRACT}\b" ./test | head -n 1)
 if [ -n "$ATTACK_FILE_PATH" ]; then
     TEST_DIR=$(dirname "$ATTACK_FILE_PATH")
     README_PATH="${TEST_DIR}/README.md"
+    
     if [ -f "$README_PATH" ]; then
-        if grep 'network:' "$README_PATH" | grep -qv 'ethereum'; then
-            EVM_VERSION="london"
-        else
+        # Check if network is Ethereum
+        if grep -q 'network:' "$README_PATH" && grep 'network:' "$README_PATH" | grep -q 'ethereum'; then
+            # Only calculate EVM version for Ethereum
             ATTACK_BLOCK=$(grep -A 2 'attack_block:' "$README_PATH" | grep -o '[0-9]\+' | head -n 1 || true)
             ATTACK_BLOCK=${ATTACK_BLOCK:-0}
-            if [ -n "$ATTACK_BLOCK" ]; then
+            
+            if [ -n "$ATTACK_BLOCK" ] && [ "$ATTACK_BLOCK" -gt 0 ]; then
                 if (( ATTACK_BLOCK < LONDON_BLOCK )); then EVM_VERSION="berlin";
                 elif (( ATTACK_BLOCK < PARIS_BLOCK )); then EVM_VERSION="london";
                 elif (( ATTACK_BLOCK < SHANGHAI_BLOCK )); then EVM_VERSION="paris";
                 elif (( ATTACK_BLOCK < CANCUN_BLOCK )); then EVM_VERSION="shanghai";
                 elif (( ATTACK_BLOCK < PETRA_BLOCK )); then EVM_VERSION="cancun";
-                else EVM_VERSION="prague";fi;
+                else EVM_VERSION="prague"; fi
+                
                 EVM_VERSION_FLAG="--evm-version $EVM_VERSION"
-                echo "Using EVM Version: $EVM_VERSION"
+                echo "Using EVM Version: $EVM_VERSION (Ethereum block $ATTACK_BLOCK)"
             fi
+        else
+            # Non-Ethereum network: let Foundry auto-detect
+            NETWORK=$(grep 'network:' "$README_PATH" | sed 's/.*network:[[:space:]]*//' | head -n 1 || echo "unknown")
+            echo "Network: $NETWORK (using default EVM version)"
         fi
     fi
 fi
 
 printf "\n▶ Running exploit: %s\n\n" "$LEARN_ATTACK_CONTRACT"
-forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv --evm-version "$EVM_VERSION"
+
+# Run with or without --evm-version flag
+if [ -n "$EVM_VERSION_FLAG" ]; then
+    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv $EVM_VERSION_FLAG
+else
+    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv
+fi
+
 echo
 echo "✅ Done. Opening interactive shell..."
 exec bash -l
