@@ -1,16 +1,23 @@
 #!/bin/bash
 set -euo pipefail
-# warm_cache.sh <real_rpc> <block_number> <attack_test_contract>
+# cache_warm.sh <real_rpc> <block_number> <attack_test_contract>
 # One-time build step: warms Foundry's RPC cache and captures block/method
 # responses so attacks can run fully offline via the mock RPC proxy.
+#
+# Outputs:
+#   .block_cache/<block_number>/block.json        — full block response
+#   .block_cache/<block_number>/eth_chainId.json   — chain metadata
+#   .block_cache/<block_number>/eth_gasPrice.json
+#   .block_cache/<block_number>/net_version.json
+#   foundry_rpc_cache/                             — Foundry's internal RPC cache
 
-REAL_RPC="${1:?Usage: warm_cache.sh <real_rpc> <block_number> <test_contract>}"
-BLOCK="${2:?Usage: warm_cache.sh <real_rpc> <block_number> <test_contract>}"
-TEST="${3:?Usage: warm_cache.sh <real_rpc> <block_number> <test_contract>}"
-BLOCK_CACHE_DIR=".block_cache"
+REAL_RPC="${1:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
+BLOCK="${2:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
+TEST="${3:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 PORT=8546
 
-mkdir -p "$BLOCK_CACHE_DIR"
+BLOCK_DIR=".block_cache/$BLOCK"
+mkdir -p "$BLOCK_DIR"
 
 # 1. Start anvil forked from real RPC on the same port the proxy will use,
 #    so Foundry's cache is keyed to http://localhost:8546
@@ -35,16 +42,16 @@ done
 
 BLOCK_HEX=$(printf '0x%x' "$BLOCK")
 
-# 2. Capture the block response (numeric filename = block data)
+# 2. Capture the block response
 curl -s "http://localhost:$PORT" -X POST -H "Content-Type: application/json" \
   -d "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getBlockByNumber\",\"params\":[\"$BLOCK_HEX\", true],\"id\":1}" \
-  > "$BLOCK_CACHE_DIR/$BLOCK.json"
+  > "$BLOCK_DIR/block.json"
 
-# 3. Capture metadata method responses (named filename = method response)
+# 3. Capture chain metadata method responses
 for method in eth_gasPrice eth_chainId net_version; do
   curl -s "http://localhost:$PORT" -X POST -H "Content-Type: application/json" \
     -d "{\"jsonrpc\":\"2.0\",\"method\":\"$method\",\"params\":[],\"id\":1}" \
-    > "$BLOCK_CACHE_DIR/$method.json"
+    > "$BLOCK_DIR/$method.json"
   echo "Captured $method"
 done
 
@@ -68,4 +75,4 @@ mkdir -p ./foundry_rpc_cache
 cp -r ~/.foundry/cache/* ./foundry_rpc_cache/
 
 echo "Cache warmed for block $BLOCK. Files:"
-ls -la "$BLOCK_CACHE_DIR/"
+ls -la "$BLOCK_DIR/"

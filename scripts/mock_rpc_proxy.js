@@ -5,31 +5,51 @@ const path = require("path");
 const BLOCK_CACHE_DIR = path.join(__dirname, "..", ".block_cache");
 const PORT = 8546;
 
-// Load all cached files from .block_cache/
-// Numeric filenames (e.g. 17248593.json) → block responses
-// Named filenames (e.g. eth_chainId.json) → method responses
-const blocks = {};      // blockNumber (int) → parsed JSON response
-const methods = {};     // methodName (string) → parsed JSON response
-let highestBlock = 0;
+// FORK_BLOCK tells us which block's metadata (chainId, gasPrice, etc.) to serve.
+// Passed by attach-run.sh based on the attack being run.
+const FORK_BLOCK = parseInt(process.env.FORK_BLOCK || "0", 10);
+if (!FORK_BLOCK) {
+  console.error("ERROR: FORK_BLOCK env var is required");
+  process.exit(1);
+}
 
-for (const file of fs.readdirSync(BLOCK_CACHE_DIR)) {
-  if (!file.endsWith(".json")) continue;
-  const name = file.replace(".json", "");
-  const data = JSON.parse(fs.readFileSync(path.join(BLOCK_CACHE_DIR, file), "utf8"));
+const FORK_BLOCK_HEX = "0x" + FORK_BLOCK.toString(16);
 
-  if (/^\d+$/.test(name)) {
-    const num = parseInt(name, 10);
-    blocks[num] = data;
-    if (num > highestBlock) highestBlock = num;
+// Load block responses from all subdirectories: .block_cache/<blocknum>/block.json
+// This lets eth_getBlockByNumber serve any cached block regardless of which attack is active.
+const blocks = {};
+
+for (const dir of fs.readdirSync(BLOCK_CACHE_DIR)) {
+  const dirPath = path.join(BLOCK_CACHE_DIR, dir);
+  if (!fs.statSync(dirPath).isDirectory()) continue;
+  if (!/^\d+$/.test(dir)) continue;
+
+  const blockFile = path.join(dirPath, "block.json");
+  if (fs.existsSync(blockFile)) {
+    const num = parseInt(dir, 10);
+    blocks[num] = JSON.parse(fs.readFileSync(blockFile, "utf8"));
     console.log(`Loaded block ${num}`);
-  } else {
-    methods[name] = data;
-    console.log(`Loaded method ${name}`);
   }
 }
 
-const highestBlockHex = "0x" + highestBlock.toString(16);
-console.log(`Highest cached block: ${highestBlock} (${highestBlockHex})`);
+// Load chain metadata from the active attack's block subdirectory.
+// These are chain-specific (eth_chainId differs between Ethereum, BSC, Polygon, etc.)
+const methods = {};
+const metaDir = path.join(BLOCK_CACHE_DIR, String(FORK_BLOCK));
+
+if (fs.existsSync(metaDir)) {
+  for (const file of fs.readdirSync(metaDir)) {
+    if (file === "block.json" || !file.endsWith(".json")) continue;
+    const methodName = file.replace(".json", "");
+    methods[methodName] = JSON.parse(fs.readFileSync(path.join(metaDir, file), "utf8"));
+    console.log(`Loaded method ${methodName} (from block ${FORK_BLOCK})`);
+  }
+} else {
+  console.warn(`WARNING: No metadata directory for block ${FORK_BLOCK}`);
+}
+
+console.log(`Active fork block: ${FORK_BLOCK} (${FORK_BLOCK_HEX})`);
+console.log(`Cached blocks: ${Object.keys(blocks).join(", ")}`);
 
 const server = http.createServer((req, res) => {
   let body = "";
@@ -49,19 +69,18 @@ const server = http.createServer((req, res) => {
 
     switch (rpc.method) {
       case "eth_blockNumber":
-        result = highestBlockHex;
+        result = FORK_BLOCK_HEX;
         break;
 
       case "eth_getBlockByNumber": {
         const requested = rpc.params[0];
         let blockNum;
         if (requested === "latest") {
-          blockNum = highestBlock;
+          blockNum = FORK_BLOCK;
         } else {
           blockNum = parseInt(requested, 16);
         }
         if (blocks[blockNum]) {
-          // Return a copy with the correct request id
           const resp = Object.assign({}, blocks[blockNum], { id });
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(resp));
