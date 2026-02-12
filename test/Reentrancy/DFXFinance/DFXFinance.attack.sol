@@ -33,7 +33,7 @@ contract Exploit_DFXFinance is TestHarness {
     // We are showing an attack once the attacker stole funds several times and starts with pre-existing
     // balance.
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15_941_703); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15941703); // We pin one block before the exploit
             // happened.
 
         // We simulate some balance in this contract

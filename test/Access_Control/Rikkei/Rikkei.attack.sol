@@ -61,7 +61,7 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
     ISimpleOraclePrice internal priceOracle = ISimpleOraclePrice(0xD55f01B4B51B7F48912cD8Ca3CDD8070A1a9DBa5);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 16_956_473); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 16956473); // We pin one block before the exploit
             // happened.
 
         // The attacker contract started with some BNBs.

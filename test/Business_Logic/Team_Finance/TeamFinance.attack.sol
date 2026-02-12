@@ -126,7 +126,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     // https://github.com/stakewithus/notes/blob/main/notebook/uniswap-v3/tick-and-sqrt-price-x-96.ipynb
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15_837_165);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15837165);
         cheat.deal(address(this), 0.5 ether);
 
         maliciousToken = new SpoofERC20();

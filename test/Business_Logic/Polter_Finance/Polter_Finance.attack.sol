@@ -66,7 +66,7 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
     IUniswapV3Pair private constant pairWftmBooV3 = IUniswapV3Pair(0xEd23Be0cc3912808eC9863141b96A9748bc4bd89);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 97_508_838);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 97508838);
         deal(address(this), 0);
 
         addTokenToTracker(address(WFTM));

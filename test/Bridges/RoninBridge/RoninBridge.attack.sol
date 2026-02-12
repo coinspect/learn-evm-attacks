@@ -29,7 +29,7 @@ contract Exploit_RoninBridge is TestHarness, TokenBalanceTracker {
     // the attacker just got access to the private keys, so
     // there's not much to reverse
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_442_834); // One block before the first weth
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14442834); // One block before the first weth
             // transfer
 
         addTokenToTracker(weth);

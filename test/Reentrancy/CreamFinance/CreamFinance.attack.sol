@@ -52,7 +52,7 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
         0xfa352d6368bbc643bcf9d528ffaba5dd3e826137bc42f935045c6c227bd4c72a;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 13_125_070); // fork mainnet at block 13125070
+        cheat.createSelectFork(vm.envString("RPC_URL"), 13125070); // fork mainnet at block 13125070
 
         cheat.deal(address(this), 0);
 

@@ -79,7 +79,7 @@ contract Exploit_OneInch is Test, TestHarness, TokenBalanceTracker {
 
     function setUp() public {
        // Fork mainnet at the block before the attack
-        cheat.createSelectFork(vm.envString("RPC_URL"), 21_982_110);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 21982110);
 
         // Deploy attacker contract that will execute orders
         attacker = new AttackerContract();

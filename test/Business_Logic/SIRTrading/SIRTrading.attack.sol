@@ -42,7 +42,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20 {
         // want to find
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 22_157_899);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 22157899);
 
         addTokenToTracker(address(weth));
         addTokenToTracker(address(usdc));

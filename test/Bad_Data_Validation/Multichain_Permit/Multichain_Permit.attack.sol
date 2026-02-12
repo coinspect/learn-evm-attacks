@@ -52,7 +52,7 @@ contract Exploit_Multichain is TestHarness, TokenBalanceTracker {
     // and then transfered to their EOA. Here, we can simplify and just transfer to
     // this contract.
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_037_236); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14037236); // We pin one block before the exploit
             // happened.
         cheat.deal(address(this), 0);
 

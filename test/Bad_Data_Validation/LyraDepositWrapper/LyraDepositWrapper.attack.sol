@@ -31,7 +31,7 @@ contract Exploit_LyraDepositWrapper is TestHarness, TokenBalanceTracker {
 
     function setUp() public {
         // Fork the chain one block before the exploit occurred
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23_377_072);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23377072);
 
         deal(address(this), 0);
         // Set up token balance tracking for logging.

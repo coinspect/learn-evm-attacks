@@ -46,7 +46,7 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         hex"0c6539f57b9bd2138b003744d9bd94375111bd0137525073b5b3967b7089d98f47236cea76488260b74cb587dbbeb7c5f35a056a5cf5b63649cd90ff487f386401";
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 12_996_658);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 12996658);
         // We use the actual attacker address here to reuse their signed message
         // A possible improvement is to reverse-engineer their payload, and create
         // logic that rebuilds the payload to be able to modify it and set

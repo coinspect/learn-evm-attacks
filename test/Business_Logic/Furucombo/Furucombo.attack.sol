@@ -117,7 +117,7 @@ contract Exploit_Furucombo is TestHarness, TokenBalanceTracker {
     address attacker = address(0x69);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 11_940_499);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 11940499);
 
         cheat.deal(address(this), 0);
 

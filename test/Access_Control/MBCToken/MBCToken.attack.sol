@@ -33,7 +33,7 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
     IUniswapV2Pair[] internal pairs = [pairUsdtMbc, pairUsdtZzsh];
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23_474_460);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23474460);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(usdt));

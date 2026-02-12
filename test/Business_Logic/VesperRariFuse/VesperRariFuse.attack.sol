@@ -96,7 +96,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
     uint256 forkId;
 
     function setUp() external {
-        forkId = cheat.createSelectFork(vm.envString("RPC_URL"), 13_537_921); // Just one block before the
+        forkId = cheat.createSelectFork(vm.envString("RPC_URL"), 13537921); // Just one block before the
             // manipulation.
         // We will roll the blocknumber later.
 

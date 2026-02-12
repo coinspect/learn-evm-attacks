@@ -90,7 +90,7 @@ contract Exploit_Seaman is TestHarness, TokenBalanceTracker {
     IDppOracle internal dppOracle = IDppOracle(0x9ad32e3054268B849b84a8dBcC7c8f7c52E4e69A);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23_467_515);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23467515);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(usdt));

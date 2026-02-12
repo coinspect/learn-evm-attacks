@@ -23,7 +23,7 @@ contract Exploit_OlympusDao is TestHarness, TokenBalanceTracker {
     IBondFixedExpiryTeller public bondExpiryTeller;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15_794_363); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15794363); // We pin one block before the exploit
             // happened.
         cheat.label(OHM, "OHM");
         cheat.label(BOND_FIXED_EXPIRY_TELLER, "BondFixedExpiryTeller");

@@ -165,7 +165,7 @@ contract Exploit_RevestFinance is TestHarness {
     uint256 currentId;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_465_356); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14465356); // We pin one block before the exploit
             // happened.
 
         cheat.label(attacker, "Attacker");

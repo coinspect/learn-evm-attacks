@@ -58,7 +58,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan, TokenB
     // The attacker minion address can be found at
     // https://polygonscan.com/address/0x8d1e7cE7DbB14aFB8782EaEa8010938cC457115e
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 34_716_800); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 34716800); // We pin one block before the exploit
             // happened.
 
         cheat.label(address(this), "Attacker Contract");

@@ -61,7 +61,7 @@ contract Exploit_Paraluni is TestHarness, TokenBalanceTracker {
     IUniswapV2Pair internal pancakeBSCBUSDPair = IUniswapV2Pair(0x7EFaEf62fDdCCa950418312c6C91Aef321375A00);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 16_008_280);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 16008280);
 
         cheat.deal(address(this), 0);
 

@@ -34,7 +34,7 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
     IERC20 constant WBTC = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15_259_100); // We pin one block before the attacker
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15259100); // We pin one block before the attacker
             // starts to drain the bridge after he sent the 0.1 WBTC tx on Moonbeam.
         cheat.label(NOMAD_DEPLOYER, "Nomad Deployer");
 

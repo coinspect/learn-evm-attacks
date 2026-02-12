@@ -36,7 +36,7 @@ contract Exploit_BVaults is TestHarness, TokenBalanceTracker {
     address internal constant ATTACKER_CONTRACT = 0x1958d75C082D7F10991d07e0016B45a0904D2Eb1;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 22_629_431); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 22629431); // We pin one block before the exploit
             // happened
 
         cheat.label(ATTACKER, "Attacker");

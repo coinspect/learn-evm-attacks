@@ -90,7 +90,7 @@ contract Exploit_Uranium is TestHarness, TokenBalanceTracker {
     address internal attacker = 0xC47BdD0A852a88A019385ea3fF57Cf8de79F019d;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 6_947_153);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 6947153);
 
         cheat.deal(address(this), 0);
     }
