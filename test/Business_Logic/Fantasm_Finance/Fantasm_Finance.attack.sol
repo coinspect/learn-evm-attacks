@@ -125,7 +125,7 @@ contract Exploit_FantasmFinance is TestHarness, TokenBalanceTracker {
     uint256 internal constant ATTACKER_INITIAL_BALANCE = 282_788_864_964_253_879_669;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 32_972_106);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 32972106);
 
         cheat.prank(FANTOM_DEPLOYER); // Simulating initial attacker's balance
         fsm.transfer(address(this), ATTACKER_INITIAL_BALANCE); // https://ftmscan.com/tx/0xdfe2357a2105acaf36ffb54f1973d33460fa9160f8c4b12453bd1c5bcdab9560

@@ -25,7 +25,7 @@ contract Exploit_Superfluid is TestHarness, TokenBalanceTracker {
     uint256 internal constant CALL_INFO_APP_LEVEL_MASK = 0xFF;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 24_685_147);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 24685147);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(qi));

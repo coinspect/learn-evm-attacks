@@ -53,7 +53,7 @@ contract Exploit_CorkFinance is TestHarness, TokenBalanceTracker {
         // 3: 0xfd89cdd0be468a564dd525b222b728386d7c6780cf7b2f90d2b54493be09f64d (main attack)
 
         // We pin one block before the first transaction to analyze if they are strictly needed.
-        cheat.createSelectFork(vm.envString("RPC_URL"), 22_580_951);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 22580951);
 
         // 1.1. Deploy malicious MTK and Attck1 Instances
         mtk = new MyToken();

@@ -59,7 +59,7 @@ contract Exploit_Fei_Globals {
 contract Exploit_Fei is TestHarness, BalancerFlashloan, Exploit_Fei_Globals {
     // This contract acts as the exploiter factory contract.
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_684_813); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14684813); // We pin one block before the exploit
             // happened.
 
         cheat.label(attacker, "Attacker");

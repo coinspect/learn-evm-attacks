@@ -26,7 +26,7 @@ contract Report_Compound is TestHarness, TokenBalanceTracker {
         // point
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_266_479); // fork mainnet at block 14266479
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14266479); // fork mainnet at block 14266479
 
         addTokenToTracker(address(tusd));
         addTokenToTracker(address(tusdLegacy)); // Should be the same as tusd

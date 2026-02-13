@@ -29,7 +29,7 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
 
     function setUp() external {
         // We pin one block before the exploit process began
-        cheat.createSelectFork(vm.envString("RPC_URL"), 46_555_724);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 46555724);
 
         // The attacker started with some BNBs
         cheat.deal(address(this), attackerAddress.balance);

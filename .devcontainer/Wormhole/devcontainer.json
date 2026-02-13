@@ -1,6 +1,9 @@
 {
   "name": "Wormhole",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
   "remoteEnv": {
     "LEARN_ATTACK_CONTRACT": "Report_Wormhole",
     "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"

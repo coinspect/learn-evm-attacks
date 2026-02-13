@@ -1,6 +1,9 @@
 {
   "name": "DFXFinance",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
   "remoteEnv": {
     "LEARN_ATTACK_CONTRACT": "Exploit_DFXFinance",
     "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"

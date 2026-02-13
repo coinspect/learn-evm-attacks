@@ -49,7 +49,7 @@ contract Exploit_Punk is TestHarness, TokenBalanceTracker {
     // address internal attackerEOA = address(0x69);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 12_995_894);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 12995894);
 
         cheat.deal(address(this), 0);
 

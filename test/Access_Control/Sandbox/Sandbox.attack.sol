@@ -18,7 +18,7 @@ contract Exploit_SandBox is TestHarness {
     ILand internal land = ILand(0x50f5474724e0Ee42D9a4e711ccFB275809Fd6d4a);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14_163_041); // We pin one block before the exploit
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14163041); // We pin one block before the exploit
             // happened.
     }
 
