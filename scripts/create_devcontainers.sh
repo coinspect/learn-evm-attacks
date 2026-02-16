@@ -81,6 +81,9 @@ for attack_dir in ${attack_dirs}; do
 {
   "name": "${attack_dir}",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
   "remoteEnv": {
     "LEARN_ATTACK_CONTRACT": "${contract_name}",
     "PATH": "\${containerEnv:PATH}:/home/vscode/.foundry/bin"

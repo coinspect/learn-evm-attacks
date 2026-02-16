@@ -3,7 +3,7 @@ set -euo pipefail
 # test_all_cached.sh — Verify all cached attacks run offline.
 # Simulates the devcontainer flow locally:
 #   1. Wipe Foundry's cache
-#   2. Restore from committed foundry_rpc_cache/
+#   2. Restore from committed rpc_cache/foundry/
 #   3. For each attack: start proxy, run forge test, record result
 #
 # Usage:
@@ -29,13 +29,13 @@ FAILURES=""
 echo "Wiping ~/.foundry/cache/ ..."
 rm -rf "$HOME/.foundry/cache"
 
-if [ ! -d "foundry_rpc_cache" ]; then
-  echo "ERROR: foundry_rpc_cache/ not found. Run warm_all.sh first."
+if [ ! -d "rpc_cache/foundry" ]; then
+  echo "ERROR: rpc_cache/foundry/ not found. Run warm_all.sh first."
   exit 1
 fi
 
 mkdir -p "$HOME/.foundry/cache"
-cp -r foundry_rpc_cache/* "$HOME/.foundry/cache/"
+cp -r rpc_cache/foundry/* "$HOME/.foundry/cache/"
 echo "Foundry RPC cache restored."
 echo ""
 
@@ -59,14 +59,14 @@ for devcontainer in .devcontainer/*/devcontainer.json; do
     continue
   fi
 
-  # Extract block number from createSelectFork
-  FORK_BLOCK=$(grep -oP 'createSelectFork\([^,]+,\s*\K[\d]+' "$ATTACK_FILE" | head -n 1 || true)
+  # Extract block number from createSelectFork (strip Solidity underscores)
+  FORK_BLOCK=$(grep -oP 'createSelectFork\([^,]+,\s*\K[\d_]+' "$ATTACK_FILE" | tr -d '_' | head -n 1 || true)
 
   # Fallback: constant variable
   if [ -z "$FORK_BLOCK" ]; then
     VAR_NAME=$(grep -oP 'createSelectFork\([^,]+,\s*\K[A-Z_]+' "$ATTACK_FILE" | head -n 1 || true)
     if [ -n "$VAR_NAME" ]; then
-      FORK_BLOCK=$(grep -oP "${VAR_NAME}\s*=\s*\K[\d]+" "$ATTACK_FILE" | head -n 1 || true)
+      FORK_BLOCK=$(grep -oP "${VAR_NAME}\s*=\s*\K[\d_]+" "$ATTACK_FILE" | tr -d '_' | head -n 1 || true)
     fi
   fi
 
@@ -76,9 +76,17 @@ for devcontainer in .devcontainer/*/devcontainer.json; do
     continue
   fi
 
-  # Check that we have cache for this block
-  if [ ! -d ".block_cache/$FORK_BLOCK" ]; then
-    echo "[$DIR_NAME] SKIP: no .block_cache/$FORK_BLOCK/ directory"
+  # Resolve chain ID from rpc_cache/blocks/<chainId>/<block>/ directory
+  CHAIN_ID=""
+  for chain_dir in rpc_cache/blocks/*/; do
+    if [ -d "${chain_dir}${FORK_BLOCK}" ]; then
+      CHAIN_ID=$(basename "$chain_dir")
+      break
+    fi
+  done
+
+  if [ -z "$CHAIN_ID" ]; then
+    echo "[$DIR_NAME] SKIP: no rpc_cache/blocks/<chainId>/$FORK_BLOCK/ directory"
     SKIPPED=$((SKIPPED + 1))
     continue
   fi
@@ -102,7 +110,7 @@ for devcontainer in .devcontainer/*/devcontainer.json; do
   sleep 0.2
 
   # Start proxy for this attack
-  FORK_BLOCK="$FORK_BLOCK" node scripts/mock_rpc_proxy.js &
+  FORK_BLOCK="$FORK_BLOCK" CHAIN_ID="$CHAIN_ID" node scripts/mock_rpc_proxy.js &
   PROXY_PID=$!
 
   # Wait for proxy
@@ -117,17 +125,17 @@ for devcontainer in .devcontainer/*/devcontainer.json; do
   done
 
   if [ "$PROXY_OK" != "true" ]; then
-    echo "[$DIR_NAME] FAIL: proxy did not start for block $FORK_BLOCK"
+    echo "[$DIR_NAME] FAIL: proxy did not start for chain $CHAIN_ID block $FORK_BLOCK"
     kill "$PROXY_PID" 2>/dev/null || true
     FAILED=$((FAILED + 1))
-    FAILURES="$FAILURES  - $DIR_NAME (proxy failed, block $FORK_BLOCK)\n"
+    FAILURES="$FAILURES  - $DIR_NAME (proxy failed, chain $CHAIN_ID block $FORK_BLOCK)\n"
     continue
   fi
 
   # Run the test
   echo ""
   echo "=============================================="
-  echo "[$DIR_NAME] $CONTRACT | block $FORK_BLOCK $EVM_VERSION_FLAG"
+  echo "[$DIR_NAME] $CONTRACT | chain $CHAIN_ID block $FORK_BLOCK $EVM_VERSION_FLAG"
   echo "=============================================="
 
   if RPC_URL="http://localhost:8546" forge test --match-contract "$CONTRACT" -vvv $EVM_VERSION_FLAG; then
@@ -136,7 +144,7 @@ for devcontainer in .devcontainer/*/devcontainer.json; do
   else
     echo "[$DIR_NAME] FAIL"
     FAILED=$((FAILED + 1))
-    FAILURES="$FAILURES  - $DIR_NAME ($CONTRACT at block $FORK_BLOCK)\n"
+    FAILURES="$FAILURES  - $DIR_NAME ($CONTRACT at chain $CHAIN_ID block $FORK_BLOCK)\n"
   fi
 
   # Stop proxy

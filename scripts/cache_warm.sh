@@ -5,20 +5,17 @@ set -euo pipefail
 # responses so attacks can run fully offline via the mock RPC proxy.
 #
 # Outputs:
-#   .block_cache/<block_number>/block.json        — full block response
-#   .block_cache/<block_number>/eth_chainId.json   — chain metadata
-#   .block_cache/<block_number>/eth_gasPrice.json
-#   .block_cache/<block_number>/net_version.json
-#   foundry_rpc_cache/                             — Foundry's internal RPC cache
+#   rpc_cache/blocks/<chainId>/<block_number>/block.json        — full block response
+#   rpc_cache/blocks/<chainId>/<block_number>/eth_chainId.json   — chain metadata
+#   rpc_cache/blocks/<chainId>/<block_number>/eth_gasPrice.json
+#   rpc_cache/blocks/<chainId>/<block_number>/net_version.json
+#   rpc_cache/foundry/                                           — Foundry's internal RPC cache
 
 REAL_RPC="${1:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 BLOCK="${2:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 BLOCK="${BLOCK//_/}"
 TEST="${3:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 PORT=8546
-
-BLOCK_DIR=".block_cache/$BLOCK"
-mkdir -p "$BLOCK_DIR"
 
 # 1. Start anvil forked from real RPC on the same port the proxy will use,
 #    so Foundry's cache is keyed to http://localhost:8546
@@ -40,6 +37,15 @@ for i in $(seq 1 30); do
   fi
   sleep 1
 done
+
+# Detect chain ID from the forked node
+CHAIN_ID_HEX=$(curl -s "http://localhost:$PORT" -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}' | jq -r '.result')
+CHAIN_ID=$(printf '%d' "$CHAIN_ID_HEX")
+echo "Detected chain ID: $CHAIN_ID"
+
+BLOCK_DIR="rpc_cache/blocks/$CHAIN_ID/$BLOCK"
+mkdir -p "$BLOCK_DIR"
 
 BLOCK_HEX=$(printf '0x%x' "$BLOCK")
 
@@ -72,8 +78,8 @@ kill -9 "$ANVIL_PID" 2>/dev/null || true
 wait "$ANVIL_PID" 2>/dev/null || true
 
 # 8. Copy Foundry's RPC cache (keyed to localhost:8546)
-mkdir -p ./foundry_rpc_cache
-cp -r ~/.foundry/cache/* ./foundry_rpc_cache/
+mkdir -p ./rpc_cache/foundry
+cp -r ~/.foundry/cache/* ./rpc_cache/foundry/
 
-echo "Cache warmed for block $BLOCK. Files:"
+echo "Cache warmed for chain $CHAIN_ID, block $BLOCK. Files:"
 ls -la "$BLOCK_DIR/"

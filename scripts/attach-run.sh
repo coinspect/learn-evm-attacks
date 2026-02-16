@@ -56,13 +56,28 @@ if [ -z "$FORK_BLOCK" ]; then
     exit 1
 fi
 
-echo "Fork block: $FORK_BLOCK"
+# Resolve chain ID from rpc_cache/blocks/<chainId>/<block>/ directory
+CHAIN_ID=""
+for chain_dir in rpc_cache/blocks/*/; do
+  if [ -d "${chain_dir}${FORK_BLOCK}" ]; then
+    CHAIN_ID=$(basename "$chain_dir")
+    break
+  fi
+done
+
+if [ -z "$CHAIN_ID" ]; then
+    echo "ERROR: No rpc_cache/blocks/<chainId>/$FORK_BLOCK/ directory found."
+    echo "Run warm_all.sh first to populate the cache."
+    exit 1
+fi
+
+echo "Fork block: $FORK_BLOCK (chain $CHAIN_ID)"
 
 # ── Start the RPC proxy ──────────────────────────────────────
 # Kill any existing proxy
 pkill -f "node scripts/mock_rpc_proxy.js" 2>/dev/null || true
 
-FORK_BLOCK="$FORK_BLOCK" node scripts/mock_rpc_proxy.js &
+FORK_BLOCK="$FORK_BLOCK" CHAIN_ID="$CHAIN_ID" node scripts/mock_rpc_proxy.js &
 PROXY_PID=$!
 trap "kill $PROXY_PID 2>/dev/null || true" EXIT
 
