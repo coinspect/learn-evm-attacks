@@ -46,8 +46,8 @@ contract Report_ArbitrumInbox is TestHarness, TokenBalanceTracker {
         // not fun do not try)
         // By block 15460000 it was patched with no change in the implementation,
         // probably by re-initializing the contract and avoiding calling the postUpgradeInit method
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15450000); // fork number fairly arbitrary, just
-            // when contract existed but before it was patched
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_450_000); // fork number fairly arbitrary, just
+        // when contract existed but before it was patched
 
         updateBalanceTracker(attacker);
         updateBalanceTracker(address(arbitrumInbox));

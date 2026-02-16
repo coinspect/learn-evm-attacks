@@ -23,7 +23,7 @@ contract Exploit_MobiusDAO is TestHarness, TokenBalanceTracker {
     IERC20 internal constant mbu = IERC20(0x0dFb6Ac3A8Ea88d058bE219066931dB2BeE9A581);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 49470429);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 49_470_429);
 
         // The attacker funds the contract with 1 BNB to start the attack
         cheat.deal(address(this), 1 ether);

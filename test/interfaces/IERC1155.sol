@@ -13,22 +13,22 @@ interface IERC1155 {
     /**
      * @dev Emitted when `value` tokens of token type `id` are transferred from `from` to `to` by `operator`.
      */
-    event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value);
-
-    /**
-     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for all
-     * transfers.
-     */
-    event TransferBatch(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256[] ids,
-        uint256[] values
+    event TransferSingle(
+        address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value
     );
 
     /**
-     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens, according to
+     * @dev Equivalent to multiple {TransferSingle} events, where `operator`, `from` and `to` are the same for
+     * all
+     * transfers.
+     */
+    event TransferBatch(
+        address indexed operator, address indexed from, address indexed to, uint256[] ids, uint256[] values
+    );
+
+    /**
+     * @dev Emitted when `account` grants or revokes permission to `operator` to transfer their tokens,
+     * according to
      * `approved`.
      */
     event ApprovalForAll(address indexed account, address indexed operator, bool approved);
@@ -37,7 +37,8 @@ interface IERC1155 {
      * @dev Emitted when the URI for token type `id` changes to `value`, if it is a non-programmatic URI.
      *
      * If an {URI} event was emitted for `id`, the standard
-     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the value
+     * https://eips.ethereum.org/EIPS/eip-1155#metadata-extensions[guarantees] that `value` will equal the
+     * value
      * returned by {IERC1155MetadataURI-uri}.
      */
     event URI(string value, uint256 indexed id);
@@ -64,7 +65,8 @@ interface IERC1155 {
         returns (uint256[] memory);
 
     /**
-     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,
+     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to
+     * `approved`,
      *
      * Emits an {ApprovalForAll} event.
      *
@@ -89,18 +91,15 @@ interface IERC1155 {
      * Requirements:
      *
      * - `to` cannot be the zero address.
-     * - If the caller is not `from`, it must have been approved to spend ``from``'s tokens via {setApprovalForAll}.
+     * - If the caller is not `from`, it must have been approved to spend ``from``'s tokens via
+     * {setApprovalForAll}.
      * - `from` must have a balance of tokens of type `id` of at least `amount`.
-     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return
+     * the
      * acceptance magic value.
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data)
+        external;
 
     /**
      * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] version of {safeTransferFrom}.
@@ -110,7 +109,8 @@ interface IERC1155 {
      * Requirements:
      *
      * - `ids` and `amounts` must have the same length.
-     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and return the
+     * - If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155BatchReceived} and
+     * return the
      * acceptance magic value.
      */
     function safeBatchTransferFrom(

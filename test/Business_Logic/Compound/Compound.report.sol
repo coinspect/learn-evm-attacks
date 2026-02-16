@@ -23,10 +23,10 @@ contract Report_Compound is TestHarness, TokenBalanceTracker {
 
     IERC20 internal tusd = IERC20(0x0000000000085d4780B73119b644AE5ecd22b376); // Main entry point
     IERC20 internal tusdLegacy = IERC20(0x8dd5fbCe2F6a956C3022bA3663759011Dd51e73E); // Forwarder, side entry
-        // point
+    // point
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14266479); // fork mainnet at block 14266479
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14_266_479); // fork mainnet at block 14266479
 
         addTokenToTracker(address(tusd));
         addTokenToTracker(address(tusdLegacy)); // Should be the same as tusd

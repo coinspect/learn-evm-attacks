@@ -104,7 +104,7 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
     function setUp() external {
         // Fork after added PEPE token market through Proposal 22
         // Block = 18476512 when attacker created a attack smart contract
-        cheat.createSelectFork(vm.envString("RPC_URL"), 18476512);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 18_476_512);
 
         deal(address(this), 0);
 
@@ -130,7 +130,10 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
         uint256 premium,
         address, /* initiator */
         bytes calldata /* params */
-    ) external returns (bool) {
+    )
+        external
+        returns (bool)
+    {
         logBalancesWithLabel("Attacker contract", address(this));
         approveAll();
         // Calculate reserve in Uniswap for pair PEPE/WETH

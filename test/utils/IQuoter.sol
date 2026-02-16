@@ -3,8 +3,8 @@ pragma solidity ^0.8.17;
 pragma abicoder v2;
 
 interface IQuoter {
-    /// @notice Returns the amount in required to receive the given exact output amount but for a swap of a single pool
-    /// @param tokenIn The token being swapped in
+    /// @notice Returns the amount in required to receive the given exact output amount but for a swap of a
+    /// single pool @param tokenIn The token being swapped in
     /// @param tokenOut The token being swapped out
     /// @param fee The fee of the token pool to consider for the pair
     /// @param amountOut The desired output amount

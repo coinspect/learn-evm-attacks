@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 
-import {IUniswapV3Pair} from '../utils/IUniswapV3Pair.sol';
+import {IUniswapV3Pair} from "../utils/IUniswapV3Pair.sol";
 
 // An UniswapV3 TWAP oracle price getter.
 contract TWAPGetter {
@@ -13,31 +13,20 @@ contract TWAPGetter {
     {
         uint32[] memory secondsArr = new uint32[](2);
         secondsArr[0] = secondsAgo;
-        (int56[] memory tickCumulatives, ) = pool.observe(secondsArr);
+        (int56[] memory tickCumulatives,) = pool.observe(secondsArr);
         // average ticks: latest tick - secondsAgo tick
-        int24 tick = int24(
-            (tickCumulatives[1] - tickCumulatives[0]) /
-                int56(int256(uint256(secondsAgo)))
-        );
+        int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int56(int256(uint256(secondsAgo))));
         // sqrt(token1/token0) price
         uint160 sqrtPrice = UniswapMath.getSqrtRatioAtTick(tick);
-        // convert to price; square it and divide by the 2**96 base, but keep it in token1.decimals - token0.decimals + 18 = 6
-        price = UniswapMath.mulDiv(
-            sqrtPrice,
-            sqrtPrice,
-            uint256(2**192) / 1e18
-        );
+        // convert to price; square it and divide by the 2**96 base, but keep it in token1.decimals -
+        // token0.decimals + 18 = 6
+        price = UniswapMath.mulDiv(sqrtPrice, sqrtPrice, uint256(2 ** 192) / 1e18);
     }
 
     function getCurrentPrice(IUniswapV3Pair pool) public view returns (uint256 price) {
-        (uint160 sqrtRatioX96, , , , , , ) = pool.slot0();
-        price = UniswapMath.mulDiv(
-            sqrtRatioX96,
-            sqrtRatioX96,
-            uint256(2**192) / 1e18
-        );
+        (uint160 sqrtRatioX96,,,,,,) = pool.slot0();
+        price = UniswapMath.mulDiv(sqrtRatioX96, sqrtRatioX96, uint256(2 ** 192) / 1e18);
     }
-    
 }
 
 // FullMath & TickMath use unsupported features in 0.8, need to copy paste code
@@ -46,17 +35,13 @@ contract TWAPGetter {
 // import '@uniswap/v3-core/contracts/libraries/FullMath.sol';
 
 library UniswapMath {
-    /// @notice Calculates floor(a×b÷denominator) with full precision. Throws if result overflows a uint256 or denominator == 0
-    /// @param a The multiplicand
+    /// @notice Calculates floor(a×b÷denominator) with full precision. Throws if result overflows a uint256
+    /// or denominator == 0 @param a The multiplicand
     /// @param b The multiplier
     /// @param denominator The divisor
     /// @return result The 256-bit result
     /// @dev Credit to Remco Bloemen under MIT license https://xn--2-umb.com/21/muldiv
-    function mulDiv(
-        uint256 a,
-        uint256 b,
-        uint256 denominator
-    ) internal pure returns (uint256 result) {
+    function mulDiv(uint256 a, uint256 b, uint256 denominator) internal pure returns (uint256 result) {
         unchecked {
             // 512-bit multiply [prod1 prod0] = a * b
             // Compute the product mod 2**256 and mod 2**256 - 1
@@ -148,72 +133,85 @@ library UniswapMath {
         }
     }
 
-    /// @dev The minimum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**-128
-    int24 internal constant MIN_TICK = -887272;
-    /// @dev The maximum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of 2**128
+    /// @dev The minimum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of
+    /// 2**-128
+    int24 internal constant MIN_TICK = -887_272;
+    /// @dev The maximum tick that may be passed to #getSqrtRatioAtTick computed from log base 1.0001 of
+    /// 2**128
     int24 internal constant MAX_TICK = -MIN_TICK;
 
-    function getSqrtRatioAtTick(int24 tick)
-        internal
-        pure
-        returns (uint160 sqrtPriceX96)
-    {
+    function getSqrtRatioAtTick(int24 tick) internal pure returns (uint160 sqrtPriceX96) {
         unchecked {
-            uint256 absTick = tick < 0
-                ? uint256(-int256(tick))
-                : uint256(int256(tick));
+            uint256 absTick = tick < 0 ? uint256(-int256(tick)) : uint256(int256(tick));
             require(absTick <= uint256(int256(MAX_TICK)), "T");
 
-            uint256 ratio = absTick & 0x1 != 0
-                ? 0xfffcb933bd6fad37aa2d162d1a594001
-                : 0x100000000000000000000000000000000;
-            if (absTick & 0x2 != 0)
+            uint256 ratio =
+                absTick & 0x1 != 0 ? 0xfffcb933bd6fad37aa2d162d1a594001 : 0x100000000000000000000000000000000;
+            if (absTick & 0x2 != 0) {
                 ratio = (ratio * 0xfff97272373d413259a46990580e213a) >> 128;
-            if (absTick & 0x4 != 0)
+            }
+            if (absTick & 0x4 != 0) {
                 ratio = (ratio * 0xfff2e50f5f656932ef12357cf3c7fdcc) >> 128;
-            if (absTick & 0x8 != 0)
+            }
+            if (absTick & 0x8 != 0) {
                 ratio = (ratio * 0xffe5caca7e10e4e61c3624eaa0941cd0) >> 128;
-            if (absTick & 0x10 != 0)
+            }
+            if (absTick & 0x10 != 0) {
                 ratio = (ratio * 0xffcb9843d60f6159c9db58835c926644) >> 128;
-            if (absTick & 0x20 != 0)
+            }
+            if (absTick & 0x20 != 0) {
                 ratio = (ratio * 0xff973b41fa98c081472e6896dfb254c0) >> 128;
-            if (absTick & 0x40 != 0)
+            }
+            if (absTick & 0x40 != 0) {
                 ratio = (ratio * 0xff2ea16466c96a3843ec78b326b52861) >> 128;
-            if (absTick & 0x80 != 0)
+            }
+            if (absTick & 0x80 != 0) {
                 ratio = (ratio * 0xfe5dee046a99a2a811c461f1969c3053) >> 128;
-            if (absTick & 0x100 != 0)
+            }
+            if (absTick & 0x100 != 0) {
                 ratio = (ratio * 0xfcbe86c7900a88aedcffc83b479aa3a4) >> 128;
-            if (absTick & 0x200 != 0)
+            }
+            if (absTick & 0x200 != 0) {
                 ratio = (ratio * 0xf987a7253ac413176f2b074cf7815e54) >> 128;
-            if (absTick & 0x400 != 0)
+            }
+            if (absTick & 0x400 != 0) {
                 ratio = (ratio * 0xf3392b0822b70005940c7a398e4b70f3) >> 128;
-            if (absTick & 0x800 != 0)
+            }
+            if (absTick & 0x800 != 0) {
                 ratio = (ratio * 0xe7159475a2c29b7443b29c7fa6e889d9) >> 128;
-            if (absTick & 0x1000 != 0)
+            }
+            if (absTick & 0x1000 != 0) {
                 ratio = (ratio * 0xd097f3bdfd2022b8845ad8f792aa5825) >> 128;
-            if (absTick & 0x2000 != 0)
+            }
+            if (absTick & 0x2000 != 0) {
                 ratio = (ratio * 0xa9f746462d870fdf8a65dc1f90e061e5) >> 128;
-            if (absTick & 0x4000 != 0)
+            }
+            if (absTick & 0x4000 != 0) {
                 ratio = (ratio * 0x70d869a156d2a1b890bb3df62baf32f7) >> 128;
-            if (absTick & 0x8000 != 0)
+            }
+            if (absTick & 0x8000 != 0) {
                 ratio = (ratio * 0x31be135f97d08fd981231505542fcfa6) >> 128;
-            if (absTick & 0x10000 != 0)
+            }
+            if (absTick & 0x10000 != 0) {
                 ratio = (ratio * 0x9aa508b5b7a84e1c677de54f3e99bc9) >> 128;
-            if (absTick & 0x20000 != 0)
+            }
+            if (absTick & 0x20000 != 0) {
                 ratio = (ratio * 0x5d6af8dedb81196699c329225ee604) >> 128;
-            if (absTick & 0x40000 != 0)
+            }
+            if (absTick & 0x40000 != 0) {
                 ratio = (ratio * 0x2216e584f5fa1ea926041bedfe98) >> 128;
-            if (absTick & 0x80000 != 0)
+            }
+            if (absTick & 0x80000 != 0) {
                 ratio = (ratio * 0x48a170391f7dc42444e8fa2) >> 128;
+            }
 
             if (tick > 0) ratio = type(uint256).max / ratio;
 
             // this divides by 1<<32 rounding up to go from a Q128.128 to a Q128.96.
-            // we then downcast because we know the result always fits within 160 bits due to our tick input constraint
-            // we round up in the division so getTickAtSqrtRatio of the output price is always consistent
-            sqrtPriceX96 = uint160(
-                (ratio >> 32) + (ratio % (1 << 32) == 0 ? 0 : 1)
-            );
+            // we then downcast because we know the result always fits within 160 bits due to our tick input
+            // constraint we round up in the division so getTickAtSqrtRatio of the output price is always
+            // consistent
+            sqrtPriceX96 = uint160((ratio >> 32) + (ratio % (1 << 32) == 0 ? 0 : 1));
         }
     }
 }

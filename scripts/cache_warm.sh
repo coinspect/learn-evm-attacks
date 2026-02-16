@@ -13,6 +13,7 @@ set -euo pipefail
 
 REAL_RPC="${1:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 BLOCK="${2:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
+BLOCK="${BLOCK//_/}"
 TEST="${3:?Usage: cache_warm.sh <real_rpc> <block_number> <test_contract>}"
 PORT=8546
 

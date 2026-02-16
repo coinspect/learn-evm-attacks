@@ -20,7 +20,7 @@ contract Exploit_Bad_Guys_NFT is TestHarness {
     address internal constant attacker = 0xBD8A137E79C90063cd5C0DB3Dbabd5CA2eC7e83e;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15453652); // One before setting the merkle root
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_453_652); // One before setting the merkle root
 
         // Add data to the Whitelist Tree. The data could be bigger.
         // Adding this contract into the whitelist in an arbitrary position.
@@ -71,7 +71,11 @@ contract Exploit_Bad_Guys_NFT is TestHarness {
         address, /* _from */
         uint256, /* _tokenId */
         bytes memory /* _data */
-    ) external pure returns (bytes4) {
+    )
+        external
+        pure
+        returns (bytes4)
+    {
         return this.onERC721Received.selector;
     }
 }

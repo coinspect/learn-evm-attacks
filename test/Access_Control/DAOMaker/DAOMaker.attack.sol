@@ -26,7 +26,7 @@ contract Exploit_DAOMaker is TestHarness, TokenBalanceTracker {
     IERC20 internal derc = IERC20(0x9fa69536d1cda4A04cFB50688294de75B505a9aE);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 13155349);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 13_155_349);
 
         addTokenToTracker(address(derc));
     }

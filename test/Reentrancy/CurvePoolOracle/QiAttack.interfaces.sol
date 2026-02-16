@@ -10,7 +10,8 @@ interface IUnitroller {
 
     function exitMarket(address market) external;
 
-    // Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to unlimited borrowing.
+    // Borrow caps enforced by borrowAllowed for each cToken address. Defaults to zero which corresponds to
+    // unlimited borrowing.
     function borrowCaps(address market) external view returns (uint256);
 
     function getAccountLiquidity(address account) external view returns (uint256, uint256, uint256);
@@ -97,5 +98,6 @@ interface IAaveFlashloan {
 // Gets the price of Curve LP tokens (Beefy's underlying) according to the
 // Compound price's feed
 function get_lp_token_price_for_compound() view returns (uint256) {
-    return IPriceFeed(0x71585E806402473Ff25eda3e2C3C17168767858a).getUnderlyingPrice(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8); // STMATIC_MATIC_DELEGATOR
+    return IPriceFeed(0x71585E806402473Ff25eda3e2C3C17168767858a)
+        .getUnderlyingPrice(0x570Bc2b7Ad1399237185A27e66AEA9CfFF5F3dB8); // STMATIC_MATIC_DELEGATOR
 }

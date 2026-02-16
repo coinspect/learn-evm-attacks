@@ -9,8 +9,7 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {BalancerFlashloan} from "../../utils/BalancerFlashloan.sol";
 
 interface IDVM {
-    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address assetTo, bytes memory data)
-        external;
+    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address assetTo, bytes memory data) external;
 }
 
 interface IEFVault {
@@ -26,7 +25,7 @@ contract Exploit_EarningFarm is TestHarness, TokenBalanceTracker, BalancerFlashl
     IERC20 internal eftoken = IERC20(0xBAe7EC1BAaAe7d5801ad41691A2175Aa11bcba19);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15746199);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_746_199);
         cheat.deal(address(this), 0.1 ether);
 
         addTokenToTracker(address(weth));
@@ -52,7 +51,9 @@ contract Exploit_EarningFarm is TestHarness, TokenBalanceTracker, BalancerFlashl
         uint256, /*  amount */
         uint256, /*quoteAmount */
         bytes memory /*data */
-    ) external {
+    )
+        external
+    {
         require(msg.sender == address(dvm), "Only DVM");
         require(sender == address(this), "Only requested by this");
 

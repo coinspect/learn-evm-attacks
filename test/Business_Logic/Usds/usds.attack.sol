@@ -14,7 +14,7 @@ contract Exploit_Usds is TestHarness, TokenBalanceTracker {
     ContractFactory internal factory;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 57803396);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 57_803_396);
 
         // As USDS is behind a proxy, Foundry does not
         // let us deal directly to it.

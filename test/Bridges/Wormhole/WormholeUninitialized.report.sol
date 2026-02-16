@@ -83,7 +83,7 @@ contract Report_Wormhole is TestHarness {
         // Wormhole initialized the implementation initialize(), fixing the issue, at tx hash:
         // https://etherscan.io/tx/0x9acb2b580aba4f5be75366255800df5f62ede576619cb5ce638cedc61273a50f
         // at blockNumber: 14269474
-        cheat.createSelectFork(cheat.envString("RPC_URL"), 13818843);
+        cheat.createSelectFork(cheat.envString("RPC_URL"), 13_818_843);
 
         evilWormhole = new EvilWormhole();
         console.log("Evil contract @", address(evilWormhole));

@@ -10,11 +10,20 @@ interface IERC20 {
 
 interface IAsset {
     // IAsset is typically just the token address cast to IAsset
-}
+
+    }
 
 interface IBalancerVault {
-    enum SwapKind { GIVEN_IN, GIVEN_OUT }
-    enum UserBalanceOpKind { DEPOSIT_INTERNAL, WITHDRAW_INTERNAL, TRANSFER_INTERNAL, TRANSFER_EXTERNAL }
+    enum SwapKind {
+        GIVEN_IN,
+        GIVEN_OUT
+    }
+    enum UserBalanceOpKind {
+        DEPOSIT_INTERNAL,
+        WITHDRAW_INTERNAL,
+        TRANSFER_INTERNAL,
+        TRANSFER_EXTERNAL
+    }
 
     struct BatchSwapStep {
         bytes32 poolId;
@@ -39,11 +48,10 @@ interface IBalancerVault {
         address payable recipient;
     }
 
-    function getPoolTokens(bytes32 poolId) external view returns (
-        address[] memory tokens,
-        uint256[] memory balances,
-        uint256 lastChangeBlock
-    );
+    function getPoolTokens(bytes32 poolId)
+        external
+        view
+        returns (address[] memory tokens, uint256[] memory balances, uint256 lastChangeBlock);
 
     function batchSwap(
         SwapKind kind,
@@ -68,14 +76,12 @@ interface IBalancerVault {
         bytes memory userData
     ) external;
 
-    function getInternalBalance(
-        address user,
-        address[] memory tokens
-    ) external view returns (uint256[] memory);
+    function getInternalBalance(address user, address[] memory tokens)
+        external
+        view
+        returns (uint256[] memory);
 
-    function manageUserBalance(
-        UserBalanceOp[] memory ops
-    ) external payable;
+    function manageUserBalance(UserBalanceOp[] memory ops) external payable;
 }
 
 interface IBalancerPool {
@@ -85,11 +91,10 @@ interface IBalancerPool {
     function getScalingFactors() external view returns (uint256[] memory);
     function getRateProviders() external view returns (address[] memory);
     function updateTokenRateCache(address token) external;
-    function getAmplificationParameter() external view returns (
-        uint256 value,
-        bool isUpdating,
-        uint256 precision
-    );
+    function getAmplificationParameter()
+        external
+        view
+        returns (uint256 value, bool isUpdating, uint256 precision);
     function getSwapFeePercentage() external view returns (uint256);
     function getActualSupply() external view returns (uint256);
     function totalSupply() external view returns (uint256);

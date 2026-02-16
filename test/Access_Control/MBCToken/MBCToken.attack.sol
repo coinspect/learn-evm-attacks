@@ -10,8 +10,7 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
 
 interface IDppOracle {
-    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data)
-        external;
+    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data) external;
 }
 
 interface ILiqToken is IERC20 {
@@ -33,7 +32,7 @@ contract Exploit_MBCToken is TestHarness, TokenBalanceTracker {
     IUniswapV2Pair[] internal pairs = [pairUsdtMbc, pairUsdtZzsh];
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23474460);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23_474_460);
         cheat.deal(address(this), 0);
 
         addTokenToTracker(address(usdt));

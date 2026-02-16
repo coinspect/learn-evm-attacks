@@ -10,7 +10,6 @@ interface IPool {
         bytes calldata params,
         uint16 referralCode
     ) external;
-
 }
 
 // Interface required to receive flashloan
@@ -28,9 +27,7 @@ interface IFlashLoanSimpleReceiver {
 interface IFutureswap {
     function updateFunding() external;
     function longPosition() external view returns (int256, int256);
-    function changePosition(
-        int256 deltaAsset,
-        int256 deltaStable,
-        int256 stableBound
-    ) external returns (int256, int256, int256, int256, int256, int256);
+    function changePosition(int256 deltaAsset, int256 deltaStable, int256 stableBound)
+        external
+        returns (int256, int256, int256, int256, int256, int256);
 }

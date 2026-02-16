@@ -26,8 +26,8 @@ interface IERC20 {
      */
     function totalSupply() external view returns (uint256);
 
-    function name() external view returns(string memory);
-    function decimals() external view returns(uint8);
+    function name() external view returns (string memory);
+    function decimals() external view returns (uint8);
 
     /**
      * @dev Returns the amount of tokens owned by `account`.
@@ -77,9 +77,5 @@ interface IERC20 {
      *
      * Emits a {Transfer} event.
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool);
+    function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }

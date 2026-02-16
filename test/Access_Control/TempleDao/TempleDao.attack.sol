@@ -18,7 +18,7 @@ contract Exploit_TempleDAO is TestHarness, TokenBalanceTracker {
     IStax internal stax = IStax(0xd2869042E12a3506100af1D192b5b04D65137941);
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 15725066);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 15_725_066);
         cheat.deal(address(this), 0 ether);
 
         addTokenToTracker(address(staxLpToken));

