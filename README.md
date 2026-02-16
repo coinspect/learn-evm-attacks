@@ -102,7 +102,7 @@ Each attack uses `createSelectFork` to replay on-chain state from a specific blo
 
 **1. Warm the cache for a single attack**
 
-`cache_warm.sh` takes a real RPC URL, the fork block number, and the test contract name. It spins up a temporary Anvil fork, runs the test to populate Foundry's RPC cache, and captures block metadata into `.block_cache/`:
+`cache_warm.sh` takes a real RPC URL, the fork block number, and the test contract name. It spins up a temporary Anvil fork, runs the test to populate Foundry's RPC cache, and captures block metadata into `rpc_cache/`:
 
 ``` bash
 bash scripts/cache_warm.sh <rpc_url> <block_number> <test_contract>
@@ -111,11 +111,11 @@ bash scripts/cache_warm.sh <rpc_url> <block_number> <test_contract>
 bash scripts/cache_warm.sh "$ETH_RPC_URL" 14684300 Exploit_FeiProtocol
 ```
 
-This produces two things:
-- `.block_cache/<block_number>/` — block JSON and chain metadata (`eth_chainId`, `eth_gasPrice`, `net_version`) used by the mock RPC proxy
-- `foundry_rpc_cache/` — a copy of Foundry's internal RPC cache (keyed to `localhost:8546`)
+This populates the unified `rpc_cache/` directory:
+- `rpc_cache/blocks/<chainId>/<block_number>/` — block JSON and chain metadata (`eth_chainId`, `eth_gasPrice`, `net_version`) used by the mock RPC proxy
+- `rpc_cache/foundry/` — a copy of Foundry's internal RPC cache (binded to `localhost:8546`)
 
-Both directories must be committed to the repo.
+The `rpc_cache/` directory must be committed to the repo.
 
 **2. Warm the cache for all attacks at once**
 
@@ -131,7 +131,7 @@ bash scripts/warm_all.sh
 
 **3. Verify the cache works offline**
 
-`test_all_cached.sh` wipes Foundry's local cache, restores from the committed `foundry_rpc_cache/`, starts the mock RPC proxy (`mock_rpc_proxy.js`) for each attack, and runs every test without any external RPC:
+`test_all_cached.sh` wipes Foundry's local cache, restores from the committed `rpc_cache/foundry/`, starts the mock RPC proxy (`mock_rpc_proxy.js`) for each attack, and runs every test without any external RPC:
 
 ``` bash
 bash scripts/test_all_cached.sh
@@ -141,7 +141,7 @@ If any attacks fail, you can re-warm just those with `warm_failed.sh` (edit the 
 
 **How it works at runtime (devcontainers)**
 
-When a user opens an attack in a Codespace, `attach-run.sh` starts the lightweight Node.js mock RPC proxy on port 8546. This proxy serves cached block metadata from `.block_cache/` while Foundry's own RPC cache handles all `eth_call`/`eth_getStorageAt` requests. No external RPC is needed — the attack replays entirely from the committed cache.
+When a user opens an attack in a Codespace, `attach-run.sh` starts the lightweight Node.js mock RPC proxy on port 8546. This proxy serves cached block metadata from `rpc_cache/blocks/` while Foundry's own RPC cache handles all `eth_call`/`eth_getStorageAt` requests. No external RPC is needed — the attack replays entirely from the committed cache.
 
 # <h2 align="center"> Past work and further study </h2>
 
