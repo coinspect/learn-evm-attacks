@@ -100,18 +100,40 @@ echo "RPC proxy running on :8546"
 export RPC_URL="http://localhost:8546"
 
 echo "Running reproduction using RPC cache."
-echo "If you want to modify the attack's code with new calls, manually set the RPC_URL env var providing an active RPC endpoint."
 
 printf "\n▶ Running exploit: %s\n\n" "$LEARN_ATTACK_CONTRACT"
 
 # Run with or without --evm-version flag
-if [ -n "$EVM_VERSION_FLAG" ]; then
-    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv $EVM_VERSION_FLAG
-else
-    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv
-fi
+run_forge() {
+    if [ -n "$EVM_VERSION_FLAG" ]; then
+        forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv $EVM_VERSION_FLAG
+    else
+        forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv
+    fi
+}
 
-echo
-echo "✅ Done. Opening interactive shell..."
+if run_forge; then
+    echo
+    echo "✅ Done. Opening interactive shell..."
+else
+    echo
+    echo "❌ Cached RPC run failed."
+    echo "You can re-run with a live RPC endpoint."
+    printf "Paste your RPC URL (or press Enter to skip): "
+    read -r USER_RPC
+    if [ -n "$USER_RPC" ]; then
+        # Kill the cache proxy
+        kill $PROXY_PID 2>/dev/null || true
+        export RPC_URL="$USER_RPC"
+        printf "\n▶ Re-running with live RPC: %s\n\n" "$USER_RPC"
+        if run_forge; then
+            echo
+            echo "✅ Done. Opening interactive shell..."
+        else
+            echo
+            echo "❌ Run failed again. Opening interactive shell..."
+        fi
+    fi
+fi
 
 exec bash -l
