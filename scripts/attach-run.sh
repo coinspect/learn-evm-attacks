@@ -125,7 +125,9 @@ else
         # Kill the cache proxy
         kill $PROXY_PID 2>/dev/null || true
         export RPC_URL="$USER_RPC"
-        printf "\n▶ Re-running with live RPC: %s\n\n" "$USER_RPC"
+        # Mask API key in output (show only host + first 4 chars of path/key)
+        MASKED_RPC=$(echo "$USER_RPC" | sed -E 's|(https?://[^/]+/)(.{4}).*|\1\2…|')
+        printf "\n▶ Re-running with live RPC: %s\n\n" "$MASKED_RPC"
         if run_forge; then
             echo
             echo "✅ Done. Opening interactive shell..."
