@@ -113,7 +113,7 @@ bash scripts/cache_warm.sh "$ETH_RPC_URL" 14684300 Exploit_FeiProtocol
 
 This populates the unified `rpc_cache/` directory:
 - `rpc_cache/blocks/<chainId>/<block_number>/` — block JSON and chain metadata (`eth_chainId`, `eth_gasPrice`, `net_version`) used by the mock RPC proxy
-- `rpc_cache/foundry/` — a copy of Foundry's internal RPC cache (binded to `localhost:8546`)
+- `rpc_cache/foundry/` — a copy of Foundry's internal RPC cache (bind to `localhost:8546`)
 
 The `rpc_cache/` directory must be committed to the repo.
 
