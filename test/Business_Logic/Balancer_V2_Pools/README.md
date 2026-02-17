@@ -16,7 +16,7 @@ tokens_lost:
   - WETH
   - osETH
   - wstETH
-attacker_addresses: [0x506D1f9EFe24f0d47853aDca907EB8d89AE03207]
+attacker_addresses: ["0x506D1f9EFe24f0d47853aDca907EB8d89AE03207"]
 attack_block: [23717397]
 reproduction_command: forge test --match-contract Exploit_Balancer_V2_Pools -vvv
 attack_txs:
