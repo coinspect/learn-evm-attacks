@@ -58,3 +58,9 @@ This causes the internal exchange rate of the contract to change, which elevates
 ## Possible mitigations
 
 - [ChainSecurity](https://medium.com/chainsecurity/trueusd-compound-vulnerability-bc5b696d29e2) proposes an interesting fix: checking the underlying balance before and after the `transfer` to make sure it stays the same.
+
+## Related
+
+- [Bond Olympus DAO](/learn-evm-attacks/cases/bond-olympus-dao/) - Arbitrary token parameter exploits in redemption functions
+- [AnySwap Permit Attack](/learn-evm-attacks/cases/anyswap-permit-attack/) - Token address validation bypass
+- [Fantasm Finance](/learn-evm-attacks/cases/fantasm-finance/) - Faulty token integration allows minting without proper backing

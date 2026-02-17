@@ -99,3 +99,9 @@ So now, the attacker only has to tell Furucombo to `DELEGATECALL` into AAVE and 
 1. Be **extremely** careful when using `DELEGATECALL`
 2. Do not whitelist useless contracts. AAVE has no reason to be in the whitelist, as it actually did not work (it would not be able to find its implementation, balances, or anything else when run through Furucombo's Proxy)
 3. The attack was so profitable because there where many users who had approved Furucombo to use their funds in different tokens.
+
+## Related
+
+- [TornadoCash Governance Takeover](/learn-evm-attacks/cases/tornadocash-governance-takeover/) - Context hijacking via `delegatecall` to execute malicious code
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Exploiting uninitialized implementation contracts
+- [Cork Finance](/learn-evm-attacks/cases/cork-finance/) - Exploiting hook/callback mechanisms for unauthorized access

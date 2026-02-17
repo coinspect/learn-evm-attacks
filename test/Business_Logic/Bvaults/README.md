@@ -68,3 +68,9 @@ Unfortunately, it did not do any kind of price check or use any kind of smoothin
 ## Possible mitigations
 
 - Either introduce an oracle to get a second-source of truth for prices or use time-weighted-average to smooth the curve.
+
+## Related
+
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Share price manipulation via reserve balance changes
+- [Seaman](/learn-evm-attacks/cases/seaman/) - Forcing contracts to trade at manipulated token prices
+- [MBC Token](/learn-evm-attacks/cases/mbc-token/) - Price manipulation through public liquidity functions

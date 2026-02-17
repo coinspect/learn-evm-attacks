@@ -61,3 +61,8 @@ The attacker claimed 400 NFTs in a single transaction. The mistake is in the `Wh
 
 - The `chosenAmount` parameter seems to be useless and would better be a constant of `1` if that was the intended usage.
 - Otherwise, if it was intended to allow for more than one mint per accoutn, restrict the `chosenAmount` parameter.
+
+## Related
+
+- [Sandbox Public Burn](/learn-evm-attacks/cases/sandbox-public-burn/) - Insufficient validation on user-supplied parameters
+- [Fantasm Finance](/learn-evm-attacks/cases/fantasm-finance/) - Missing validation on mint allows minting without backing

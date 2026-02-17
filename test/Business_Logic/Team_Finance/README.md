@@ -165,3 +165,9 @@ draining the Lock contract via the migration process.
     authentication bypass, etc).
 4.  Carefully review and check migration processes as they will likely be called once most likely conveying token transfers of considerable
     amounts.
+
+## Related
+
+- [TempleDAO Spoof Old Staking Contract](/learn-evm-attacks/cases/templedao-spoof-old-staking-contract/) - Exploiting migration processes with spoofed contracts
+- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-usds/) - Abusing contract deployment timing to bypass balance checks
+- [Paraluni](/learn-evm-attacks/cases/paraluni/) - Attacking protocols through malicious token contracts

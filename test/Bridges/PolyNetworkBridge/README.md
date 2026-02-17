@@ -123,3 +123,9 @@ Once this is done, the attacker can simply forge cross chain messages.
 
 - Do not rely on `sighash` to be non-reversible by bruteforce.
 - Always implement as many restrictions as possible on calls to external contracts. In this case, a restriction should have been made so that cross-chain transactions to the manager are not possible for the public.
+
+## Related
+
+- [Ronin Bridge](/learn-evm-attacks/cases/ronin-bridge/) - Bridge exploit through compromised validator keys
+- [Nomad Bridge](/learn-evm-attacks/cases/nomad-bridge/) - Bridge message validation bypass
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Bridge vulnerability through uninitialized implementation

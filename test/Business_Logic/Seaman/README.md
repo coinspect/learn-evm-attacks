@@ -103,3 +103,9 @@ This makes it possible for an attacker to manipulate the price and force the con
 
 1. Prevent users to manipulate contract balances via low liquidity pair interactions.
 2. Do not automatically perform trades without a sanity check on the prices
+
+## Related
+
+- [MBC Token](/learn-evm-attacks/cases/mbc-token/) - Same `swapAndLiquify` pattern exploited via price manipulation
+- [BVaults](/learn-evm-attacks/cases/bvaults/) - Price manipulation through unprotected swap functions
+- [Four Meme](/learn-evm-attacks/cases/four-meme/) - Preemptive pool price manipulation on BSC

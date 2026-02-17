@@ -90,3 +90,9 @@ Because the reentrancy mutex only protects functions that include that modifier,
 ## Possible mitigations
 
 - Respect the checks-effects-interactions pattern whenever it's possible taking into account that a reentrancy mutex does not protect against cross-contract attacks.
+
+## Related
+
+- [Fei Protocol](/learn-evm-attacks/cases/fei-protocol/) - Same `borrowFresh` pattern with cross-function reentrancy
+- [Hundred Finance](/learn-evm-attacks/cases/hundred-finance/) - Same `borrowFresh` pattern exploited via ERC667 token hooks
+- [DFX Finance](/learn-evm-attacks/cases/dfx-finance/) - Reentrancy through flash loan callback to manipulate balances

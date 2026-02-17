@@ -191,9 +191,15 @@ A basic unit test exercising the `changePosition()` flow with non-zero fee value
 
 - **Cap Fee Values:** Enforce maximum bounds on fee percentages. Futureswap's documented fee is 0.05% (~5 bps) plus Uniswap's 0.05% (~5 bps). Any fee value exceeding ~100 bps (1%) should trigger a revert as it would indicate an error or manipulation.
 
-- **Validate Fee Pool:** Before distribution, verify that total claimed fees don't exceed actual collected fees. 
+- **Validate Fee Pool:** Before distribution, verify that total claimed fees don't exceed actual collected fees.
 
 ## Sources and References
 
 - [nn0b0dyyy on X - Initial Report](https://x.com/nn0b0dyyy/status/2009922304927731717)
 - [Arbiscan - Attack Transaction](https://arbiscan.io/tx/0xe1e6aa5332deaf0fa0a3584113c17bedc906148730cbbc73efae16306121687b)
+
+## Related
+
+- [Uranium](/learn-evm-attacks/cases/uranium/) - Arithmetic error in core AMM constant calculation
+- [MobiusDAO](/learn-evm-attacks/cases/mobiusdao/) - Decimal precision error inflates minted token amounts
+- [1inch Calldata Corruption](/learn-evm-attacks/cases/1inch-calldata-corruption/) - Encoding/arithmetic error in low-level assembly

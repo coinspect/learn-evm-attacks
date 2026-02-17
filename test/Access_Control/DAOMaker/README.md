@@ -72,3 +72,9 @@ Also, the contract attacked was not verified. The fact that the attacker used on
 ## Possible mitigations
 
 - `initialize` functions should always be protected so they can be called only once
+
+## Related
+
+- [Punk Protocol Re-initialize](/learn-evm-attacks/cases/punk-protocol-re-initialize/) - Unprotected `initialize` on proxy allows fund theft
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Uninitialized implementation contract
+- [Arbitrum Inbox](/learn-evm-attacks/cases/arbitrum-inbox/) - Reinitialization vulnerability after storage slot wipe

@@ -200,3 +200,9 @@ Based on the identified vulnerabilities and Bunni's post-mortem analysis, severa
 ### 3. Comprehensive Testing Framework
 
 - **Fuzz Testing:** As Bunni acknowledged, existing Foundry and Medusa fuzz tests failed to cover multi-step manipulation scenarios. Protocols with custom accounting logic must implement extensive fuzz testing and simulations that cover the edge conditions.
+
+## Related
+
+- [Onyx Protocol](/learn-evm-attacks/cases/onyx-protocol/) - Rounding errors and empty market manipulation in lending
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Share/LP price manipulation via reserve balance changes
+- [Cork Finance](/learn-evm-attacks/cases/cork-finance/) - AMM pricing manipulation during protocol state transitions

@@ -203,3 +203,9 @@ Based on the identified vulnerabilities and the post-mortem's action plan, sever
 - **HIYA Formula Review:** Re-evaluate and potentially re-engineer the HIYA formula, particularly its sensitivity to low-volume trades and close-to-expiry conditions. Consider introducing minimum volume thresholds or time-weighted average price (TWAP) mechanisms for historical data inclusion to mitigate sudden spikes in risk premium calculations.
 
 - **Circuit Breakers:** Implement circuit breakers for large or anomalous trades/movements of assets based on a deviation from a predefined threshold. This could temporarily pause problematic functions or markets.
+
+## Related
+
+- [SIR Trading](/learn-evm-attacks/cases/sir-trading/) - Exploiting callback/hook mechanisms for unauthorized fund access
+- [Furucombo](/learn-evm-attacks/cases/furucombo/) - Hijacking execution context through proxy interactions
+- [Bunni](/learn-evm-attacks/cases/bunni/) - AMM price manipulation combined with rounding exploits

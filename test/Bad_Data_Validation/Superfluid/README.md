@@ -53,3 +53,8 @@ The attacker can now send a crafted message that set's anyone as the [`publisher
 ## Possible mitigations
 
 - The [`git blame`](https://github.com/superfluid-finance/protocol-monorepo/blame/48f5951c1fb30127a462cce7b16871c435d66e10/packages/ethereum-contracts/contracts/agreements/AgreementLibrary.sol#L43) of this fix is quite straightforward: the `authorizeTokenAccess` has to actually call the `Host` to make sure this context has been aproved by it.
+
+## Related
+
+- [Furucombo](/learn-evm-attacks/cases/furucombo/) - Hijacking execution context through delegatecall
+- [TornadoCash Governance Takeover](/learn-evm-attacks/cases/tornadocash-governance-takeover/) - Replacing trusted execution context with attacker-controlled code

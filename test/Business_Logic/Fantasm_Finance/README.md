@@ -86,3 +86,9 @@ The problem is that the `mint` function never checks for the amount of `FMT` dep
 ## Possible mitigations
 
 The obvious recommendation here is "check that counterpart token is received", but this can be covered by a test. Make sure to have **negative testing** as part of the suite of your contract, with tests that check that "should not mint XFTM without backing native token"
+
+## Related
+
+- [Bad Guys NFT](/learn-evm-attacks/cases/bad-guys-nft/) - Missing validation on mint allows claiming unlimited tokens
+- [Compound TUSD Integration](/learn-evm-attacks/cases/compound-tusd-integration/) - Faulty token integration in protocol functions
+- [Uranium](/learn-evm-attacks/cases/uranium/) - Business logic error in core protocol invariant

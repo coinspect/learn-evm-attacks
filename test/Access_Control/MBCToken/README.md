@@ -104,3 +104,9 @@ In the same transaction, they:
 ## Possible mitigations
 
 - `swapAndLiquifyStepv1` should be made private
+
+## Related
+
+- [Seaman](/learn-evm-attacks/cases/seaman/) - Same `swapAndLiquify` pattern exploited via price manipulation
+- [BVaults](/learn-evm-attacks/cases/bvaults/) - Price manipulation through public swap functions
+- [Sandbox Public Burn](/learn-evm-attacks/cases/sandbox-public-burn/) - Public function that should have been access-controlled

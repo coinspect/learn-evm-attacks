@@ -104,3 +104,9 @@ The attacker managed to swap an equivalent of ~309K USD.
 ## Possible mitigations
 
 Never rely on `isContract` or similar to check that an address will never be a contract across it's lifecycle.
+
+## Related
+
+- [Team Finance](/learn-evm-attacks/cases/team-finance/) - Exploiting migration processes with malicious token manipulation
+- [TempleDAO Spoof Old Staking Contract](/learn-evm-attacks/cases/templedao-spoof-old-staking-contract/) - Spoofing contracts in migration flows
+- [TornadoCash Governance Takeover](/learn-evm-attacks/cases/tornadocash-governance-takeover/) - Exploiting `create2` and contract deployment mechanics

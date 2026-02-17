@@ -102,3 +102,9 @@ Because the `mint` function is eventually called with the inflated amount, the a
 2. Always verify the output format of external data sources like price oracles to ensure their values are properly scaled before using them in calculations
 3. Pay close attention to decimal handling when performing operations involving tokens, ensuring that all calculations correctly account for the token's decimal precision
 4. Include unit tests that use mock tokens with varying decimals (e.g., 6, 8, 18) to catch conversion errors across different token standards
+
+## Related
+
+- [Uranium](/learn-evm-attacks/cases/uranium/) - Arithmetic error in core invariant constant
+- [Futureswap](/learn-evm-attacks/cases/futureswap/) - Unit mismatch in fee calculation drains protocol
+- [1inch Calldata Corruption](/learn-evm-attacks/cases/1inch-calldata-corruption/) - Arithmetic/encoding error in low-level code

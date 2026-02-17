@@ -60,3 +60,9 @@ The core issue originates from four.meme's contract [0x5c95](https://bscscan.com
 ## Possible mitigations
 
 To mitigate this attack, [four.meme](https://four.meme/) should have set appropriate `amount0Min` and `amount1Min` values when adding liquidity to the pool.
+
+## Related
+
+- [Seaman](/learn-evm-attacks/cases/seaman/) - Forcing contracts to trade at manipulated token prices on BSC
+- [BVaults](/learn-evm-attacks/cases/bvaults/) - Price manipulation through unprotected swap functions on BSC
+- [Cork Finance](/learn-evm-attacks/cases/cork-finance/) - Manipulating AMM pricing during pool initialization

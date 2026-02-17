@@ -67,3 +67,9 @@ Anyway, this update made the left hand side of the equation (which does `newX * 
 ## Possible mitigations
 
 Make sure invariants in the code are mantained correctly.
+
+## Related
+
+- [MobiusDAO](/learn-evm-attacks/cases/mobiusdao/) - Decimal precision error inflates token amounts
+- [Futureswap](/learn-evm-attacks/cases/futureswap/) - Unit mismatch in fee calculation drains protocol
+- [1inch Calldata Corruption](/learn-evm-attacks/cases/1inch-calldata-corruption/) - Arithmetic error in low-level assembly code

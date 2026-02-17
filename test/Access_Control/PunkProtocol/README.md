@@ -56,3 +56,9 @@ The attacker called `initialize` through the proxy and set their own `forge_` ad
 ## Possible mitigations
 
 - `initialize` functions should always be protected so they can be called only once
+
+## Related
+
+- [DAO maker](/learn-evm-attacks/cases/dao-maker/) - Unprotected `init` function allows attacker to become owner
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Uninitialized proxy implementation contract
+- [Arbitrum Inbox](/learn-evm-attacks/cases/arbitrum-inbox/) - Reinitialization after storage slot wipe during bridge upgrade

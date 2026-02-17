@@ -48,3 +48,9 @@ To calculate how many shares the user must receive. To exploit this, the attacke
 
 1. Use Time-Weighted price feeds or other reliable oracles to get the price of commodities instead of relying on a metric that can be manipulated with flash loans.
 2. Another strategy is to implement `slippage`, so the price of each share increase the more you buy.
+
+## Related
+
+- [BVaults](/learn-evm-attacks/cases/bvaults/) - Price manipulation through unprotected swap functions
+- [Polter Finance](/learn-evm-attacks/cases/polter-finance/) - Oracle price manipulation to drain lending protocol
+- [Onyx Protocol](/learn-evm-attacks/cases/onyx-protocol/) - Empty market manipulation to inflate collateral values

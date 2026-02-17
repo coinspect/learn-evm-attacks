@@ -124,3 +124,9 @@ Upgrading the implementation with a contract issuing `SELFDESTRUCT` would brick 
 - Be careful when implementing proxy upgradability
 - Make sure to implement secure authentication and authorization schemes
 - Test deploy conditions, like `contract should be initialized` and `should not be able to reinitialize contract`
+
+## Related
+
+- [Punk Protocol Re-initialize](/learn-evm-attacks/cases/punk-protocol-re-initialize/) - Unprotected `initialize` allows taking ownership of proxy
+- [Arbitrum Inbox](/learn-evm-attacks/cases/arbitrum-inbox/) - Reinitialization vulnerability in bridge upgrade process
+- [DAO maker](/learn-evm-attacks/cases/dao-maker/) - Unprotected initialization function enables fund theft

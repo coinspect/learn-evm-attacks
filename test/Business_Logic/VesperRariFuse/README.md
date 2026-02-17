@@ -60,3 +60,9 @@ The attacker was thus left with a lot of overprice `VUSD`, which they used to ta
 
 - Most likely, the solution to this is offchain. If managing a low-liquidity pool, it is advisable to run an arbitrers to protect against this kind of manipulations.
 - Setting the TWAP with a higher delay can also help smoothing the curve, but there's always a risk of going too far and not being able to react in time to natural price variations.
+
+## Related
+
+- [Onyx Protocol](/learn-evm-attacks/cases/onyx-protocol/) - Price manipulation in lending protocol via empty markets
+- [Polter Finance](/learn-evm-attacks/cases/polter-finance/) - Oracle manipulation to drain lending reserves
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Share price manipulation via reserve balance changes

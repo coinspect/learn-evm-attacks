@@ -71,3 +71,9 @@ Maybe more interesting than the exploit itself is how the vulnerability came to 
 - Be careful when wiping up slots.
 - Be careful when removing "useless" checks.
 - Test deploy conditions, like `should not be able to reinitialize contract`
+
+## Related
+
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Uninitialized proxy implementation in bridge contract
+- [Punk Protocol Re-initialize](/learn-evm-attacks/cases/punk-protocol-re-initialize/) - Unprotected `initialize` on proxy contract
+- [Nomad Bridge](/learn-evm-attacks/cases/nomad-bridge/) - Faulty initialization value enables arbitrary message processing
