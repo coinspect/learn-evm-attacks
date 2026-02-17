@@ -56,3 +56,9 @@ The attacker:
 ## Possible mitigations
 
 - The `setOracleData` had to be either `internal` or authenticated.
+
+## Related
+
+- [Sandbox Public Burn](/learn-evm-attacks/cases/sandbox-public-burn/) - Unprotected public function allows anyone to cause damage
+- [DAO maker](/learn-evm-attacks/cases/dao-maker/) - Missing access control on critical function
+- [Polter Finance](/learn-evm-attacks/cases/polter-finance/) - Oracle manipulation to drain lending protocol

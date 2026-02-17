@@ -48,3 +48,9 @@ quite trivial: the attacker just sends `from == owner`.
 ## Possible mitigations
 
 - Use `msg.sender` instead of the function parameter `from`
+
+## Related
+
+- [Rikkei Oracle Replace](/learn-evm-attacks/cases/rikkei-oracle-replace/) - Unprotected public function allows critical state changes
+- [MBC Token](/learn-evm-attacks/cases/mbc-token/) - Public function that should have been restricted
+- [Bad Guys NFT](/learn-evm-attacks/cases/bad-guys-nft/) - Insufficient input validation on user-supplied parameters

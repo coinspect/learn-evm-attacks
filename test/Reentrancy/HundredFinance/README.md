@@ -85,3 +85,9 @@ The attacked [CEther Token](https://gnosisscan.io/address/0x090a00A2De0EA83DEf70
 
 - Respect the checks-effects-interactions to prevent cross-function and single function reentrancy
 - Remember that only functions that use the reetrancy mutex of the contract that implements that modifier are protected. If different contracts declare distinct reentrancy modifiers, a cross reentrancy is still open.
+
+## Related
+
+- [Cream Finance](/learn-evm-attacks/cases/cream-finance/) - Same `borrowFresh` pattern with cross-contract reentrancy
+- [Fei Protocol](/learn-evm-attacks/cases/fei-protocol/) - Same pattern with cross-function reentrancy via `exitMarket`
+- [Paraluni](/learn-evm-attacks/cases/paraluni/) - Reentrancy through malicious token hooks

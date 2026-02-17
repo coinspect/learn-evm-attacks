@@ -136,3 +136,9 @@ For new markets should consider including and preserving the order of these step
 2. List market
 3. Mint cTokens
 4. Set CF to non-zero.
+
+## Related
+
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Share price manipulation via reserve balance changes
+- [Rari Fuse](/learn-evm-attacks/cases/rari-fuse/) - Price manipulation in lending protocol with low liquidity
+- [Polter Finance](/learn-evm-attacks/cases/polter-finance/) - Oracle manipulation to drain lending protocol reserves

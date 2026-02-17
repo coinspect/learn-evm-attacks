@@ -55,3 +55,9 @@ Luckily for the DAO, the attacker was a whitehack that later returned the funds.
 ## Possible mitigations
 
 -   Implement a whitelist of allowed tokens.
+
+## Related
+
+- [AnySwap Permit Attack](/learn-evm-attacks/cases/anyswap-permit-attack/) - Arbitrary token parameter to drain user funds
+- [Compound TUSD Integration](/learn-evm-attacks/cases/compound-tusd-integration/) - Token address validation bypass
+- [LyraDepositWrapper](/learn-evm-attacks/cases/lyradepositwrapper/) - Unvalidated address grants arbitrary token approvals

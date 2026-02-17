@@ -138,3 +138,10 @@ function swapWftmToBoo(uint256 _amountOut) internal {
 
 1. Implement decentralized oracles with multi-source price feeds to prevent price manipulation.
 2. Use TWAP oracles to protect against flash loan attacks and price volatility.
+
+## Related
+
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Share price manipulation via flash loans
+- [Onyx Protocol](/learn-evm-attacks/cases/onyx-protocol/) - Empty market manipulation in lending protocol
+- [Rari Fuse](/learn-evm-attacks/cases/rari-fuse/) - Low-liquidity oracle manipulation in lending
+- [Curve Pool Oracle](/learn-evm-attacks/cases/curve-pool-oracle/) - Oracle price manipulation during liquidity callbacks

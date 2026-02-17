@@ -111,3 +111,9 @@ The attacker managed to reenter the minting mechanism of the ERC-1155's with its
 
 - Respect the checks-effects-interactions security pattern by minting tokens lastly on the mint call
 - Evaluate if checks are needed before minting in order to guarantee that the system works as intended (e.g. no checks present in the mint function).
+
+## Related
+
+- [Paraluni](/learn-evm-attacks/cases/paraluni/) - Reentrancy through malicious token callbacks
+- [Fei Protocol](/learn-evm-attacks/cases/fei-protocol/) - Cross-function reentrancy in lending protocol
+- [Cream Finance](/learn-evm-attacks/cases/cream-finance/) - Reentrancy through token hooks bypassing per-contract mutex

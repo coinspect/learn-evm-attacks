@@ -218,3 +218,9 @@ victim.uniswapV3SwapCallback(
 
 1. Use separate transient storage slots for different values. Don’t store both the pool address and the minted amount in the same slot.
 2. Clear transient storage manually after performing critical checks, to avoid unintended reuse later in the transaction.
+
+## Related
+
+- [Cork Finance](/learn-evm-attacks/cases/cork-finance/) - Exploiting hook/callback mechanisms for unauthorized fund access
+- [Furucombo](/learn-evm-attacks/cases/furucombo/) - Hijacking execution context through proxy interactions
+- [Earning Farm](/learn-evm-attacks/cases/earning-farm/) - Bypassing authorization through flash loan callback manipulation

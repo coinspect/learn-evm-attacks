@@ -78,3 +78,9 @@ Then it is just a matter of findings victims.
 
 - Implement a whitelist of allowed tokens.
 - Avoid asking users to sign unlimited `allowances`.
+
+## Related
+
+- [Bond Olympus DAO](/learn-evm-attacks/cases/bond-olympus-dao/) - Arbitrary token parameter allows draining approved funds
+- [LyraDepositWrapper](/learn-evm-attacks/cases/lyradepositwrapper/) - Unvalidated address parameter grants arbitrary approvals
+- [Compound TUSD Integration](/learn-evm-attacks/cases/compound-tusd-integration/) - Token address validation bypass through dual-contract tokens

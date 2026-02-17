@@ -80,3 +80,9 @@ sources:
 - Ensure that the tokens addresses provided match the addresses from the targeted pool or check if they are whitelisted.
 - Use a reentrancy mutex if arbitrary tokens are meant to be handled.
 - Review the checks-effects-interactions pattern and evaluate the steps at which tokens flow in and out the contract.
+
+## Related
+
+- [Hundred Finance](/learn-evm-attacks/cases/hundred-finance/) - Reentrancy via token hooks in lending protocol
+- [Revest Finance](/learn-evm-attacks/cases/revest-finance/) - Reentrancy through ERC-1155 mint callbacks
+- [Team Finance](/learn-evm-attacks/cases/team-finance/) - Exploiting protocols through malicious token contracts

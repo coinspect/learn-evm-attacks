@@ -96,3 +96,9 @@ At this point, you only need to know that QiDAO is a lending platform which used
 - Ensure that the tokens addresses provided match the addresses from the targeted pool or check if they are whitelisted.
 - Use a reentrancy mutex if arbitrary tokens are meant to be handled.
 - Review the checks-effects-interactions pattern and evaluate the steps at which tokens flow in and out the contract.
+
+## Related
+
+- [Polter Finance](/learn-evm-attacks/cases/polter-finance/) - Oracle price manipulation to drain lending reserves
+- [One Ring Finance](/learn-evm-attacks/cases/one-ring-finance/) - Manipulating price feeds via reserve balance changes
+- [DFX Finance](/learn-evm-attacks/cases/dfx-finance/) - Reentrancy exploiting balance-based validation checks

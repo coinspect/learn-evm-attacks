@@ -209,3 +209,9 @@ Implement overflow checks on pointer arithmetic in Yul assembly to prevent under
 ### 3. Resolver Self-Validation
 
 Resolver contracts should verify the `resolver` parameter matches their own address, not just trust the Settlement caller.
+
+## Related
+
+- [Uranium](/learn-evm-attacks/cases/uranium/) - Arithmetic error in core AMM invariant calculation
+- [MobiusDAO](/learn-evm-attacks/cases/mobiusdao/) - Decimal precision error inflates minted amounts
+- [SIR Trading](/learn-evm-attacks/cases/sir-trading/) - Exploiting low-level EVM features (transient storage) for unauthorized access

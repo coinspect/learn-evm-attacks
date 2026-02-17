@@ -90,3 +90,9 @@ The final step was a simple `transferFrom` call to drain the $1 million that the
 - **Validating Inputs:** Implement strict checks to validate the `socketVault` and token addresses are trusted, and require `amount > 0`. This prevents both arbitrary approval targets and the zero-amount bypass.
 
 - **Use Scoped Approvals**: Replace infinite approvals with approvals for only the specific amount being deposited or reset to zero at the end of the call.
+
+## Related
+
+- [AnySwap Permit Attack](/learn-evm-attacks/cases/anyswap-permit-attack/) - Arbitrary token parameter enables draining user-approved funds
+- [Bond Olympus DAO](/learn-evm-attacks/cases/bond-olympus-dao/) - Unvalidated token parameter in redemption function
+- [Nomad Bridge](/learn-evm-attacks/cases/nomad-bridge/) - Bridge validation failure allows processing arbitrary messages

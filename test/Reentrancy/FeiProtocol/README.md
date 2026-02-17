@@ -91,3 +91,9 @@ The mentioned function performs the transfer via `doTransferOut()` before updati
 
 - Respect the checks-effects-interactions to prevent cross-function and single function reentrancy
 - Remember that only functions that use the reetrancy mutex of the contract that implements that modifier are protected. If different contracts declare distinct reentrancy modifiers, a cross reentrancy is still open.
+
+## Related
+
+- [Cream Finance](/learn-evm-attacks/cases/cream-finance/) - Same `borrowFresh` / `doTransferOut` reentrancy in lending
+- [Hundred Finance](/learn-evm-attacks/cases/hundred-finance/) - Same pattern exploited via ERC667 token hooks
+- [Revest Finance](/learn-evm-attacks/cases/revest-finance/) - Reentrancy through ERC-1155 mint callbacks

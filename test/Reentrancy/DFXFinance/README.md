@@ -60,3 +60,9 @@ Because the balance checked after executing the flashloan callback was satisfied
 
 - Use reentrancy protection for flashloans
 - Check if the flashloan key checks could be manipuladed by side-entering the contract and if so, evaluate its impact. Whenever a risk arises, add a reentrancy mutex to the vulnerable functions and to the flashLoan itself.
+
+## Related
+
+- [Cream Finance](/learn-evm-attacks/cases/cream-finance/) - Reentrancy through token hooks in lending protocol
+- [Earning Farm](/learn-evm-attacks/cases/earning-farm/) - Flash loan callback bypass to drain protocol funds
+- [Curve Pool Oracle](/learn-evm-attacks/cases/curve-pool-oracle/) - Reentrancy exploiting balance checks during callbacks

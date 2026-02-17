@@ -111,3 +111,9 @@ Because the update set `confirmAt[0x00]` at `1`, this will end up giving `true` 
 ## Possible mitigations
 
 - Make sure that initializers uphold invariants. In this case, a `require(_committedRoot != 0)` would have prevented the attack.
+
+## Related
+
+- [Arbitrum Inbox](/learn-evm-attacks/cases/arbitrum-inbox/) - Initialization issue in bridge allowing reinitialization
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Bridge vulnerability through uninitialized contracts
+- [Polynetwork Bridge](/learn-evm-attacks/cases/polynetwork-bridge/) - Cross-chain bridge exploit via validation bypass

@@ -43,3 +43,9 @@ The attacker got control of the keys doing a social-engineer attack. Once they h
 ## Possible mitigations
 
 - Multisigs do not matter if in practice several keys are controlled by the same entity. Distribute keys to independent entities to actually enforce that several entities must agree with a transaction before executing it.
+
+## Related
+
+- [Wormhole Bridge](/learn-evm-attacks/cases/wormhole-bridge/) - Bridge vulnerability through uninitialized guardian set
+- [Polynetwork Bridge](/learn-evm-attacks/cases/polynetwork-bridge/) - Hijacking bridge validator roles via sighash collision
+- [Nomad Bridge](/learn-evm-attacks/cases/nomad-bridge/) - Bridge message validation bypass through faulty initialization

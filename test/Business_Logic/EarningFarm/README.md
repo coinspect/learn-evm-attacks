@@ -166,3 +166,9 @@ There are several things that could be improved here.
 ```
 
 3. (2) does not completely solve the problem, but at least makes it non-profitable to an attacker. It still is possible for an attacker to force the contract to recover collateral.
+
+## Related
+
+- [DFX Finance](/learn-evm-attacks/cases/dfx-finance/) - Exploiting flash loan callbacks to manipulate balance checks
+- [SIR Trading](/learn-evm-attacks/cases/sir-trading/) - Bypassing authorization through callback manipulation
+- [Cream Finance](/learn-evm-attacks/cases/cream-finance/) - Exploiting lending protocol token transfer hooks
