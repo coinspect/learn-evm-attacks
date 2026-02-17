@@ -1,0 +1,22 @@
+name: Validate README's Frontmatter inside Test folder
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "test/**/README.md"
+      - ".github/readme-schema.js"
+      - ".github/validate-readmes.js"
+  pull_request:
+    branches: [master]
+    paths:
+      - "test/**/README.md"
+      - ".github/readme-schema.js"
+      - ".github/validate-readmes.js"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node .github/validate-readmes.js
