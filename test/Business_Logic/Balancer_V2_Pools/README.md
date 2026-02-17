@@ -1,107 +1,110 @@
-# Balancer V2 Rate Manipulation Attack Reproduction
+---
+title: Balancer V2 Stable Pools Rate Manipulation
+description: Rounding inconsistency in stable invariant calculation deflates BPT price via crafted batchSwap sequence
+type: Exploit
+network: [ethereum]
+date: 2025-11-03
+loss_usd: 128000000
+returned_usd: 0
+tags: [business logic]
+subcategory: [Rate Manipulation]
+vulnerable_contracts:
+  - "0xDACf5Fa19b1f720111609043ac67A9818262850c"
+  - "0x93d199263632a4EF4Bb438F1feB99e57b4b5f0BD"
+  - "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+tokens_lost:
+  - WETH
+  - osETH
+  - wstETH
+attacker_addresses: [0x506D1f9EFe24f0d47853aDca907EB8d89AE03207]
+attack_block: [23717397]
+reproduction_command: forge test --match-contract Exploit_Balancer_V2_Pools -vvv
+attack_txs:
+  - "0x6ed07db1a9fe5c0794d44cd36081d6a6df103fab868cdd75d581e3bd23bc9742"
+  - "0xd155207261712c35fa3d472ed1e51bfcd816e616dd4f517fa5959836f5b48569"
+sources:
+  - title: Balancer V2 Stable Pools Exploit — Rate Manipulation (Coinspect)
+    url: https://www.coinspect.com/blog/balancer-rate-manipulation-exploit/
+---
+
+# Balancer V2 Stable Pools Rate Manipulation
 
 ## Attack Overview
-On November 3, 2025, Balancer V2 suffered a $116M+ exploit through rate manipulation of stable pools.
 
-## How The Attack Works
+On November 3, 2025, an attacker manipulated exchange rates in Balancer V2 Composable Stable Pools by issuing a long, alternating batchSwap sequence that exploited rounding inconsistencies in the stable invariant calculation. The attack deflated the invariant D, reducing the implied BPT price and allowing the attacker to extract value through arbitrage. Stolen funds exceeded USD 128 million. The incident affected Composable Stable Pools across Ethereum, Base, Avalanche, Gnosis, Polygon, Arbitrum, and Optimism. Balancer V3 and other pool types were unaffected.
 
-### 1. **Core Vulnerability: Division by Zero Exploitation**
+## Root Cause
 
-The attacker intentionally triggers `BAL#004` (ZERO_DIVISION) errors in Balancer's math library:
+The vulnerability stems from a rounding inconsistency between scaling operations:
 
-```solidity
-// In Balancer's divDown function:
-function divDown(uint256 a, uint256 b) internal pure returns (uint256) {
-    _require(b != 0, Errors.ZERO_DIVISION); // BAL#004
-    return a / b;
-}
-```
+- **Upscaling**: Uses unidirectional rounding (always rounds down via `mulDown`)
+- **Downscaling**: Uses bidirectional rounding (`divUp` or `divDown` depending on context)
 
-### 2. **The Exploit Technique**
+This violates the principle that rounding should always favor the protocol. In `GIVEN_OUT` swaps, `_upscale()` incorrectly rounds down the output amount, leading to underestimation of the required input.
 
-From the decompiled `SC2_decompiled.sol`, we can see the attacker creates a zero denominator:
+The stable invariant calculation compounds the error through repeated `divDown` operations:
 
 ```solidity
-// Lines 221-224: Intentionally creates zero
-uint256 denominator = _sub(
-    _add(virtualBalance, feeAdjustedWeight),
-    _add(virtualBalance, feeAdjustedWeight)  // Same value!
-);
-// Result: denominator = X - X = 0
+// StableMath.sol - Invariant calculation with divDown
+D_P = Math.divDown(Math.mul(D_P, invariant), Math.mul(balances[j], numTokens));
+invariant = Math.divDown(...);  // Multiple divDown operations compound precision loss
 ```
 
-### 3. **Binary Search Using Reverts as Feedback**
+Because BPT price scales with `D / totalSupply`, a lower D yields a lower implied BPT price than the balances warrant. Mixed token decimals amplify the precision loss. The batchSwap's deferred settlement allows maintaining manipulated balances within a single call, bypassing minimum pool supply limits.
 
-The attacker uses BAL#004 reverts as **feedback in a binary search algorithm** to find optimal manipulation parameters:
+## Attack Method
 
-1. **Binary Search Algorithm**:
-   - Start with a range of possible manipulation values
-   - Try midpoint value
-   - **If it reverts (BAL#004)**: Value is too high, search lower half
-   - **If it succeeds**: Value is too low, search upper half
-   - Converge on the exact threshold that maximizes manipulation
+The attack used a two-stage approach with two deployed contracts:
 
-2. **The ~30% Revert Rate Explained**:
-   - Not random - it's the natural result of binary search convergence
-   - Early iterations: Wide search with ~50% reverts
-   - Middle iterations: Narrowing down with varying revert rates
-   - Late iterations: Oscillating around optimal value (~30% reverts)
+- **SC1 — Coordinator** (`0x54b53...a30d`): Orchestrates the attack. Reads `getPoolTokens`, identifies indices (BPT, WETH, other), runs parameter probes, builds `BatchSwapStep[]`, submits `batchSwap`, and later calls `manageUserBalance` to extract value.
+- **SC2 — Math Helper** (`0x679b3...381e`): Computes stable-invariant-related expressions over scaled balances. Edge inputs drive denominators toward zero; reverts such as `BAL#004` (division by zero) mark boundaries.
 
-3. **Each Iteration**:
-   - **Success**: Manipulation progresses, rounding errors introduced
-   - **BAL#004 Revert**: Provides feedback AND forces recalculation
-   - Both outcomes advance the attack!
+### Stage 1 — Boundary Search (Parameter Calculation)
 
-4. **Compound Effect**:
-   - After 150+ iterations, the attacker has found the optimal manipulation value
-   - Pool 1: Rate increases from 1.027 → 20.189 (+1,864%)
-   - Pool 2: Rate increases from 1.051 → 3.887 (+270%)
+SC1 performed a binary search using on-chain feedback from SC2:
+- Iterate over candidate inputs (balance deltas, scaling/amount values)
+- When SC2 completes: keep the candidate (safe region)
+- When SC2 reverts with `BAL#004`: treat as boundary signal and adjust
+- This converges on values where rounding effects are largest
+
+### Stage 2 — Rate Manipulation (Batch Swap)
+
+Using the tuned candidates, SC1 constructed a single `batchSwap` with three operation types in an alternating 4-leg block pattern:
+1. **Setup**: Swap BPT for underlying assets to position tokens at rounding boundaries
+2. **Manipulation**: Execute calculated swaps that trigger precision loss, deflating D
+3. **Profit setup**: Reverse-swap underlying assets back to BPT at the manipulated rate
+
+### Stage 3 — Value Extraction (Separate Transaction)
+
+With internal balances credited from the first transaction, SC1 invoked `manageUserBalance(WITHDRAW_INTERNAL)` for each asset, then transferred tokens to the attacker EOA.
+
+## Observed Effects
+
+Two pools showed large rate movements between BPT and underlying tokens:
+
+| Pool | Before | After | Change |
+|------|--------|-------|--------|
+| osETH/WETH-BPT (`0xDACf5...850c`) | ~1.027e18 | ~20.189e18 | +1,864% |
+| wstETH/WETH-BPT (`0x93d19...f0BD`) | ~1.051e18 | ~3.887e18 | +270% |
 
 ## Files in This Reproduction
 
-- `AttackCoordinator.sol` - Main orchestrator (SC1)
-- `BalancerExploitMath.sol` - Mathematical exploit contract (SC2)
-- `Balancer_V2_Pools.attack.sol` - Test harness
-- `Interfaces.sol` - Required interfaces
-- `SC1_decompiled.sol` - Decompiled attacker coordinator
-- `SC2_decompiled.sol` - Decompiled exploit math contract
-
-## Key Addresses
-
-**Pools Attacked**:
-- osETH/WETH-BPT: `0xDACf5Fa19b1f720111609043ac67A9818262850c`
-- wstETH/WETH-BPT: `0x93d199263632a4EF4Bb438F1feB99e57b4b5f0BD`
-
-**Balancer Vault**: `0xBA12222222228d8Ba445958a75a0704d566BF2C8`
-
-**Attack Transactions**:
-- Manipulation: `0x6ed07db1a9fe5c0794d44cd36081d6a6df103fab868cdd75d581e3bd23bc9742`
-- Extraction: `0xd155207261712c35fa3d472ed1e51bfcd816e616dd4f517fa5959836f5b48569`
+- `AttackCoordinator.sol` — Main orchestrator (SC1)
+- `BalancerExploitMath.sol` — Mathematical exploit contract (SC2)
+- `Balancer_V2_Pools.attack.sol` — Test harness
+- `Interfaces.sol` — Required interfaces
+- `SC1_decompiled.sol` — Decompiled attacker coordinator
+- `SC2_decompiled.sol` — Decompiled exploit math contract
 
 ## Running the Test
 
 ```bash
-# Run with verbose output
 forge test --match-contract Exploit_Balancer_V2_Pools -vvv
-
-# Run with mainnet fork at specific block
-forge test --match-contract Exploit_Balancer_V2_Pools --fork-url $RPC_URL --fork-block-number 21344999 -vvv
 ```
 
-## Common Issues
-
-### BAL#510 Error
-This error occurs when batch swap parameters are invalid. Ensure:
-- Token indices are correct
-- Pool ID matches the pool
-- Assets array includes all tokens involved
-- Limits are properly set
-
-### BAL#004 (Expected)
-This is the intentional division by zero that's part of the attack. ~30% of manipulation calls should trigger this.
-
 ## Mitigation
-- Implement checks to prevent division by zero in rate calculations
-- Add time-weighted average price (TWAP) mechanisms
-- Limit the frequency of rate updates
-- Add bounds checking on rate changes
+
+- Enforce consistent protocol-favoring rounding directions across all scaling operations
+- Ensure `_upscale()` rounds in the correct direction for `GIVEN_OUT` swaps
+- Add bounds checking on invariant D changes between operations
+- Limit cumulative rounding drift within a single batchSwap call
