@@ -14,7 +14,7 @@ The attacker initialized a malicious contract spoofing as a new implementation o
 previously gave allowance to Furucombo.
 
 // Attack Overview
-Total Lost: 
+Total Lost:
 3,9k stETH
 2.4M USDC
 649k USDT
@@ -49,7 +49,7 @@ https://tx.eth.samczsun.com/ethereum/0x8bf64bd802d039d03c63bf3614afc042f345e158e
 Exploited Contract: https://etherscan.io/address/0x17e8Ca1b4798B97602895f63206afCd1Fc90Ca5f
 Attacker Address: https://etherscan.io/address/0xb624e2b10b84a41687caec94bdd484e48d76b212
 Attacker Contract: https://etherscan.io/address/0x86765dde9304bEa32f65330d266155c4fA0C4F04
-Attack Block: 11940500 
+Attack Block: 11940500
 
 // Key Info Sources
 Twitter: https://twitter.com/furucombo/status/1365743633605959681
@@ -64,9 +64,9 @@ ATTACK:
 The attacker detected a non initialized proxy implementation and deceived Furucombo's Proxy to interpret that
 the implementaiton of AaveV2 proxy was modified. This was
 also possible because the non initialized proxy was already included into the whitelisted contracts. A
-malicious implementation was passed instead (being the attacker's contract) 
+malicious implementation was passed instead (being the attacker's contract)
 that performed a transferFrom the users who gave approval to Furucombo. Because the calls were triggered by a
-delegation chain, the sender of the transferFrom was 
+delegation chain, the sender of the transferFrom was
 Fucucombo (the approved) executing the logic of the malicious contract.
 
 MITIGATIONS:

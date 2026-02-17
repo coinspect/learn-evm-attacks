@@ -130,7 +130,10 @@ contract Exploit_Onyx_Protocol is TestHarness, TokenBalanceTracker {
         uint256 premium,
         address, /* initiator */
         bytes calldata /* params */
-    ) external returns (bool) {
+    )
+        external
+        returns (bool)
+    {
         logBalancesWithLabel("Attacker contract", address(this));
         approveAll();
         // Calculate reserve in Uniswap for pair PEPE/WETH

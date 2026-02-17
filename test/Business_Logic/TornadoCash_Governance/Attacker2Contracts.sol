@@ -88,7 +88,7 @@ contract ReinitializableContractFactory is Ownable {
                             address(this), // this contract will be the caller.
                             salt, // pass in the supplied salt value.
                             keccak256(type(TransientContract).creationCode) // init
-                                // code hash.
+                            // code hash.
                         )
                     )
                 )

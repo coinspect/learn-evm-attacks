@@ -18,7 +18,7 @@ The attacker (which is suspected to be a rugpuller) drained swap pools because a
 constant product in the swap function.
 
 // Attack Overview
-Total Lost: 
+Total Lost:
 - 34k WBNB ($18M)
 - 17.9M BUSD ($17.9M)
 - 1.8k ETH ($4.7M)
@@ -44,7 +44,7 @@ Code: https://bscscan.com/address/0xA08c4571b395f81fBd3755d44eaf9a25C9399a4a#cod
 
 
 Principle: Constant Product not respected
-    
+
     function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external lock {
         ...
 
@@ -61,10 +61,10 @@ K');
 
 ATTACK:
 The contract implementation modified the multiplied amount from 1_000 to 10_000 breaking the constant product
-check (x * y = k) (10_000 * 10_000 = 100MM instead of 1MM). Because of this, the balance0 
+check (x * y = k) (10_000 * 10_000 = 100MM instead of 1MM). Because of this, the balance0
 and/or the balance1 could be significantly smaller yet swap 100 times more. It is worth noting that the
 codebase was updated and the only modification introduced was the bug shown. The code before was:
-        
+
         ...
         uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(16));
         uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(16));

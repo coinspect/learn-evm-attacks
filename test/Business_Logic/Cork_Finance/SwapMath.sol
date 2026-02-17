@@ -158,11 +158,7 @@ library SwapMath {
     }
 
     /// @notice calculate percentage of an amount = amount * percentage / 100
-    function _calculatePercentage(UD60x18 amount, UD60x18 percentage)
-        internal
-        pure
-        returns (UD60x18 result)
-    {
+    function _calculatePercentage(UD60x18 amount, UD60x18 percentage) internal pure returns (UD60x18 result) {
         result = div(mul(amount, percentage), convert(100));
     }
 

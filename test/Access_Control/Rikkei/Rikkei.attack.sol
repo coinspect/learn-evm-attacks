@@ -62,7 +62,7 @@ contract Exploit_Rikkei is TestHarness, TokenBalanceTracker {
 
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 16_956_473); // We pin one block before the exploit
-            // happened.
+        // happened.
 
         // The attacker contract started with some BNBs.
         // cheat.deal(address(this), attackerContract.balance);

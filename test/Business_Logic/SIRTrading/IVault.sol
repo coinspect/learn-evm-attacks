@@ -8,7 +8,8 @@ interface IVault {
         int8 leverageTier;
     }
 
-    /** Collateral owned by the apes and LPers in a vault
+    /**
+     * Collateral owned by the apes and LPers in a vault
      */
     struct Reserves {
         uint144 reserveApes;
@@ -16,24 +17,28 @@ interface IVault {
         int64 tickPriceX42;
     }
 
-    /** Data needed for recoverying the amount of collateral owned by the apes and LPers in a vault
+    /**
+     * Data needed for recoverying the amount of collateral owned by the apes and LPers in a vault
      */
     struct VaultState {
         uint144 reserve; // reserve =  reserveApes + reserveLPers
-        /** Price at the border of the power and saturation zone.
-            Q21.42 - Fixed point number with 42 bits of precision after the comma.
-            type(int64).max and type(int64).min are used to represent +∞ and -∞ respectively.
+        /**
+         * Price at the border of the power and saturation zone.
+         *     Q21.42 - Fixed point number with 42 bits of precision after the comma.
+         *     type(int64).max and type(int64).min are used to represent +∞ and -∞ respectively.
          */
         int64 tickPriceSatX42; // Saturation price in Q21.42 fixed point
         uint48 vaultId; // Allows the creation of approximately 281 trillion vaults
     }
 
-    /** The sum of all amounts in Fees are equal to the amounts deposited by the user (in the case of a mint)
-        or taken out by the user (in the case of a burn).
-        collateralInOrWithdrawn: Amount of collateral deposited by the user (in the case of a mint) or taken out by the user (in the case of a burn).
-        collateralFeeToStakers: Amount of collateral paid to the stakers.
-        collateralFeeToLPers: Amount of collateral paid to the gentlemen.
-        collateralFeeToProtocol: Amount of collateral paid to the protocol.
+    /**
+     * The sum of all amounts in Fees are equal to the amounts deposited by the user (in the case of a mint)
+     *     or taken out by the user (in the case of a burn).
+     *     collateralInOrWithdrawn: Amount of collateral deposited by the user (in the case of a mint) or
+     * taken out by the user (in the case of a burn).
+     *     collateralFeeToStakers: Amount of collateral paid to the stakers.
+     *     collateralFeeToLPers: Amount of collateral paid to the gentlemen.
+     *     collateralFeeToProtocol: Amount of collateral paid to the protocol.
      */
     struct Fees {
         uint144 collateralInOrWithdrawn;
@@ -49,20 +54,27 @@ interface IVault {
 
     /**
      * @notice Function for minting APE or TEA, the protocol's synthetic tokens.\n
-     * You can mint by depositing collateral token or debt token dependening by setting collateralToDepositMin to 0 or not, respectively.\n
-     * You have the option to mint with vanilla ETH when the token is WETH by simply sending ETH with the call. In this case, amountToDeposit is ignored.
+     * You can mint by depositing collateral token or debt token dependening by setting collateralToDepositMin
+     * to 0 or not, respectively.\n
+     * You have the option to mint with vanilla ETH when the token is WETH by simply sending ETH with the
+     * call. In this case, amountToDeposit is ignored.
      * @dev When minting APE, the user will give away a portion of his deposited collateral to the LPers.\n
-     * When minting TEA, the user will give away a portion of his deposited collateral to protocol owned liquidity.
+     * When minting TEA, the user will give away a portion of his deposited collateral to protocol owned
+     * liquidity.
      * @param isAPE If true, mint APE. If false, mint TEA
-     * @param vaultParams The 3 parameters identifying a vault: collateral token, debt token, and leverage tier.
-     * @param amountToDeposit Collateral amount to deposit if collateralToDepositMin == 0, debt token to deposit if collateralToDepositMin > 0
-     * @param collateralToDepositMin Ignored when minting with collateral token, otherwise it specifies the minimum amount of collateral to receive from Uniswap when swapping the debt token.
+     * @param vaultParams The 3 parameters identifying a vault: collateral token, debt token, and leverage
+     * tier.
+     * @param amountToDeposit Collateral amount to deposit if collateralToDepositMin == 0, debt token to
+     * deposit if collateralToDepositMin > 0
+     * @param collateralToDepositMin Ignored when minting with collateral token, otherwise it specifies the
+     * minimum amount of collateral to receive from Uniswap when swapping the debt token.
      * @return amount of tokens TEA/APE obtained
      */
     function mint(
         bool isAPE,
         VaultParameters memory vaultParams,
-        uint256 amountToDeposit, // Collateral amount to deposit if collateralToDepositMin == 0, debt token to deposit if collateralToDepositMin > 0
+        uint256 amountToDeposit, // Collateral amount to deposit if collateralToDepositMin == 0, debt token to
+        // deposit if collateralToDepositMin > 0
         uint144 collateralToDepositMin
     ) external payable returns (uint256 amount);
 

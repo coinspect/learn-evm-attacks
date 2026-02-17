@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Configuration block number
-LONDON_BLOCK=12965000  
+LONDON_BLOCK=12965000
 PARIS_BLOCK=15537394
 SHANGHAI_BLOCK=17034870
 CANCUN_BLOCK=19426587
@@ -13,51 +13,24 @@ export PATH="$PATH:$HOME/.foundry/bin"
 # Required: which exploit contract to run
 : "${LEARN_ATTACK_CONTRACT:?Missing LEARN_ATTACK_CONTRACT}"
 
-# Prompt for RPC_URL if missing, with feedback + persistence
-if [[ -z "${RPC_URL:-}" ]]; then
-  echo
-  echo "No RPC_URL found."
-  echo "You need an HTTPS RPC endpoint for the correct chain (e.g., Ethereum Mainnet or Sepolia)."
-  echo "Get one by creating a free project at providers like:"
-  echo "  • Alchemy  • Infura  • Ankr  • QuickNode  • Cloudflare/LlamaNodes"
-  echo "Then copy the HTTPS URL for your network (e.g., https://eth-sepolia.g.alchemy.com/v2/<key>)."
-  echo
-
-  while true; do
-    read -r -p "Enter RPC_URL: " RPC_URL_INPUT
-    if [[ -z "$RPC_URL_INPUT" ]]; then
-      echo "Empty. Try again."; continue
-    fi
-    if [[ ! "$RPC_URL_INPUT" =~ ^https?:// ]]; then
-      echo "Warning: value does not look like an http(s) URL"
-    fi
-    
-    # Export for this session and persist for future shells
-    export RPC_URL="$RPC_URL_INPUT"
-    sed -i '/^export RPC_URL=/d' "$HOME/.bashrc"
-    printf 'export RPC_URL="%s"\n' "$RPC_URL_INPUT" >> "$HOME/.bashrc"
-    echo "RPC_URL saved."
-    break
-  done
-else
-  echo "Using saved RPC_URL (…${RPC_URL: -6})"
-fi
-
-# Initialize empty - will only be set for Ethereum
+# ── Find attack file and extract fork block ──────────────────
+ATTACK_FILE_PATH=$(grep -rl --include="*.sol" "contract ${LEARN_ATTACK_CONTRACT}\b" ./test | head -n 1)
+FORK_BLOCK=""
 EVM_VERSION_FLAG=""
 
-ATTACK_FILE_PATH=$(grep -rl "contract ${LEARN_ATTACK_CONTRACT}\b" ./test | head -n 1)
 if [ -n "$ATTACK_FILE_PATH" ]; then
+    # Extract block number from createSelectFork call (strip Solidity underscores)
+    FORK_BLOCK=$(grep -oP 'createSelectFork\([^,]+,\s*\K[\d_]+' "$ATTACK_FILE_PATH" | tr -d '_' | head -n 1 || true)
+
     TEST_DIR=$(dirname "$ATTACK_FILE_PATH")
     README_PATH="${TEST_DIR}/README.md"
-    
+
     if [ -f "$README_PATH" ]; then
         # Check if network is Ethereum
-        if grep -q 'network:' "$README_PATH" && grep 'network:' "$README_PATH" | grep -q 'ethereum'; then
+        if grep -q 'network:' "$README_PATH" && grep 'network:' "$README_PATH" | grep -qi 'ethereum'; then
             # Only calculate EVM version for Ethereum
-            ATTACK_BLOCK=$(grep -A 2 'attack_block:' "$README_PATH" | grep -o '[0-9]\+' | head -n 1 || true)
-            ATTACK_BLOCK=${ATTACK_BLOCK:-0}
-            
+            ATTACK_BLOCK=${FORK_BLOCK:-0}
+
             if [ -n "$ATTACK_BLOCK" ] && [ "$ATTACK_BLOCK" -gt 0 ]; then
                 if (( ATTACK_BLOCK < LONDON_BLOCK )); then EVM_VERSION="berlin";
                 elif (( ATTACK_BLOCK < PARIS_BLOCK )); then EVM_VERSION="london";
@@ -65,7 +38,7 @@ if [ -n "$ATTACK_FILE_PATH" ]; then
                 elif (( ATTACK_BLOCK < CANCUN_BLOCK )); then EVM_VERSION="shanghai";
                 elif (( ATTACK_BLOCK < PETRA_BLOCK )); then EVM_VERSION="cancun";
                 else EVM_VERSION="prague"; fi
-                
+
                 EVM_VERSION_FLAG="--evm-version $EVM_VERSION"
                 echo "Using EVM Version: $EVM_VERSION (Ethereum block $ATTACK_BLOCK)"
             fi
@@ -77,15 +50,92 @@ if [ -n "$ATTACK_FILE_PATH" ]; then
     fi
 fi
 
+if [ -z "$FORK_BLOCK" ]; then
+    echo "WARNING: Could not extract fork block from $ATTACK_FILE_PATH"
+    echo "The RPC proxy requires FORK_BLOCK to serve the correct chain metadata."
+    exit 1
+fi
+
+# Resolve chain ID from rpc_cache/blocks/<chainId>/<block>/ directory
+CHAIN_ID=""
+for chain_dir in rpc_cache/blocks/*/; do
+  if [ -d "${chain_dir}${FORK_BLOCK}" ]; then
+    CHAIN_ID=$(basename "$chain_dir")
+    break
+  fi
+done
+
+if [ -z "$CHAIN_ID" ]; then
+    echo "ERROR: No rpc_cache/blocks/<chainId>/$FORK_BLOCK/ directory found."
+    echo "Run warm_all.sh first to populate the cache."
+    exit 1
+fi
+
+echo "Fork block: $FORK_BLOCK (chain $CHAIN_ID)"
+
+# ── Start the RPC proxy ──────────────────────────────────────
+# Kill any existing proxy
+pkill -f "node scripts/mock_rpc_proxy.js" 2>/dev/null || true
+
+FORK_BLOCK="$FORK_BLOCK" CHAIN_ID="$CHAIN_ID" node scripts/mock_rpc_proxy.js &
+PROXY_PID=$!
+trap "kill $PROXY_PID 2>/dev/null || true" EXIT
+
+# Wait for proxy to be ready (up to 10s)
+echo "Waiting for RPC proxy..."
+
+for i in $(seq 1 10); do
+  if curl -s localhost:8546 -X POST -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}' > /dev/null 2>&1; then
+    break
+  fi
+  if [ "$i" -eq 10 ]; then
+    echo "ERROR: RPC proxy failed to start within 10s"
+    exit 1
+  fi
+  sleep 1
+done
+
+echo "RPC proxy running on :8546"
+export RPC_URL="http://localhost:8546"
+
+echo "Running reproduction using RPC cache."
+
 printf "\n▶ Running exploit: %s\n\n" "$LEARN_ATTACK_CONTRACT"
 
 # Run with or without --evm-version flag
-if [ -n "$EVM_VERSION_FLAG" ]; then
-    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv $EVM_VERSION_FLAG
+run_forge() {
+    if [ -n "$EVM_VERSION_FLAG" ]; then
+        forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv $EVM_VERSION_FLAG
+    else
+        forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv
+    fi
+}
+
+if run_forge; then
+    echo
+    echo "✅ Done. Opening interactive shell..."
 else
-    forge test --match-contract "$LEARN_ATTACK_CONTRACT" -vvv
+    echo
+    echo "❌ Cached RPC run failed."
+    echo "You can re-run with a live RPC endpoint."
+    printf "Paste your RPC URL (or press Enter to skip): "
+    read -r USER_RPC
+    if [ -n "$USER_RPC" ]; then
+        # Kill the cache proxy
+        kill $PROXY_PID 2>/dev/null || true
+        export RPC_URL="$USER_RPC"
+        # Mask API key in output (show only host + first 4 chars of path/key)
+        MASKED_RPC=$(echo "$USER_RPC" | sed -E 's|(https?://[^/]+/)(.{4}).*|\1\2…|')
+        printf "\n▶ Re-running with live RPC: %s\n\n" "$MASKED_RPC"
+        if run_forge; then
+            echo
+            echo "✅ Done. Opening interactive shell..."
+        else
+            echo
+            echo "❌ Run failed again. Opening interactive shell..."
+        fi
+    fi
 fi
 
-echo
-echo "✅ Done. Opening interactive shell..."
 exec bash -l

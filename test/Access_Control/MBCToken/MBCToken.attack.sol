@@ -10,8 +10,7 @@ import {IWETH9} from "../../interfaces/IWETH9.sol";
 import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
 
 interface IDppOracle {
-    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data)
-        external;
+    function flashLoan(uint256 baseAmount, uint256 quoteAmount, address _assetTo, bytes memory data) external;
 }
 
 interface ILiqToken is IERC20 {

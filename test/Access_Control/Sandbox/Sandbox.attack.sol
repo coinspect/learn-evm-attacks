@@ -19,7 +19,7 @@ contract Exploit_SandBox is TestHarness {
 
     function setUp() external {
         cheat.createSelectFork(vm.envString("RPC_URL"), 14_163_041); // We pin one block before the exploit
-            // happened.
+        // happened.
     }
 
     function test_attack() external {
