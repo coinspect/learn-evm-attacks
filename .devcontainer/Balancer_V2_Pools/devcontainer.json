@@ -1,0 +1,16 @@
+{
+  "name": "Balancer_V2_Pools",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+  "remoteEnv": {
+    "LEARN_ATTACK_CONTRACT": "Exploit_Balancer_V2_Pools",
+    "PATH": "${containerEnv:PATH}:/home/vscode/.foundry/bin"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["test/Business_Logic/Balancer_V2_Pools/Balancer_V2_Pools.attack.sol"] }
+  },
+  "postCreateCommand": "bash scripts/postCreateCommand.sh",
+  "postAttachCommand": "bash scripts/attach-run.sh"
+}
