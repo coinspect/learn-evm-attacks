@@ -244,5 +244,5 @@ Governance contracts should check that the `code` that was voted is exactly the 
 ## Related
 
 - [Furucombo](/learn-evm-attacks/cases/furucombo/) - Context hijacking via `delegatecall` to steal approved funds
-- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-usds/) - Exploiting `create2` and contract deployment mechanics
+- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-(usds)/) - Exploiting `create2` and contract deployment mechanics
 - [Cork Finance](/learn-evm-attacks/cases/cork-finance/) - Deploying malicious contracts to hijack protocol operations
