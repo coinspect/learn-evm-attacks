@@ -169,5 +169,5 @@ draining the Lock contract via the migration process.
 ## Related
 
 - [TempleDAO Spoof Old Staking Contract](/learn-evm-attacks/cases/templedao-spoof-old-staking-contract/) - Exploiting migration processes with spoofed contracts
-- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-usds/) - Abusing contract deployment timing to bypass balance checks
+- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-(usds)/) - Abusing contract deployment timing to bypass balance checks
 - [Paraluni](/learn-evm-attacks/cases/paraluni/) - Attacking protocols through malicious token contracts

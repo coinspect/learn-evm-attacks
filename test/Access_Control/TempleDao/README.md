@@ -52,5 +52,5 @@ Unfortunately, it is trivial to pass an evil `oldStaking` contract that never re
 ## Related
 
 - [Team Finance](/learn-evm-attacks/cases/team-finance/) - Exploiting migration processes through malicious parameters
-- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-usds/) - Abusing contract deployment timing in migration flows
+- [Sperax USD (USDS)](/learn-evm-attacks/cases/sperax-usd-(usds)/) - Abusing contract deployment timing in migration flows
 - [AnySwap Permit Attack](/learn-evm-attacks/cases/anyswap-permit-attack/) - Passing arbitrary contract addresses to bypass validation
